@@ -53,7 +53,7 @@ export default function Home() {
             <img
               src={shalomLogo}
               alt="SHALOM"
-              className="h-28 md:h-44 w-auto mx-auto object-contain"
+              className="h-48 md:h-72 lg:h-96 w-auto mx-auto object-contain"
               data-testid="img-shalom-logo"
             />
           </motion.div>
