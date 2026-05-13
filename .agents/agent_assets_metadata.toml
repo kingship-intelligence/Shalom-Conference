@@ -1,0 +1,14 @@
+uploads = []
+outputs = []
+
+[[generated]]
+id = "6pj7x5eQ51vjNh23Pkbrg"
+uri = "file://artifacts/shalom/public/images/worship.png"
+type = "image"
+title = "electric worship crowd"
+
+[[generated]]
+id = "nFEnjfMr_HpPvhgLUB8N2"
+uri = "file://artifacts/shalom/public/images/community.png"
+type = "image"
+title = "vibrant youth community"
