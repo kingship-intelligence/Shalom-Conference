@@ -1,4 +1,5 @@
 import React from "react";
+import shalomLogo from "@assets/logo_1778697155106.png";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles } from "lucide-react";
@@ -43,15 +44,19 @@ export default function Home() {
             </div>
           </motion.div>
           
-          <motion.h1 
+          <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-7xl md:text-9xl font-black tracking-tighter uppercase text-glow mb-6 leading-none"
-            style={{ fontFamily: "var(--font-display)" }}
+            className="mb-6"
           >
-            SHALOM
-          </motion.h1>
+            <img
+              src={shalomLogo}
+              alt="SHALOM"
+              className="h-28 md:h-44 w-auto mx-auto object-contain"
+              data-testid="img-shalom-logo"
+            />
+          </motion.div>
 
           <FadeIn delay={0.4} className="max-w-2xl mx-auto mb-10">
             <p className="text-xl md:text-3xl text-muted-foreground font-light leading-relaxed">
