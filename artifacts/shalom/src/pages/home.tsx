@@ -44,19 +44,15 @@ export default function Home() {
             </div>
           </motion.div>
           
-          <motion.div
+          <motion.h1 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="mb-6"
+            className="text-7xl md:text-9xl font-black tracking-tighter uppercase text-glow mb-6 leading-none"
+            style={{ fontFamily: "var(--font-display)" }}
           >
-            <img
-              src={shalomLogo}
-              alt="SHALOM"
-              className="h-48 md:h-72 lg:h-96 w-auto mx-auto object-contain"
-              data-testid="img-shalom-logo"
-            />
-          </motion.div>
+            SHALOM
+          </motion.h1>
 
           <FadeIn delay={0.4} className="max-w-2xl mx-auto mb-10">
             <p className="text-xl md:text-3xl text-muted-foreground font-light leading-relaxed">
@@ -297,6 +293,12 @@ export default function Home() {
       </section>
 
       <footer className="py-12 px-6 bg-background text-center border-t border-white/5">
+        <img
+          src={shalomLogo}
+          alt="SHALOM"
+          className="h-16 w-auto mx-auto object-contain mb-6 opacity-80"
+          data-testid="img-shalom-logo-footer"
+        />
         <p className="text-muted-foreground font-mono text-sm uppercase tracking-widest">
           © {new Date().getFullYear()} Shalom Conference. All rights reserved.
         </p>
