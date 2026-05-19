@@ -7,12 +7,12 @@ import { currentConference } from "@/data/conferences";
 export default function About() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-white/10 px-6 py-5">
-        <nav className="container mx-auto flex max-w-7xl items-center justify-between">
+      <header className="border-b border-white/10 px-4 py-5 sm:px-6">
+        <nav className="container mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
           <Link href="/" className="flex items-center gap-3">
             <img src={shalomLogo} alt="SHALOM" className="h-10 w-auto object-contain" />
           </Link>
-          <div className="flex items-center gap-5 text-sm font-medium uppercase tracking-widest text-muted-foreground">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-medium uppercase tracking-widest text-muted-foreground sm:gap-5 sm:text-sm">
             <Link href="/2026" className="hover:text-primary">
               2026
             </Link>
@@ -30,16 +30,16 @@ export default function About() {
       </header>
 
       <main>
-        <section className="relative overflow-hidden px-6 py-24">
+        <section className="relative overflow-hidden px-4 py-20 text-center sm:px-6 sm:py-24 sm:text-left">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.18),transparent_45%)]" />
           <div className="container relative z-10 mx-auto max-w-6xl">
-            <p className="mb-5 text-sm font-bold uppercase tracking-[0.35em] text-primary">
+            <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
               About Shalom
             </p>
-            <h1 className="mb-8 text-6xl font-black uppercase leading-none tracking-tighter text-white md:text-8xl">
+            <h1 className="mb-8 text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl md:text-8xl">
               A Place For Encounter
             </h1>
-            <p className="max-w-4xl text-2xl font-light leading-relaxed text-muted-foreground">
+            <p className="mx-auto max-w-4xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl">
               Shalom exists to gather a generation into the presence of God for
               pure worship, deliverance, and spiritual renewal. It is a call to
               wholeness through Jesus and the nearness of the Holy Spirit.
@@ -47,7 +47,7 @@ export default function About() {
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-card px-6 py-20">
+        <section className="border-y border-white/10 bg-card px-4 py-16 sm:px-6 sm:py-20">
           <div className="container mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
             {[
               {
@@ -66,8 +66,8 @@ export default function About() {
                 text: "We gather with expectation for fresh hunger, healing, courage, and peace.",
               },
             ].map((item) => (
-              <article key={item.title} className="rounded-2xl border border-white/10 bg-background/60 p-8">
-                <div className="mb-6 rounded-xl bg-white/5 p-4 w-fit">{item.icon}</div>
+              <article key={item.title} className="rounded-2xl border border-white/10 bg-background/60 p-8 text-center md:text-left">
+                <div className="mx-auto mb-6 w-fit rounded-xl bg-white/5 p-4 md:mx-0">{item.icon}</div>
                 <h2 className="mb-4 text-2xl font-bold text-white">{item.title}</h2>
                 <p className="leading-relaxed text-muted-foreground">{item.text}</p>
               </article>
@@ -75,10 +75,10 @@ export default function About() {
           </div>
         </section>
 
-        <section className="px-6 py-24">
+        <section className="px-4 py-20 sm:px-6 sm:py-24">
           <div className="container mx-auto grid max-w-7xl gap-16 lg:grid-cols-[0.8fr_1fr]">
-            <div className="rounded-2xl border border-white/10 bg-card p-8">
-              <Users className="mb-6 h-10 w-10 text-primary" />
+            <div className="rounded-2xl border border-white/10 bg-card p-8 text-center lg:text-left">
+              <Users className="mx-auto mb-6 h-10 w-10 text-primary lg:mx-0" />
               <h2 className="mb-4 text-3xl font-black uppercase tracking-tight text-white">
                 Shalom {currentConference.year}
               </h2>
@@ -89,14 +89,14 @@ export default function About() {
               <p className="mt-2 text-muted-foreground">{currentConference.location}</p>
             </div>
 
-            <div>
-              <p className="mb-4 text-sm font-bold uppercase tracking-[0.35em] text-primary">
+            <div className="text-center lg:text-left">
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
                 The Heart
               </p>
-              <h2 className="mb-8 text-4xl font-black uppercase tracking-tighter text-white md:text-6xl">
+              <h2 className="mb-8 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
                 We Are Gathering Around The Comforter
               </h2>
-              <div className="space-y-6 text-xl leading-relaxed text-muted-foreground">
+              <div className="space-y-6 text-lg leading-relaxed text-muted-foreground sm:text-xl">
                 <p>
                   The 2026 theme is The Comforter, taken from{" "}
                   {currentConference.scripture}. We are asking God to meet
@@ -110,8 +110,8 @@ export default function About() {
                 </p>
               </div>
 
-              <div className="mt-10 flex flex-col gap-4 sm:flex-row">
-                <Button asChild size="lg" className="rounded-none uppercase tracking-wider">
+              <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
+                <Button asChild size="lg" className="w-full max-w-xs rounded-none uppercase tracking-wider sm:w-auto">
                   <a href={currentConference.registrationUrl} target="_blank" rel="noreferrer">
                     Register for 2026 <ArrowRight className="h-5 w-5" />
                   </a>
@@ -120,7 +120,7 @@ export default function About() {
                   asChild
                   variant="outline"
                   size="lg"
-                  className="rounded-none border-white/20 uppercase tracking-wider"
+                  className="w-full max-w-xs rounded-none border-white/20 uppercase tracking-wider sm:w-auto"
                 >
                   <Link href="/archive">
                     View Archive <ArrowRight className="h-5 w-5" />
