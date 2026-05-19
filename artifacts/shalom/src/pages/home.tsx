@@ -1,8 +1,15 @@
 import React from "react";
+import { Link } from "wouter";
 import shalomLogo from "@assets/logo_1778697155106.png";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles } from "lucide-react";
+import { archivedConferences, currentConference } from "@/data/conferences";
+
+const featuredArchiveYears = new Set(["2025", "2024"]);
+const featuredArchiveConferences = archivedConferences.filter((conference) =>
+  featuredArchiveYears.has(conference.year),
+);
 
 const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
   <motion.div
@@ -19,6 +26,27 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground">
+      <header className="absolute left-0 right-0 top-0 z-20 px-6 py-5">
+        <nav className="container mx-auto flex max-w-7xl items-center justify-between">
+          <Link href="/" className="flex items-center gap-3">
+            <img src={shalomLogo} alt="SHALOM" className="h-10 w-auto object-contain" />
+          </Link>
+          <div className="flex items-center gap-5 text-sm font-medium uppercase tracking-widest text-white/70">
+            <Link href="/2026" className="hover:text-primary">
+              2026
+            </Link>
+            <Link href="/about" className="hover:text-primary">
+              About
+            </Link>
+            <Link href="/partner" className="hover:text-primary">
+              Partner
+            </Link>
+            <Link href="/archive" className="hover:text-primary">
+              Archive
+            </Link>
+          </div>
+        </nav>
+      </header>
       
       {/* 1. HERO SECTION */}
       <section className="relative min-h-[100dvh] flex items-center justify-center pt-20 pb-32 px-6 overflow-hidden">
@@ -33,17 +61,6 @@ export default function Home() {
         </div>
 
         <div className="relative z-10 container max-w-6xl mx-auto flex flex-col items-center text-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-          >
-            <div className="inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary mb-8 backdrop-blur-sm">
-              <Zap className="mr-2 h-4 w-4" />
-              <span>A Generation Awakening • Oct 12-14, 2024</span>
-            </div>
-          </motion.div>
-          
           <motion.h1 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
@@ -56,18 +73,20 @@ export default function Home() {
 
           <FadeIn delay={0.4} className="max-w-2xl mx-auto mb-10">
             <p className="text-xl md:text-3xl text-muted-foreground font-light leading-relaxed">
-              Peace. Wholeness. Flourishing. <br className="hidden md:block" />
-              Not just a conference—a collision with the Divine.
+              Pure worship. Deliverance. Spiritual renewal. <br className="hidden md:block" />
+              Shalom 2026 is centered on the Comforter.
             </p>
           </FadeIn>
 
           <FadeIn delay={0.6}>
             <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <Button size="lg" className="h-14 px-8 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 bg-glow rounded-none uppercase tracking-wider" data-testid="button-register-hero">
-                Register Now <ArrowRight className="ml-2 h-5 w-5" />
+              <Button asChild size="lg" className="h-14 px-8 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 bg-glow rounded-none uppercase tracking-wider" data-testid="button-register-hero">
+                <a href={currentConference.registrationUrl} target="_blank" rel="noreferrer">
+                  Register for 2026 <ArrowRight className="ml-2 h-5 w-5" />
+                </a>
               </Button>
-              <Button variant="outline" size="lg" className="h-14 px-8 text-lg font-medium border-white/20 hover:bg-white/5 rounded-none uppercase tracking-wider" data-testid="button-watch-trailer">
-                Watch Trailer
+              <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg font-medium border-white/20 hover:bg-white/5 rounded-none uppercase tracking-wider">
+                <Link href="/archive">Explore Archives</Link>
               </Button>
             </div>
           </FadeIn>
@@ -78,13 +97,16 @@ export default function Home() {
       <section className="py-32 px-6 bg-background relative">
         <div className="container max-w-4xl mx-auto text-center">
           <FadeIn>
-            <h2 className="text-4xl md:text-6xl font-bold mb-10 text-white tracking-tight">WE REFUSE TO BE BORED.</h2>
+            <h2 className="text-4xl md:text-6xl font-bold mb-10 text-white tracking-tight">THE COMFORTER IS NEAR.</h2>
             <div className="space-y-8 text-xl md:text-2xl text-muted-foreground font-light leading-relaxed">
               <p>
-                There's a cultural script that says youth gatherings have to be generic. Safe. Predictable. We're tearing up that script.
+                Shalom 2026 is a one-day gathering for pure worship,
+                deliverance, and spiritual renewal in the presence of God.
               </p>
               <p className="text-white">
-                Shalom is the moment the bass drops and the presence of God fills the room. It's the sacred and the electric. It's deep community, unmatched energy, and a generation desperate for real truth.
+                The theme is The Comforter, taken from {currentConference.scripture}:
+                the Holy Spirit drawing close to bring freedom, renewal,
+                conviction, healing, and real peace.
               </p>
             </div>
           </FadeIn>
@@ -97,14 +119,14 @@ export default function Home() {
           <FadeIn>
             <div className="relative aspect-video md:aspect-[21/9] overflow-hidden rounded-2xl bg-muted">
               <img 
-                src="/images/community.png" 
-                alt="Youth community" 
+                src="/images/home/shalom-worship-moment.png" 
+                alt="Shalom worship moment" 
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
               <div className="absolute bottom-8 left-8 right-8">
                 <p className="text-2xl md:text-4xl font-bold text-white max-w-2xl">
-                  Find your people. Find your purpose.
+                  One conference. Many years of testimony.
                 </p>
               </div>
             </div>
@@ -116,25 +138,25 @@ export default function Home() {
       <section className="py-32 px-6 bg-card border-y border-white/5">
         <div className="container max-w-7xl mx-auto">
           <FadeIn>
-            <h2 className="text-5xl md:text-7xl font-black uppercase mb-20 text-center tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">What to Expect</h2>
+            <h2 className="text-5xl md:text-7xl font-black uppercase mb-20 text-center tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Shalom 2026</h2>
           </FadeIn>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
               {
                 icon: <Zap className="h-10 w-10 text-primary" />,
-                title: "Electric Worship",
-                desc: "High energy, deep reverence. We're turning up the volume and pressing in. No holding back."
+                title: "Pure Worship",
+                desc: "A room turned toward Jesus with space to listen, respond, and encounter the Holy Spirit."
               },
               {
                 icon: <Heart className="h-10 w-10 text-secondary" />,
-                title: "Real Encounter",
-                desc: "Beyond the hype. We create space for genuine, life-altering moments with the Spirit."
+                title: "Deliverance",
+                desc: "Prayer and ministry focused on the freedom, healing, and restoration God brings."
               },
               {
                 icon: <Users className="h-10 w-10 text-primary" />,
-                title: "Deep Community",
-                desc: "Nobody stands alone. Form bonds that outlast the weekend in our squad sessions."
+                title: "Spiritual Renewal",
+                desc: "A place for students and young adults to be refreshed, revived, and sent with purpose."
               }
             ].map((item, i) => (
               <FadeIn key={i} delay={i * 0.2}>
@@ -151,40 +173,47 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 5. LINEUP */}
+      {/* 5. ARCHIVE */}
       <section className="py-32 px-6">
         <div className="container max-w-7xl mx-auto">
           <FadeIn>
             <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-              <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">The Lineup</h2>
+              <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">The Archive</h2>
               <p className="text-xl text-muted-foreground max-w-md md:text-right">
-                Voices that challenge the status quo and lead with fire.
+                A living catalog of previous Shalom gatherings, themes, and moments.
               </p>
             </div>
           </FadeIn>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {[
-              { name: "Sarah Jenkins", role: "Keynote Speaker", color: "from-primary/20 to-transparent" },
-              { name: "Shalom Worship", role: "House Band", color: "from-secondary/20 to-transparent" },
-              { name: "Marcus Doe", role: "Guest Speaker", color: "from-primary/20 to-transparent" },
-              { name: "DJ Elevate", role: "Afterparty", color: "from-secondary/20 to-transparent" }
-            ].map((speaker, i) => (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {featuredArchiveConferences.map((conference, i) => (
               <FadeIn key={i} delay={i * 0.1}>
-                <div className="group relative aspect-[3/4] overflow-hidden bg-muted rounded-none cursor-pointer">
-                  <div className={`absolute inset-0 bg-gradient-to-t ${speaker.color} z-10 opacity-60 group-hover:opacity-100 transition-opacity duration-500`} />
+                <Link href={`/archive/${conference.year}`} className="group relative block aspect-[4/3] overflow-hidden bg-muted rounded-2xl cursor-pointer">
+                  <img
+                    src={conference.image}
+                    alt={`${conference.year} ${conference.theme}`}
+                    className="absolute inset-0 h-full w-full object-cover opacity-30 transition duration-500 group-hover:scale-105 group-hover:opacity-50"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent z-10" />
                   <div className="absolute inset-0 flex flex-col justify-end p-6 z-20">
-                    <h3 className="text-2xl font-bold text-white translate-y-4 group-hover:translate-y-0 transition-transform duration-300">{speaker.name}</h3>
-                    <p className="text-primary font-medium opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0 delay-75">{speaker.role}</p>
+                    <p className="font-mono text-sm uppercase tracking-widest text-primary mb-3">
+                      {conference.year}
+                    </p>
+                    <h3 className="text-3xl font-bold text-white">{conference.theme}</h3>
+                    <p className="text-muted-foreground mt-3 max-w-md">{conference.summary}</p>
                   </div>
-                  {/* Placeholder for actual speaker images if we had them */}
-                  <div className="absolute inset-0 bg-background flex items-center justify-center grayscale group-hover:grayscale-0 transition-all duration-700 opacity-20">
-                    <Users className="w-20 h-20 text-white/20" />
-                  </div>
-                </div>
+                </Link>
               </FadeIn>
             ))}
           </div>
+
+          <FadeIn delay={0.2} className="mt-10 text-center">
+            <Button asChild variant="outline" size="lg" className="rounded-none border-white/20 uppercase tracking-wider">
+              <Link href="/archive">
+                View Full Archive <ArrowRight className="h-5 w-5" />
+              </Link>
+            </Button>
+          </FadeIn>
         </div>
       </section>
 
@@ -198,26 +227,23 @@ export default function Home() {
           <div className="space-y-12">
             {[
               {
-                day: "Friday Night",
+                day: "Morning",
                 events: [
-                  { time: "6:00 PM", title: "Doors Open & Pre-Party" },
-                  { time: "7:30 PM", title: "Session 1: The Awakening" }
+                  { time: "10:00 AM", title: "Doors Open & Community" },
+                  { time: "11:00 AM", title: "Session 1: The Promise" }
                 ]
               },
               {
-                day: "Saturday",
+                day: "Midday",
                 events: [
-                  { time: "10:00 AM", title: "Session 2: Deep Waters" },
-                  { time: "1:00 PM", title: "Squad Connect & Lunch" },
-                  { time: "3:00 PM", title: "Masterclasses" },
-                  { time: "7:00 PM", title: "Session 3: The Outpouring" },
-                  { time: "10:00 PM", title: "Neon Afterparty" }
+                  { time: "1:00 PM", title: "Lunch & Connect" },
+                  { time: "3:00 PM", title: "Session 2: The Comforter" }
                 ]
               },
               {
-                day: "Sunday Morning",
+                day: "Evening",
                 events: [
-                  { time: "10:30 AM", title: "Session 4: Sent Out" }
+                  { time: "6:30 PM", title: "Pure Worship & Deliverance Prayer" }
                 ]
               }
             ].map((day, i) => (
@@ -245,8 +271,8 @@ export default function Home() {
               <MapPin className="h-8 w-8" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-white">The Warehouse</h3>
-              <p className="text-muted-foreground">123 Industrial Ave, Downtown</p>
+              <h3 className="text-2xl font-bold text-white">Owings Mills, Maryland</h3>
+              <p className="text-muted-foreground">{currentConference.location}</p>
             </div>
           </FadeIn>
 
@@ -255,8 +281,8 @@ export default function Home() {
               <Calendar className="h-8 w-8" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-white">October 12-14, 2024</h3>
-              <p className="text-muted-foreground">All weekend event</p>
+              <h3 className="text-2xl font-bold text-white">{currentConference.date}</h3>
+              <p className="text-muted-foreground">One-day event</p>
             </div>
           </FadeIn>
           
@@ -265,8 +291,8 @@ export default function Home() {
               <Sparkles className="h-8 w-8" />
             </div>
             <div>
-              <h3 className="text-2xl font-bold text-white">$49 Early Bird</h3>
-              <p className="text-muted-foreground">Includes all access & merch</p>
+              <h3 className="text-2xl font-bold text-white">The Comforter</h3>
+              <p className="text-muted-foreground">Theme for Shalom 2026</p>
             </div>
           </FadeIn>
         </div>
@@ -280,13 +306,15 @@ export default function Home() {
         <div className="container relative z-10 max-w-4xl mx-auto text-center">
           <FadeIn>
             <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-primary-foreground mb-8">
-              Don't Miss It
+              Register for 2026
             </h2>
             <p className="text-xl md:text-2xl text-primary-foreground/80 mb-12 font-medium">
-              Spaces are limited. The moment is now. Gather your crew.
+              Join us for pure worship, deliverance, and spiritual renewal.
             </p>
-            <Button size="lg" className="h-16 px-10 text-xl font-bold bg-background text-foreground hover:bg-background/90 rounded-none uppercase tracking-wider" data-testid="button-register-footer">
-              Secure Your Spot <ArrowRight className="ml-2 h-6 w-6" />
+            <Button asChild size="lg" className="h-16 px-10 text-xl font-bold bg-background text-foreground hover:bg-background/90 rounded-none uppercase tracking-wider" data-testid="button-register-footer">
+              <a href={currentConference.registrationUrl} target="_blank" rel="noreferrer">
+                Secure Your Spot <ArrowRight className="ml-2 h-6 w-6" />
+              </a>
             </Button>
           </FadeIn>
         </div>
