@@ -3,7 +3,7 @@ import { Link } from "wouter";
 import shalomLogo from "@assets/logo_1778697155106.png";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles } from "lucide-react";
+import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles, ChevronDown } from "lucide-react";
 import { archivedConferences, currentConference } from "@/data/conferences";
 
 const featuredArchiveYears = new Set(["2025", "2024"]);
@@ -91,10 +91,25 @@ export default function Home() {
             </div>
           </FadeIn>
         </div>
+
+        <motion.a
+          href="#comforter"
+          aria-label="Scroll to learn more"
+          initial={{ opacity: 0, y: -8 }}
+          animate={{ opacity: 1, y: [0, 12, 0] }}
+          transition={{
+            opacity: { duration: 0.6, delay: 1 },
+            y: { duration: 1.4, repeat: Infinity, ease: "easeInOut" },
+          }}
+          className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-2 text-white/70 transition-colors hover:text-primary"
+        >
+          <span className="text-xs font-bold uppercase tracking-[0.35em]">Scroll</span>
+          <ChevronDown className="h-8 w-8" aria-hidden="true" />
+        </motion.a>
       </section>
 
       {/* 2. THE VIBE (MANIFESTO) */}
-      <section className="py-32 px-6 bg-background relative">
+      <section id="comforter" className="py-32 px-6 bg-background relative">
         <div className="container max-w-4xl mx-auto text-center">
           <FadeIn>
             <h2 className="text-4xl md:text-6xl font-bold mb-10 text-white tracking-tight">THE COMFORTER IS NEAR.</h2>
