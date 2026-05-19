@@ -20,12 +20,12 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="absolute left-0 right-0 top-0 z-20 px-6 py-5">
-        <nav className="container mx-auto flex max-w-7xl items-center justify-between">
+      <header className="absolute left-0 right-0 top-0 z-20 px-4 py-5 sm:px-6">
+        <nav className="container mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
           <Link href="/" className="flex items-center gap-3">
             <img src={shalomLogo} alt="SHALOM" className="h-10 w-auto object-contain" />
           </Link>
-          <div className="flex items-center gap-5 text-sm font-medium uppercase tracking-widest text-white/70">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-medium uppercase tracking-widest text-white/70 sm:gap-5 sm:text-sm">
             <Link href="/2026" className={isCurrent ? "text-primary" : "hover:text-primary"}>
               2026
             </Link>
@@ -43,7 +43,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
       </header>
 
       <main>
-        <section className="relative flex min-h-[85dvh] items-center overflow-hidden px-6 pb-24 pt-32">
+        <section className="relative flex min-h-[85dvh] items-center overflow-hidden px-4 pb-20 pt-40 text-center sm:px-6 sm:pb-24 sm:pt-32 sm:text-left">
           <div className="absolute inset-0">
             <img
               src={conference.image}
@@ -61,19 +61,19 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               </span>
             </div>
 
-            <h1 className="mb-6 text-6xl font-black uppercase leading-none tracking-tighter text-glow md:text-9xl">
+            <h1 className="mb-6 text-4xl font-black uppercase leading-none tracking-tighter text-glow sm:text-6xl md:text-9xl">
               {conference.theme}
             </h1>
-            <p className="mb-10 max-w-3xl text-2xl font-light leading-relaxed text-muted-foreground md:text-3xl">
+            <p className="mx-auto mb-10 max-w-3xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl md:text-3xl">
               {conference.tagline}
             </p>
 
-            <div className="flex flex-col gap-4 sm:flex-row">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
               {isCurrent && conference.registrationUrl ? (
                 <Button
                   asChild
                   size="lg"
-                  className="h-14 rounded-none bg-glow px-8 text-lg font-bold uppercase tracking-wider"
+                  className="h-14 w-full max-w-xs rounded-none px-8 text-lg font-bold uppercase tracking-wider bg-glow sm:w-auto"
                 >
                   <a href={conference.registrationUrl} target="_blank" rel="noreferrer">
                     Register for Shalom {conference.year}
@@ -85,7 +85,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                 asChild
                 variant="outline"
                 size="lg"
-                className="h-14 rounded-none border-white/20 px-8 text-lg font-medium uppercase tracking-wider"
+                className="h-14 w-full max-w-xs rounded-none border-white/20 px-8 text-lg font-medium uppercase tracking-wider sm:w-auto"
               >
                 <Link href="/archive">
                   View Archives <ArrowRight className="h-5 w-5" />
@@ -95,23 +95,23 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
           </div>
         </section>
 
-        <section className="border-y border-white/10 bg-card px-6 py-16">
+        <section className="border-y border-white/10 bg-card px-4 py-16 sm:px-6">
           <div className="container mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
-            <div className="flex items-center gap-5">
+            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-5 sm:text-left">
               <MapPin className="h-8 w-8 text-primary" />
               <div>
                 <h2 className="text-xl font-bold text-white">Location</h2>
                 <p className="text-muted-foreground">{conference.location}</p>
               </div>
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-5 sm:text-left">
               <Calendar className="h-8 w-8 text-secondary" />
               <div>
                 <h2 className="text-xl font-bold text-white">Date</h2>
                 <p className="text-muted-foreground">{conference.date}</p>
               </div>
             </div>
-            <div className="flex items-center gap-5">
+            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-5 sm:text-left">
               <Sparkles className="h-8 w-8 text-primary" />
               <div>
                 <h2 className="text-xl font-bold text-white">Theme</h2>
@@ -121,22 +121,22 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
           </div>
         </section>
 
-        <section className="px-6 py-24">
+        <section className="px-4 py-20 sm:px-6 sm:py-24">
           <div className="container mx-auto grid max-w-7xl gap-16 lg:grid-cols-[1fr_0.8fr]">
-            <div>
-              <p className="mb-4 text-sm font-bold uppercase tracking-[0.35em] text-primary">
+            <div className="text-center lg:text-left">
+              <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
                 About Shalom {conference.year}
               </p>
-              <h2 className="mb-8 text-4xl font-black uppercase tracking-tighter text-white md:text-6xl">
+              <h2 className="mb-8 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
                 {conference.summary}
               </h2>
-              <p className="text-xl leading-relaxed text-muted-foreground">
+              <p className="text-lg leading-relaxed text-muted-foreground sm:text-xl">
                 {conference.description}
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-card p-8">
-              <h3 className="mb-6 flex items-center gap-3 text-2xl font-bold text-white">
+            <div className="rounded-2xl border border-white/10 bg-card p-6 text-center sm:p-8 sm:text-left">
+              <h3 className="mb-6 flex flex-col items-center gap-3 text-2xl font-bold text-white sm:flex-row">
                 <Sparkles className="h-6 w-6 text-primary" />
                 Highlights
               </h3>
@@ -154,7 +154,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               ) : null}
               <div className="space-y-4">
                 {conference.highlights.map((highlight) => (
-                  <div key={highlight} className="flex items-center gap-3 text-muted-foreground">
+                  <div key={highlight} className="flex flex-col items-center gap-3 text-muted-foreground sm:flex-row">
                     <span className="h-2 w-2 rounded-full bg-primary" />
                     <span>{highlight}</span>
                   </div>
@@ -164,10 +164,10 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
           </div>
         </section>
 
-        <section className="bg-card px-6 py-24">
+        <section className="bg-card px-4 py-20 sm:px-6 sm:py-24">
           <div className="container mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
-            <div>
-              <h2 className="mb-10 text-4xl font-black uppercase tracking-tighter text-white md:text-6xl">
+            <div className="text-center lg:text-left">
+              <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
                 Schedule
               </h2>
               <div className="space-y-6">
@@ -179,20 +179,20 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                     <p className="mb-2 font-mono text-sm uppercase tracking-widest text-primary">
                       {event.time}
                     </p>
-                    <h3 className="text-2xl font-bold text-white">{event.title}</h3>
+                    <h3 className="text-xl font-bold text-white sm:text-2xl">{event.title}</h3>
                   </div>
                 ))}
               </div>
             </div>
 
-            <div>
-              <h2 className="mb-10 text-4xl font-black uppercase tracking-tighter text-white md:text-6xl">
+            <div className="text-center lg:text-left">
+              <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
                 Lineup
               </h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 {conference.speakers.map((speaker) => (
-                  <div key={speaker.name} className="border border-white/10 bg-background/60 p-6">
-                    <Users className="mb-6 h-8 w-8 text-primary" />
+                  <div key={speaker.name} className="border border-white/10 bg-background/60 p-6 text-center sm:text-left">
+                    <Users className="mx-auto mb-6 h-8 w-8 text-primary sm:mx-0" />
                     <h3 className="text-2xl font-bold text-white">{speaker.name}</h3>
                     <p className="text-muted-foreground">{speaker.role}</p>
                   </div>

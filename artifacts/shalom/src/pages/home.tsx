@@ -26,12 +26,12 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground">
-      <header className="absolute left-0 right-0 top-0 z-20 px-6 py-5">
-        <nav className="container mx-auto flex max-w-7xl items-center justify-between">
+      <header className="absolute left-0 right-0 top-0 z-20 px-4 py-5 sm:px-6">
+        <nav className="container mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
           <Link href="/" className="flex items-center gap-3">
             <img src={shalomLogo} alt="SHALOM" className="h-10 w-auto object-contain" />
           </Link>
-          <div className="flex items-center gap-5 text-sm font-medium uppercase tracking-widest text-white/70">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-medium uppercase tracking-widest text-white/70 sm:gap-5 sm:text-sm">
             <Link href="/2026" className="hover:text-primary">
               2026
             </Link>
@@ -49,7 +49,7 @@ export default function Home() {
       </header>
       
       {/* 1. HERO SECTION */}
-      <section className="relative min-h-[100dvh] flex items-center justify-center pt-20 pb-32 px-6 overflow-hidden">
+      <section className="relative min-h-[100dvh] flex items-center justify-center overflow-hidden px-4 pb-28 pt-32 sm:px-6 sm:pb-32 sm:pt-20">
         <div className="absolute inset-0 z-0">
           <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-background/80 to-background z-10" />
           <img 
@@ -60,32 +60,32 @@ export default function Home() {
           <div className="absolute inset-0 bg-primary/10 mix-blend-overlay" />
         </div>
 
-        <div className="relative z-10 container max-w-6xl mx-auto flex flex-col items-center text-center">
+        <div className="relative z-10 container mx-auto flex max-w-6xl flex-col items-center text-center">
           <motion.h1 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-7xl md:text-9xl font-black tracking-tighter uppercase text-glow mb-6 leading-none"
+            className="mb-6 text-6xl font-black uppercase leading-none tracking-tighter text-glow sm:text-7xl md:text-9xl"
             style={{ fontFamily: "var(--font-display)" }}
           >
             SHALOM
           </motion.h1>
 
           <FadeIn delay={0.4} className="max-w-2xl mx-auto mb-10">
-            <p className="text-xl md:text-3xl text-muted-foreground font-light leading-relaxed">
+            <p className="text-lg font-light leading-relaxed text-muted-foreground sm:text-xl md:text-3xl">
               Pure worship. Deliverance. Spiritual renewal. <br className="hidden md:block" />
               Shalom 2026 is centered on the Comforter.
             </p>
           </FadeIn>
 
-          <FadeIn delay={0.6}>
-            <div className="flex flex-col sm:flex-row gap-4 items-center">
-              <Button asChild size="lg" className="h-14 px-8 text-lg font-bold bg-primary text-primary-foreground hover:bg-primary/90 bg-glow rounded-none uppercase tracking-wider" data-testid="button-register-hero">
+          <FadeIn delay={0.6} className="w-full sm:w-auto">
+            <div className="flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
+              <Button asChild size="lg" className="h-14 w-full max-w-xs rounded-none bg-primary px-8 text-lg font-bold uppercase tracking-wider text-primary-foreground bg-glow hover:bg-primary/90 sm:w-auto" data-testid="button-register-hero">
                 <a href={currentConference.registrationUrl} target="_blank" rel="noreferrer">
                   Register for 2026 <ArrowRight className="ml-2 h-5 w-5" />
                 </a>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-14 px-8 text-lg font-medium border-white/20 hover:bg-white/5 rounded-none uppercase tracking-wider">
+              <Button asChild variant="outline" size="lg" className="h-14 w-full max-w-xs rounded-none border-white/20 px-8 text-lg font-medium uppercase tracking-wider hover:bg-white/5 sm:w-auto">
                 <Link href="/archive">Explore Archives</Link>
               </Button>
             </div>
@@ -109,11 +109,11 @@ export default function Home() {
       </section>
 
       {/* 2. THE VIBE (MANIFESTO) */}
-      <section id="comforter" className="py-32 px-6 bg-background relative">
-        <div className="container max-w-4xl mx-auto text-center">
+      <section id="comforter" className="relative bg-background px-4 py-24 sm:px-6 sm:py-32">
+        <div className="container mx-auto max-w-4xl text-center">
           <FadeIn>
-            <h2 className="text-4xl md:text-6xl font-bold mb-10 text-white tracking-tight">THE COMFORTER IS NEAR.</h2>
-            <div className="space-y-8 text-xl md:text-2xl text-muted-foreground font-light leading-relaxed">
+            <h2 className="mb-10 text-4xl font-bold tracking-tight text-white md:text-6xl">THE COMFORTER IS NEAR.</h2>
+            <div className="space-y-8 text-lg font-light leading-relaxed text-muted-foreground sm:text-xl md:text-2xl">
               <p>
                 Shalom 2026 is a one-day gathering for pure worship,
                 deliverance, and spiritual renewal in the presence of God.
@@ -129,7 +129,7 @@ export default function Home() {
       </section>
 
       {/* 3. IMAGE BREAK */}
-      <section className="py-12 px-6">
+      <section className="px-4 py-12 sm:px-6">
         <div className="container max-w-7xl mx-auto">
           <FadeIn>
             <div className="relative aspect-video md:aspect-[21/9] overflow-hidden rounded-2xl bg-muted">
@@ -139,8 +139,8 @@ export default function Home() {
                 className="w-full h-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent" />
-              <div className="absolute bottom-8 left-8 right-8">
-                <p className="text-2xl md:text-4xl font-bold text-white max-w-2xl">
+              <div className="absolute bottom-6 left-6 right-6 text-center sm:bottom-8 sm:left-8 sm:right-8 sm:text-left">
+                <p className="mx-auto max-w-2xl text-2xl font-bold text-white sm:mx-0 md:text-4xl">
                   One conference. Many years of testimony.
                 </p>
               </div>
@@ -150,10 +150,10 @@ export default function Home() {
       </section>
 
       {/* 4. PILLARS */}
-      <section className="py-32 px-6 bg-card border-y border-white/5">
+      <section className="border-y border-white/5 bg-card px-4 py-24 sm:px-6 sm:py-32">
         <div className="container max-w-7xl mx-auto">
           <FadeIn>
-            <h2 className="text-5xl md:text-7xl font-black uppercase mb-20 text-center tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Shalom 2026</h2>
+            <h2 className="mb-14 bg-gradient-to-r from-primary to-secondary bg-clip-text text-center text-4xl font-black uppercase tracking-tighter text-transparent sm:text-5xl md:mb-20 md:text-7xl">Shalom 2026</h2>
           </FadeIn>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
@@ -175,8 +175,8 @@ export default function Home() {
               }
             ].map((item, i) => (
               <FadeIn key={i} delay={i * 0.2}>
-                <div className="flex flex-col space-y-4 p-8 rounded-2xl bg-background/50 border border-white/5 hover:border-primary/30 transition-colors duration-300">
-                  <div className="p-4 bg-white/5 w-fit rounded-xl">
+                <div className="flex flex-col items-center space-y-4 rounded-2xl border border-white/5 bg-background/50 p-8 text-center transition-colors duration-300 hover:border-primary/30 md:items-start md:text-left">
+                  <div className="w-fit rounded-xl bg-white/5 p-4">
                     {item.icon}
                   </div>
                   <h3 className="text-2xl font-bold text-white">{item.title}</h3>
@@ -189,12 +189,12 @@ export default function Home() {
       </section>
 
       {/* 5. ARCHIVE */}
-      <section className="py-32 px-6">
+      <section className="px-4 py-24 sm:px-6 sm:py-32">
         <div className="container max-w-7xl mx-auto">
           <FadeIn>
-            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-              <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">The Archive</h2>
-              <p className="text-xl text-muted-foreground max-w-md md:text-right">
+            <div className="mb-12 flex flex-col items-center justify-between gap-6 text-center md:mb-16 md:flex-row md:items-end md:text-left">
+              <h2 className="text-4xl font-black uppercase tracking-tighter sm:text-5xl md:text-7xl">The Archive</h2>
+              <p className="max-w-md text-lg text-muted-foreground sm:text-xl md:text-right">
                 A living catalog of previous Shalom gatherings, themes, and moments.
               </p>
             </div>
@@ -210,11 +210,11 @@ export default function Home() {
                     className="absolute inset-0 h-full w-full object-cover opacity-30 transition duration-500 group-hover:scale-105 group-hover:opacity-50"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent z-10" />
-                  <div className="absolute inset-0 flex flex-col justify-end p-6 z-20">
+                  <div className="absolute inset-0 z-20 flex flex-col justify-end p-5 text-center sm:p-6 sm:text-left">
                     <p className="font-mono text-sm uppercase tracking-widest text-primary mb-3">
                       {conference.year}
                     </p>
-                    <h3 className="text-3xl font-bold text-white">{conference.theme}</h3>
+                    <h3 className="text-2xl font-bold text-white sm:text-3xl">{conference.theme}</h3>
                     <p className="text-muted-foreground mt-3 max-w-md">{conference.summary}</p>
                   </div>
                 </Link>
@@ -233,10 +233,10 @@ export default function Home() {
       </section>
 
       {/* 6. SCHEDULE */}
-      <section className="py-32 px-6 bg-card">
+      <section className="bg-card px-4 py-24 sm:px-6 sm:py-32">
         <div className="container max-w-4xl mx-auto">
           <FadeIn>
-            <h2 className="text-5xl font-black uppercase mb-16 text-center tracking-tighter">The Schedule</h2>
+            <h2 className="mb-14 text-center text-4xl font-black uppercase tracking-tighter sm:text-5xl md:mb-16">The Schedule</h2>
           </FadeIn>
           
           <div className="space-y-12">
@@ -263,12 +263,12 @@ export default function Home() {
               }
             ].map((day, i) => (
               <FadeIn key={i} delay={i * 0.1} className="border-b border-white/10 pb-12 last:border-0">
-                <h3 className="text-3xl font-bold text-primary mb-6">{day.day}</h3>
+                <h3 className="mb-6 text-center text-3xl font-bold text-primary sm:text-left">{day.day}</h3>
                 <div className="space-y-4">
                   {day.events.map((event, j) => (
-                    <div key={j} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-8 group">
-                      <span className="text-muted-foreground w-28 font-mono text-sm">{event.time}</span>
-                      <span className="text-xl font-medium text-white group-hover:text-primary transition-colors">{event.title}</span>
+                    <div key={j} className="group flex flex-col items-center gap-2 text-center sm:flex-row sm:items-center sm:gap-8 sm:text-left">
+                      <span className="w-28 font-mono text-sm text-muted-foreground">{event.time}</span>
+                      <span className="text-xl font-medium text-white transition-colors group-hover:text-primary">{event.title}</span>
                     </div>
                   ))}
                 </div>
@@ -279,9 +279,9 @@ export default function Home() {
       </section>
 
       {/* 7. DETAILS */}
-      <section className="py-24 px-6 border-y border-white/5 bg-background">
-        <div className="container max-w-7xl mx-auto flex flex-col md:flex-row gap-12 items-center justify-between">
-          <FadeIn className="flex items-center gap-6">
+      <section className="border-y border-white/5 bg-background px-4 py-20 sm:px-6 sm:py-24">
+        <div className="container mx-auto flex max-w-7xl flex-col items-center justify-between gap-12 md:flex-row">
+          <FadeIn className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-6 sm:text-left">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
               <MapPin className="h-8 w-8" />
             </div>
@@ -291,7 +291,7 @@ export default function Home() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.2} className="flex items-center gap-6">
+          <FadeIn delay={0.2} className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-6 sm:text-left">
             <div className="w-16 h-16 rounded-full bg-secondary/10 flex items-center justify-center text-secondary">
               <Calendar className="h-8 w-8" />
             </div>
@@ -301,7 +301,7 @@ export default function Home() {
             </div>
           </FadeIn>
           
-          <FadeIn delay={0.4} className="flex items-center gap-6">
+          <FadeIn delay={0.4} className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-6 sm:text-left">
             <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center text-primary">
               <Sparkles className="h-8 w-8" />
             </div>
@@ -314,19 +314,19 @@ export default function Home() {
       </section>
 
       {/* 8. CTA / FOOTER */}
-      <section className="py-32 px-6 relative overflow-hidden bg-primary">
+      <section className="relative overflow-hidden bg-primary px-4 py-24 sm:px-6 sm:py-32">
         <div className="absolute inset-0 bg-[url('/images/worship.png')] bg-cover bg-center mix-blend-overlay opacity-20" />
         <div className="absolute inset-0 bg-gradient-to-t from-primary to-transparent mix-blend-multiply" />
         
         <div className="container relative z-10 max-w-4xl mx-auto text-center">
           <FadeIn>
-            <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-primary-foreground mb-8">
+            <h2 className="mb-8 text-4xl font-black uppercase tracking-tighter text-primary-foreground sm:text-6xl md:text-8xl">
               Register for 2026
             </h2>
-            <p className="text-xl md:text-2xl text-primary-foreground/80 mb-12 font-medium">
+            <p className="mb-12 text-lg font-medium text-primary-foreground/80 sm:text-xl md:text-2xl">
               Join us for pure worship, deliverance, and spiritual renewal.
             </p>
-            <Button asChild size="lg" className="h-16 px-10 text-xl font-bold bg-background text-foreground hover:bg-background/90 rounded-none uppercase tracking-wider" data-testid="button-register-footer">
+            <Button asChild size="lg" className="h-16 w-full max-w-xs rounded-none bg-background px-10 text-xl font-bold uppercase tracking-wider text-foreground hover:bg-background/90 sm:w-auto" data-testid="button-register-footer">
               <a href={currentConference.registrationUrl} target="_blank" rel="noreferrer">
                 Secure Your Spot <ArrowRight className="ml-2 h-6 w-6" />
               </a>
