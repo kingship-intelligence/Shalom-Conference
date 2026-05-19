@@ -37,13 +37,29 @@ export default function About() {
               About Shalom
             </p>
             <h1 className="mb-8 text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl md:text-8xl">
-              A Place For Encounter
+              What Is Shalom?
             </h1>
             <p className="mx-auto max-w-4xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl">
-              Shalom exists to gather a generation into the presence of God for
-              pure worship, deliverance, and spiritual renewal. It is a call to
-              wholeness through Jesus and the nearness of the Holy Spirit.
+              Shalom is an annual conference inspired by the Holy Spirit.
             </p>
+            <p className="mx-auto mt-6 max-w-4xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl">
+              We aim to create an atmosphere that will foster genuine worship,
+              spiritual awakening, and deliverance in the lives of those who are
+              earnestly seeking Christ with an extreme thirst after righteousness.
+            </p>
+          </div>
+        </section>
+
+        <section className="px-4 pb-16 sm:px-6 sm:pb-20">
+          <div className="container mx-auto max-w-7xl">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-card sm:aspect-video md:aspect-[21/9]">
+              <img
+                src="/images/home/shalom-about-worship.png"
+                alt="Shalom worship moment"
+                className="h-full w-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/10 to-transparent" />
+            </div>
           </div>
         </section>
 

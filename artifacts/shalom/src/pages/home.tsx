@@ -134,7 +134,7 @@ export default function Home() {
           <FadeIn>
             <div className="relative aspect-video md:aspect-[21/9] overflow-hidden rounded-2xl bg-muted">
               <img 
-                src="/images/home/shalom-worship-moment.png" 
+                src="/images/home/shalom-hero-worship-hd.png" 
                 alt="Shalom worship moment" 
                 className="w-full h-full object-cover"
               />
