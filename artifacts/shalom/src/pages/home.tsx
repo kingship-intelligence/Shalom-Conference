@@ -46,7 +46,19 @@ export default function Home() {
       {/* 1. HERO SECTION */}
       <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden px-4 pb-24 pt-32 sm:px-6 sm:pt-24">
         <div className="absolute inset-0 bg-background">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.08),transparent_32rem)]" />
+          <video
+            className="h-full w-full object-cover object-center opacity-45"
+            autoPlay
+            muted
+            loop
+            playsInline
+            poster="/images/home/shalom-hero-worship-hd.png"
+            aria-label="Shalom worship atmosphere"
+          >
+            <source src="/videos/herox.mp4" type="video/mp4" />
+          </video>
+          <div className="absolute inset-0 bg-background/60" />
+          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background" />
         </div>
 
         <div className="container relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center">
