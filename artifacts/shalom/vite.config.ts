@@ -26,6 +26,8 @@ if (!basePath) {
   );
 }
 
+const host = process.env.HOST ?? "127.0.0.1";
+
 export default defineConfig({
   base: basePath,
   plugins: [
@@ -61,7 +63,7 @@ export default defineConfig({
   server: {
     port,
     strictPort: true,
-    host: "0.0.0.0",
+    host,
     allowedHosts: true,
     fs: {
       strict: true,
@@ -69,7 +71,7 @@ export default defineConfig({
   },
   preview: {
     port,
-    host: "0.0.0.0",
+    host,
     allowedHosts: true,
   },
 });
