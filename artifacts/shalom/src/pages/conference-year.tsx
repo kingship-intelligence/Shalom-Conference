@@ -50,7 +50,9 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               alt={`${conference.year} ${conference.theme}`}
               className="h-full w-full object-cover opacity-50"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-background/30 via-background/80 to-background" />
+            <div className="absolute inset-0 bg-gradient-to-b from-background/35 via-background/78 to-background" />
+            <div className="absolute -right-24 top-0 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
+            <div className="absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-secondary/20 blur-3xl" />
           </div>
 
           <div className="container relative z-10 mx-auto max-w-6xl">

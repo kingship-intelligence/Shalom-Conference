@@ -77,49 +77,49 @@
   --elevate-1: rgba(255,255,255, .03);
   --elevate-2: rgba(255,255,255, .08);
 
-  --background: 240 10% 4%;
+  --background: 334 78% 5%;
   --foreground: 0 0% 98%;
 
-  --border: 240 6% 16%;
-  --input: 240 6% 16%;
-  --ring: 190 100% 50%;
+  --border: 338 42% 18%;
+  --input: 338 42% 18%;
+  --ring: 39 73% 55%;
 
-  --card: 240 10% 6%;
+  --card: 334 66% 8%;
   --card-foreground: 0 0% 98%;
-  --card-border: 240 6% 16%;
+  --card-border: 338 42% 18%;
 
-  --popover: 240 10% 6%;
+  --popover: 334 66% 8%;
   --popover-foreground: 0 0% 98%;
-  --popover-border: 240 6% 16%;
+  --popover-border: 338 42% 18%;
 
-  --primary: 190 100% 50%;
-  --primary-foreground: 240 10% 4%;
+  --primary: 39 73% 55%;
+  --primary-foreground: 334 78% 5%;
 
-  --secondary: 355 85% 58%;
+  --secondary: 5 73% 42%;
   --secondary-foreground: 0 0% 100%;
 
-  --muted: 240 6% 16%;
-  --muted-foreground: 240 5% 65%;
+  --muted: 336 48% 13%;
+  --muted-foreground: 28 22% 72%;
 
-  --accent: 240 6% 16%;
+  --accent: 20 82% 44%;
   --accent-foreground: 0 0% 98%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
 
-  --sidebar: 240 10% 6%;
+  --sidebar: 334 66% 8%;
   --sidebar-foreground: 0 0% 98%;
-  --sidebar-border: 240 6% 16%;
-  --sidebar-primary: 190 100% 50%;
-  --sidebar-primary-foreground: 240 10% 4%;
-  --sidebar-accent: 240 6% 16%;
+  --sidebar-border: 338 42% 18%;
+  --sidebar-primary: 39 73% 55%;
+  --sidebar-primary-foreground: 334 78% 5%;
+  --sidebar-accent: 336 48% 13%;
   --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-ring: 190 100% 50%;
+  --sidebar-ring: 39 73% 55%;
 
-  --chart-1: 190 100% 50%;
-  --chart-2: 355 85% 58%;
-  --chart-3: 14 90% 58%;
-  --chart-4: 45 100% 60%;
+  --chart-1: 39 73% 55%;
+  --chart-2: 5 73% 42%;
+  --chart-3: 20 82% 44%;
+  --chart-4: 42 74% 54%;
   --chart-5: 160 100% 50%;
 
   --app-font-sans: 'Outfit', sans-serif;
@@ -164,49 +164,49 @@
   --elevate-1: rgba(255,255,255, .04);
   --elevate-2: rgba(255,255,255, .09);
 
-  --background: 240 10% 4%;
+  --background: 334 78% 5%;
   --foreground: 0 0% 98%;
 
-  --border: 240 6% 16%;
-  --input: 240 6% 16%;
-  --ring: 190 100% 50%;
+  --border: 338 42% 18%;
+  --input: 338 42% 18%;
+  --ring: 39 73% 55%;
 
-  --card: 240 10% 6%;
+  --card: 334 66% 8%;
   --card-foreground: 0 0% 98%;
-  --card-border: 240 6% 16%;
+  --card-border: 338 42% 18%;
 
-  --popover: 240 10% 6%;
+  --popover: 334 66% 8%;
   --popover-foreground: 0 0% 98%;
-  --popover-border: 240 6% 16%;
+  --popover-border: 338 42% 18%;
 
-  --primary: 190 100% 50%;
-  --primary-foreground: 240 10% 4%;
+  --primary: 39 73% 55%;
+  --primary-foreground: 334 78% 5%;
 
-  --secondary: 355 85% 58%;
+  --secondary: 5 73% 42%;
   --secondary-foreground: 0 0% 100%;
 
-  --muted: 240 6% 16%;
-  --muted-foreground: 240 5% 65%;
+  --muted: 336 48% 13%;
+  --muted-foreground: 28 22% 72%;
 
-  --accent: 240 6% 16%;
+  --accent: 20 82% 44%;
   --accent-foreground: 0 0% 98%;
 
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 98%;
 
-  --sidebar: 240 10% 6%;
+  --sidebar: 334 66% 8%;
   --sidebar-foreground: 0 0% 98%;
-  --sidebar-border: 240 6% 16%;
-  --sidebar-primary: 190 100% 50%;
-  --sidebar-primary-foreground: 240 10% 4%;
-  --sidebar-accent: 240 6% 16%;
+  --sidebar-border: 338 42% 18%;
+  --sidebar-primary: 39 73% 55%;
+  --sidebar-primary-foreground: 334 78% 5%;
+  --sidebar-accent: 336 48% 13%;
   --sidebar-accent-foreground: 0 0% 98%;
-  --sidebar-ring: 190 100% 50%;
+  --sidebar-ring: 39 73% 55%;
 
-  --chart-1: 190 100% 50%;
-  --chart-2: 355 85% 58%;
-  --chart-3: 14 90% 58%;
-  --chart-4: 45 100% 60%;
+  --chart-1: 39 73% 55%;
+  --chart-2: 5 73% 42%;
+  --chart-3: 20 82% 44%;
+  --chart-4: 42 74% 54%;
   --chart-5: 160 100% 50%;
 }
 
@@ -217,6 +217,9 @@
 
   body {
     @apply font-sans antialiased bg-background text-foreground selection:bg-primary selection:text-primary-foreground;
+    background-image:
+      radial-gradient(circle at 85% 8%, hsl(var(--primary) / 0.08), transparent 18rem),
+      radial-gradient(circle at 5% 88%, hsl(var(--secondary) / 0.10), transparent 22rem);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -236,10 +239,14 @@
   }
 
   .text-glow {
-    text-shadow: 0 0 20px hsl(var(--primary) / 0.5);
+    text-shadow:
+      0 0 16px hsl(var(--primary) / 0.22),
+      0 0 34px hsl(var(--secondary) / 0.12);
   }
   
   .bg-glow {
-    box-shadow: 0 0 40px hsl(var(--primary) / 0.3);
+    box-shadow:
+      0 0 24px hsl(var(--primary) / 0.18),
+      0 0 52px hsl(var(--secondary) / 0.10);
   }
 }
