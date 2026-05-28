@@ -109,16 +109,16 @@ export default function Home() {
 
       {/* INVITATION */}
       <section id="details" className="bg-gray-50 px-4 py-24 sm:px-6">
-        <div className="container mx-auto grid max-w-6xl gap-16 lg:grid-cols-[1fr_0.85fr] lg:items-start">
+        <div className="container mx-auto grid max-w-5xl gap-12 lg:grid-cols-2 lg:items-center">
           <FadeIn>
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-primary">The Invitation</p>
             <h2
-              className="mb-8 text-5xl font-bold uppercase leading-none tracking-wide text-gray-900 sm:text-6xl"
+              className="mb-6 text-4xl font-bold uppercase leading-none tracking-wide text-gray-900 sm:text-5xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
               A simple room for encounter.
             </h2>
-            <div className="space-y-5 text-lg font-medium leading-relaxed text-gray-500">
+            <div className="space-y-4 text-base font-medium leading-relaxed text-gray-500 mb-8">
               <p>
                 Shalom 2026 is centered on{" "}
                 <span className="font-bold text-primary">{currentConference.scripture}</span>{" "}
@@ -128,27 +128,30 @@ export default function Home() {
                 We are gathering for worship, teaching, prayer, deliverance, and spiritual renewal for everyone earnestly seeking Christ.
               </p>
             </div>
+            <div className="flex flex-col gap-4">
+              {[
+                { icon: <Calendar className="h-4 w-4" />, label: "Date", value: currentConference.date },
+                { icon: <MapPin className="h-4 w-4" />, label: "Location", value: currentConference.location },
+                { icon: <Sparkles className="h-4 w-4" />, label: "Theme", value: currentConference.theme },
+              ].map((item) => (
+                <div key={item.label} className="flex gap-3 items-center">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    {item.icon}
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400 w-16">{item.label}</span>
+                  <span className="text-sm font-bold text-gray-900">{item.value}</span>
+                </div>
+              ))}
+            </div>
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
-              <div className="flex flex-col gap-7">
-                {[
-                  { icon: <Calendar className="h-5 w-5" />, label: "Date", value: currentConference.date },
-                  { icon: <MapPin className="h-5 w-5" />, label: "Location", value: currentConference.location },
-                  { icon: <Sparkles className="h-5 w-5" />, label: "Theme", value: currentConference.theme },
-                ].map((item) => (
-                  <div key={item.label} className="flex gap-4 items-start">
-                    <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                      {item.icon}
-                    </div>
-                    <div>
-                      <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{item.label}</p>
-                      <p className="mt-1 text-xl font-bold text-gray-900">{item.value}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-md">
+              <img
+                src="/images/home/shalom-hero-worship-hd.png"
+                alt="Shalom worship gathering"
+                className="h-full w-full object-cover object-top"
+              />
             </div>
           </FadeIn>
         </div>
