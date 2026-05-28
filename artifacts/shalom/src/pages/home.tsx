@@ -148,9 +148,9 @@ export default function Home() {
           <FadeIn delay={0.15}>
             <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-md">
               <img
-                src="/images/home/shalom-hero-worship-hd.png"
-                alt="Shalom worship gathering"
-                className="h-full w-full object-cover object-top"
+                src="/images/home/shalom-about-worship.png"
+                alt="Shalom worship moment"
+                className="h-full w-full object-cover object-center"
               />
             </div>
           </FadeIn>
@@ -163,7 +163,7 @@ export default function Home() {
           <FadeIn>
             <div className="relative w-full overflow-hidden rounded-2xl aspect-[21/9]">
               <img
-                src="/images/home/shalom-hero-worship-hd.png"
+                src="/images/home/shalom-worship-moment.png"
                 alt="Shalom worship moment"
                 className="h-full w-full object-cover"
               />
