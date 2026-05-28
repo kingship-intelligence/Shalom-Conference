@@ -25,6 +25,7 @@ export const CreateRegistrationBody = zod.object({
   email: zod.string().email(),
   phone: zod.string().optional(),
   conferenceYear: zod.number(),
+  volunteer: zod.boolean().optional(),
 });
 
 /**
@@ -37,8 +38,35 @@ export const ListRegistrationsResponseItem = zod.object({
   email: zod.string(),
   phone: zod.string().nullish(),
   conferenceYear: zod.number(),
+  volunteer: zod.boolean(),
   createdAt: zod.coerce.date(),
 });
 export const ListRegistrationsResponse = zod.array(
   ListRegistrationsResponseItem,
 );
+
+/**
+ * @summary Submit a testimony
+ */
+
+export const createTestimonyBodyTestimonyMin = 10;
+
+export const CreateTestimonyBody = zod.object({
+  name: zod.string().min(1),
+  email: zod.string().email(),
+  conferenceYear: zod.number(),
+  testimony: zod.string().min(createTestimonyBodyTestimonyMin),
+});
+
+/**
+ * @summary List all testimonies
+ */
+export const ListTestimoniesResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string(),
+  conferenceYear: zod.number(),
+  testimony: zod.string(),
+  createdAt: zod.coerce.date(),
+});
+export const ListTestimoniesResponse = zod.array(ListTestimoniesResponseItem);

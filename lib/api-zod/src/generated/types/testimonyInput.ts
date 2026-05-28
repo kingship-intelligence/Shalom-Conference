@@ -6,13 +6,11 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export interface RegistrationInput {
+export interface TestimonyInput {
   /** @minLength 1 */
-  firstName: string;
-  /** @minLength 1 */
-  lastName: string;
+  name: string;
   email: string;
-  phone?: string;
   conferenceYear: number;
-  volunteer?: boolean;
+  /** @minLength 10 */
+  testimony: string;
 }

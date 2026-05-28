@@ -9,6 +9,8 @@ import Archive from "@/pages/archive";
 import ConferenceYear from "@/pages/conference-year";
 import About from "@/pages/about";
 import Partner from "@/pages/partner";
+import Testimonies from "@/pages/testimonies";
+import Admin from "@/pages/admin";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -23,6 +25,8 @@ function Router() {
       </Route>
       <Route path="/about" component={About} />
       <Route path="/partner" component={Partner} />
+      <Route path="/testimonies" component={Testimonies} />
+      <Route path="/admin" component={Admin} />
       <Route path="/archive" component={Archive} />
       <Route path="/archive/:year">
         {(params) => <ConferenceYear year={params.year} />}

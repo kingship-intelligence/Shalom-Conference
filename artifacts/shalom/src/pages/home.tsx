@@ -2,7 +2,7 @@ import { Link } from "wouter";
 import shalomLogo from "@assets/logo_1778697155106.png";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles, ChevronDown, BookOpen, Mail } from "lucide-react";
+import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles, ChevronDown, BookOpen, Mail, MessageSquare } from "lucide-react";
 import { SiInstagram } from "react-icons/si";
 import { currentConference } from "@/data/conferences";
 
@@ -36,6 +36,9 @@ export default function Home() {
             </Link>
             <Link href="/partner" className="hover:text-primary transition-colors">
               Partner
+            </Link>
+            <Link href="/testimonies" className="hover:text-primary transition-colors">
+              Testimonies
             </Link>
             <Link href="/archive" className="hover:text-primary transition-colors">
               Archive
@@ -370,6 +373,18 @@ export default function Home() {
                 <Mail className="h-4 w-4 shrink-0 text-primary" />
                 finance@shalomconference.com
               </a>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary">Testimonies</p>
+              <Link
+                href="/testimonies"
+                className="flex items-center justify-center gap-2 text-white/70 hover:text-white transition-colors sm:justify-start font-medium"
+                data-testid="link-share-testimony-footer"
+              >
+                <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
+                Share Your Testimony
+              </Link>
             </div>
 
             <div>
