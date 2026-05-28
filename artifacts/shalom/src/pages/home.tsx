@@ -157,24 +157,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* FULL-WIDTH PHOTO */}
-      <section className="px-4 py-16 sm:px-6 bg-white">
-        <div className="container mx-auto max-w-7xl">
+      {/* QUOTE BREAK */}
+      <section className="bg-white px-4 py-20 sm:px-6">
+        <div className="container mx-auto max-w-4xl">
           <FadeIn>
-            <div className="relative w-full overflow-hidden rounded-2xl aspect-[21/9]">
-              <img
-                src="/images/home/shalom-worship-moment.png"
-                alt="Shalom worship moment"
-                className="h-full w-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
-              <p
-                className="absolute bottom-8 left-8 right-8 max-w-2xl text-2xl font-bold text-white sm:bottom-10 sm:left-12 sm:text-4xl leading-snug"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Worship that makes space to listen, respond, and be renewed.
-              </p>
-            </div>
+            <p
+              className="text-3xl font-bold text-gray-900 leading-snug sm:text-4xl lg:text-5xl border-l-4 border-primary pl-8"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              Worship that makes space to listen, respond, and be renewed.
+            </p>
           </FadeIn>
         </div>
       </section>
