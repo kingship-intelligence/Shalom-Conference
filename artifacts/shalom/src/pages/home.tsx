@@ -23,12 +23,12 @@ export default function Home() {
     <div className="min-h-screen text-gray-900 bg-white">
 
       {/* STICKY HEADER */}
-      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+      <header className="sticky top-0 z-50 bg-black">
         <nav className="container mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
             <img src={shalomLogo} alt="SHALOM" className="h-9 w-auto object-contain" />
           </Link>
-          <div className="hidden sm:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-gray-500">
+          <div className="hidden sm:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-white/60">
             <Link href="/2026" className="hover:text-primary transition-colors">2026</Link>
             <Link href="/about" className="hover:text-primary transition-colors">About</Link>
             <Link href="/partner" className="hover:text-primary transition-colors">Partner</Link>
@@ -41,71 +41,59 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* HERO — split layout */}
-      <section className="flex min-h-[calc(100vh-65px)] flex-col lg:flex-row">
-        {/* Left: Text panel */}
-        <div className="flex flex-col justify-center px-6 py-20 lg:w-[56%] lg:px-14 xl:px-20 bg-white order-2 lg:order-1 overflow-hidden">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
+      {/* HERO */}
+      <section className="flex min-h-[calc(100vh-65px)] items-center justify-center bg-white px-6 py-20 sm:px-10">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7 }}
+          className="container max-w-5xl mx-auto"
+        >
+          <span className="inline-block mb-6 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+            Shalom 2026
+          </span>
+          <h1
+            className="mb-6 text-[4rem] font-bold uppercase leading-[0.88] tracking-wide text-gray-900 sm:text-7xl lg:text-[6rem] xl:text-[7.5rem] italic"
+            style={{ fontFamily: "var(--font-display)" }}
           >
-            <span className="inline-block mb-6 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-primary">
-              Shalom 2026
-            </span>
-            <h1
-              className="mb-6 text-[3.25rem] font-bold uppercase leading-[0.88] tracking-wide text-gray-900 sm:text-6xl lg:text-[4.5rem] xl:text-[5.5rem] italic"
-              style={{ fontFamily: "var(--font-display)" }}
+            {currentConference.theme}
+          </h1>
+          <p className="mb-8 text-lg font-medium leading-relaxed text-gray-500 max-w-xl">
+            A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
+          </p>
+          <div className="flex flex-wrap gap-2.5 mb-10">
+            {[
+              { icon: <Calendar className="h-3.5 w-3.5" />, text: currentConference.shortDate },
+              { icon: <MapPin className="h-3.5 w-3.5" />, text: "Windsor Mill, MD" },
+              { icon: <BookOpen className="h-3.5 w-3.5" />, text: currentConference.scripture },
+            ].map((item, idx) => (
+              <div key={idx} className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
+                <span className="text-primary">{item.icon}</span>
+                {item.text}
+              </div>
+            ))}
+          </div>
+          <div className="flex flex-wrap gap-3">
+            <Button
+              asChild
+              size="lg"
+              className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md"
+              data-testid="button-register-hero"
             >
-              {currentConference.theme}
-            </h1>
-            <p className="mb-8 text-lg font-medium leading-relaxed text-gray-500 max-w-md">
-              A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
-            </p>
-            <div className="flex flex-wrap gap-2.5 mb-10">
-              {[
-                { icon: <Calendar className="h-3.5 w-3.5" />, text: currentConference.shortDate },
-                { icon: <MapPin className="h-3.5 w-3.5" />, text: "Windsor Mill, MD" },
-                { icon: <BookOpen className="h-3.5 w-3.5" />, text: currentConference.scripture },
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
-                  <span className="text-primary">{item.icon}</span>
-                  {item.text}
-                </div>
-              ))}
-            </div>
-            <div className="flex flex-wrap gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md"
-                data-testid="button-register-hero"
-              >
-                <Link href="/register">
-                  Register <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
-              >
-                <Link href="/2026">Learn More</Link>
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Right: Photo */}
-        <div className="relative order-1 lg:order-2 lg:w-[44%] min-h-[55vw] lg:min-h-full overflow-hidden">
-          <img
-            src="/images/home/shalom-hero-worship-hd.png"
-            alt="Shalom worship gathering"
-            className="absolute inset-0 h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-transparent to-transparent lg:block hidden" />
-        </div>
+              <Link href="/register">
+                Register <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              size="lg"
+              className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
+            >
+              <Link href="/2026">Learn More</Link>
+            </Button>
+          </div>
+        </motion.div>
       </section>
 
       {/* INVITATION */}
