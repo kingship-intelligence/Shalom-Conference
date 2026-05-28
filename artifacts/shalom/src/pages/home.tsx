@@ -42,12 +42,12 @@ export default function Home() {
       </header>
 
       {/* HERO */}
-      <section className="flex min-h-[calc(100vh-65px)] items-center justify-center bg-white px-6 py-20 sm:px-10">
+      <section className="flex min-h-[calc(100vh-65px)] items-center justify-center bg-white px-6 py-20 sm:px-10 text-center">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7 }}
-          className="container max-w-5xl mx-auto"
+          className="container max-w-5xl mx-auto flex flex-col items-center"
         >
           <span className="inline-block mb-6 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-primary">
             Shalom 2026
@@ -61,7 +61,7 @@ export default function Home() {
           <p className="mb-8 text-lg font-medium leading-relaxed text-gray-500 max-w-xl">
             A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
           </p>
-          <div className="flex flex-wrap gap-2.5 mb-10">
+          <div className="flex flex-wrap justify-center gap-2.5 mb-10">
             {[
               { icon: <Calendar className="h-3.5 w-3.5" />, text: currentConference.shortDate },
               { icon: <MapPin className="h-3.5 w-3.5" />, text: "Windsor Mill, MD" },
@@ -73,7 +73,7 @@ export default function Home() {
               </div>
             ))}
           </div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap justify-center gap-3">
             <Button
               asChild
               size="lg"
