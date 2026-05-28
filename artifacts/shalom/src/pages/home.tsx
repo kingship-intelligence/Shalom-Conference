@@ -223,50 +223,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* SCHEDULE */}
-      <section className="bg-white px-4 py-24 sm:px-6">
-        <div className="container mx-auto max-w-3xl">
-          <FadeIn>
-            <div className="mb-14 text-center">
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Schedule</p>
-              <h2
-                className="text-5xl font-bold uppercase tracking-wide text-gray-900 sm:text-6xl"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Two-Day Flow
-              </h2>
-            </div>
-          </FadeIn>
-
-          <div className="relative border-l-2 border-gray-200 ml-4 sm:ml-8 pl-8 sm:pl-12 space-y-10 py-2">
-            {[
-              { time: "Fri 7:00 PM", title: "Opening Night: Worship & Prayer" },
-              { time: "Sat 10:00 AM", title: "Doors Open & Community" },
-              { time: "Sat 11:00 AM", title: "Session 1: The Promise" },
-              { time: "Sat 3:00 PM", title: "Session 2: The Comforter" },
-              { time: "Sat 6:30 PM", title: "Pure Worship & Deliverance Prayer" },
-            ].map((event, i) => (
-              <FadeIn key={event.title} delay={i * 0.08}>
-                <div className="relative group">
-                  <div className="absolute -left-[39px] sm:-left-[55px] top-2 h-4 w-4 rounded-full bg-white border-2 border-gray-300 group-hover:border-primary group-hover:bg-primary transition-all duration-200" />
-                  <div className="flex flex-col gap-2">
-                    <span className="inline-block w-fit rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
-                      {event.time}
-                    </span>
-                    <span
-                      className="text-2xl sm:text-3xl font-bold text-gray-900 uppercase tracking-wide"
-                      style={{ fontFamily: "var(--font-display)" }}
-                    >
-                      {event.title}
-                    </span>
-                  </div>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA — solid orange */}
       <section className="bg-primary px-4 py-28 sm:px-6">
         <div className="container mx-auto max-w-3xl text-center">
