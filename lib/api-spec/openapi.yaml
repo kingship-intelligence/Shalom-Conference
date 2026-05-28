@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: registrations
+    description: Registration operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,49 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /registrations:
+    post:
+      operationId: createRegistration
+      tags: [registrations]
+      summary: Register for the conference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RegistrationInput"
+      responses:
+        "201":
+          description: Registration created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Already registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listRegistrations
+      tags: [registrations]
+      summary: List all registrations (admin)
+      responses:
+        "200":
+          description: List of registrations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Registration"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +78,28 @@ components:
           type: string
       required:
         - status
-
+    Registration:
+      type: object
+      required: [id, firstName, lastName, email, conferenceYear, createdAt]
+      properties:
+        id:            { type: integer }
+        firstName:     { type: string }
+        lastName:      { type: string }
+        email:         { type: string }
+        phone:         { type: ["string", "null"] }
+        conferenceYear: { type: integer }
+        createdAt:     { type: string, format: date-time }
+    RegistrationInput:
+      type: object
+      required: [firstName, lastName, email, conferenceYear]
+      properties:
+        firstName:      { type: string, minLength: 1 }
+        lastName:       { type: string, minLength: 1 }
+        email:          { type: string, format: email }
+        phone:          { type: string }
+        conferenceYear: { type: integer }
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }

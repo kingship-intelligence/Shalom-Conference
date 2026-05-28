@@ -5,18 +5,26 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  ErrorResponse,
+  HealthStatus,
+  Registration,
+  RegistrationInput,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -92,6 +100,167 @@ export function useHealthCheck<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getHealthCheckQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Register for the conference
+ */
+export const getCreateRegistrationUrl = () => {
+  return `/api/registrations`;
+};
+
+export const createRegistration = async (
+  registrationInput: RegistrationInput,
+  options?: RequestInit,
+): Promise<Registration> => {
+  return customFetch<Registration>(getCreateRegistrationUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(registrationInput),
+  });
+};
+
+export const getCreateRegistrationMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createRegistration>>,
+    TError,
+    { data: BodyType<RegistrationInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createRegistration>>,
+  TError,
+  { data: BodyType<RegistrationInput> },
+  TContext
+> => {
+  const mutationKey = ["createRegistration"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createRegistration>>,
+    { data: BodyType<RegistrationInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createRegistration(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateRegistrationMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createRegistration>>
+>;
+export type CreateRegistrationMutationBody = BodyType<RegistrationInput>;
+export type CreateRegistrationMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Register for the conference
+ */
+export const useCreateRegistration = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createRegistration>>,
+    TError,
+    { data: BodyType<RegistrationInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createRegistration>>,
+  TError,
+  { data: BodyType<RegistrationInput> },
+  TContext
+> => {
+  return useMutation(getCreateRegistrationMutationOptions(options));
+};
+
+/**
+ * @summary List all registrations (admin)
+ */
+export const getListRegistrationsUrl = () => {
+  return `/api/registrations`;
+};
+
+export const listRegistrations = async (
+  options?: RequestInit,
+): Promise<Registration[]> => {
+  return customFetch<Registration[]>(getListRegistrationsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListRegistrationsQueryKey = () => {
+  return [`/api/registrations`] as const;
+};
+
+export const getListRegistrationsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listRegistrations>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listRegistrations>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListRegistrationsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listRegistrations>>
+  > = ({ signal }) => listRegistrations({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listRegistrations>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListRegistrationsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listRegistrations>>
+>;
+export type ListRegistrationsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List all registrations (admin)
+ */
+
+export function useListRegistrations<
+  TData = Awaited<ReturnType<typeof listRegistrations>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listRegistrations>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListRegistrationsQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

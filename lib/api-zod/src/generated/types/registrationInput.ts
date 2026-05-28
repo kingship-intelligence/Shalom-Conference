@@ -5,20 +5,6 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-export interface HealthStatus {
-  status: string;
-}
-
-export interface Registration {
-  id: number;
-  firstName: string;
-  lastName: string;
-  email: string;
-  /** @nullable */
-  phone?: string | null;
-  conferenceYear: number;
-  createdAt: string;
-}
 
 export interface RegistrationInput {
   /** @minLength 1 */
@@ -28,8 +14,4 @@ export interface RegistrationInput {
   email: string;
   phone?: string;
   conferenceYear: number;
-}
-
-export interface ErrorResponse {
-  error: string;
 }

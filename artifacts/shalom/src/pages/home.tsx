@@ -108,9 +108,9 @@ export default function Home() {
             <div className="flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                 <Button asChild size="lg" className="h-16 w-full max-w-xs rounded-full bg-gradient-to-r from-primary to-secondary px-10 text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] sm:w-auto border-none" data-testid="button-register-hero">
-                  <a href={currentConference.registrationUrl} target="_blank" rel="noreferrer">
+                  <Link href="/register">
                     Register <ArrowRight className="ml-2 h-6 w-6" />
-                  </a>
+                  </Link>
                 </Button>
               </motion.div>
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
@@ -320,9 +320,9 @@ export default function Home() {
             </p>
             <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
               <Button asChild size="lg" className="h-20 w-full max-w-sm rounded-full bg-white px-12 text-2xl font-bold uppercase tracking-widest text-background shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:bg-white/90 hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] sm:w-auto" data-testid="button-register-footer">
-                <a href={currentConference.registrationUrl} target="_blank" rel="noreferrer">
+                <Link href="/register">
                   Secure Your Spot <ArrowRight className="ml-3 h-8 w-8" />
-                </a>
+                </Link>
               </Button>
             </motion.div>
           </FadeIn>
