@@ -2,16 +2,16 @@ import { Link } from "wouter";
 import shalomLogo from "@assets/logo_1778697155106.png";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles, ChevronDown, BookOpen, Mail, MessageSquare } from "lucide-react";
+import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles, BookOpen, Mail, MessageSquare } from "lucide-react";
 import { SiInstagram } from "react-icons/si";
 import { currentConference } from "@/data/conferences";
 
 const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
   <motion.div
-    initial={{ opacity: 0, y: 30 }}
+    initial={{ opacity: 0, y: 24 }}
     whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-100px" }}
-    transition={{ duration: 0.7, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
+    viewport={{ once: true, margin: "-80px" }}
+    transition={{ duration: 0.6, delay, ease: [0.21, 0.47, 0.32, 0.98] }}
     className={className}
   >
     {children}
@@ -20,164 +20,132 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-background text-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground relative">
+    <div className="min-h-screen text-gray-900 bg-white">
 
-      <header className="absolute left-0 right-0 top-0 z-20 px-4 py-5 sm:px-6">
-        <nav className="container mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
+      {/* STICKY HEADER */}
+      <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+        <nav className="container mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
           <Link href="/" className="flex items-center gap-3">
-            <img src={shalomLogo} alt="SHALOM" className="h-10 w-auto object-contain" />
+            <img src={shalomLogo} alt="SHALOM" className="h-9 w-auto object-contain" />
           </Link>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-bold uppercase tracking-widest text-white/70 sm:gap-5 sm:text-sm">
-            <Link href="/2026" className="hover:text-primary transition-colors">
-              2026
-            </Link>
-            <Link href="/about" className="hover:text-primary transition-colors">
-              About
-            </Link>
-            <Link href="/partner" className="hover:text-primary transition-colors">
-              Partner
-            </Link>
-            <Link href="/testimonies" className="hover:text-primary transition-colors">
-              Testimonies
-            </Link>
-            <Link href="/archive" className="hover:text-primary transition-colors">
-              Archive
-            </Link>
+          <div className="hidden sm:flex items-center gap-6 text-xs font-bold uppercase tracking-widest text-gray-500">
+            <Link href="/2026" className="hover:text-primary transition-colors">2026</Link>
+            <Link href="/about" className="hover:text-primary transition-colors">About</Link>
+            <Link href="/partner" className="hover:text-primary transition-colors">Partner</Link>
+            <Link href="/testimonies" className="hover:text-primary transition-colors">Testimonies</Link>
+            <Link href="/archive" className="hover:text-primary transition-colors">Archive</Link>
           </div>
+          <Button asChild size="sm" className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none px-6 h-10">
+            <Link href="/register">Register</Link>
+          </Button>
         </nav>
       </header>
-      
-      {/* 1. HERO SECTION */}
-      <section className="relative flex min-h-[100dvh] items-center justify-center overflow-hidden px-4 pb-24 pt-32 sm:px-6 sm:pt-24 z-10">
-        <div className="absolute inset-0 bg-background">
-          <video
-            className="h-full w-full object-cover object-center opacity-30 mix-blend-luminosity"
-            autoPlay
-            muted
-            loop
-            playsInline
-            poster="/images/home/shalom-hero-worship-hd.png"
-            aria-label="Shalom worship atmosphere"
-          >
-            <source src="/videos/herox.mp4" type="video/mp4" />
-          </video>
-          <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/60 to-background" />
-        </div>
 
-        <div className="container relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center">
-
+      {/* HERO — split layout */}
+      <section className="flex min-h-[calc(100vh-65px)] flex-col lg:flex-row">
+        {/* Left: Text panel */}
+        <div className="flex flex-col justify-center px-6 py-20 lg:w-[56%] lg:px-14 xl:px-20 bg-white order-2 lg:order-1 overflow-hidden">
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7 }}
-            className="mb-8 rounded-full border border-primary/50 bg-primary/10 px-6 py-2 text-sm font-bold uppercase tracking-[0.2em] text-primary backdrop-blur-md"
-          >
-            Shalom 2026
-          </motion.div>
-
-          <motion.h1
-            initial={{ opacity: 0, y: 34 }}
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.1 }}
-            className="mb-6 text-7xl font-bold uppercase leading-[0.85] tracking-wide text-white sm:text-8xl md:text-[10rem] relative z-10 italic"
-            style={{ fontFamily: "var(--font-display)" }}
+            transition={{ duration: 0.7 }}
           >
-            {currentConference.theme}
-          </motion.h1>
-
-          <FadeIn delay={0.25} className="mx-auto max-w-2xl relative z-10">
-            <p className="text-xl font-medium leading-relaxed text-white/80 sm:text-2xl md:text-3xl">
-              A two-day gathering for genuine worship, spiritual awakening,
-              deliverance, and renewal in the presence of the Holy Spirit.
+            <span className="inline-block mb-6 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+              Shalom 2026
+            </span>
+            <h1
+              className="mb-6 text-[3.25rem] font-bold uppercase leading-[0.88] tracking-wide text-gray-900 sm:text-6xl lg:text-[4.5rem] xl:text-[5.5rem] italic"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {currentConference.theme}
+            </h1>
+            <p className="mb-8 text-lg font-medium leading-relaxed text-gray-500 max-w-md">
+              A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
             </p>
-          </FadeIn>
-
-          <FadeIn delay={0.35} className="mt-10 w-full max-w-4xl relative z-10">
-            <div className="flex flex-wrap justify-center gap-4 text-sm sm:text-base font-bold">
+            <div className="flex flex-wrap gap-2.5 mb-10">
               {[
-                { icon: <Calendar className="h-4 w-4" />, text: currentConference.shortDate },
-                { icon: <BookOpen className="h-4 w-4" />, text: currentConference.scripture },
-                { icon: <MapPin className="h-4 w-4" />, text: "Windsor Mill, MD" },
+                { icon: <Calendar className="h-3.5 w-3.5" />, text: currentConference.shortDate },
+                { icon: <MapPin className="h-3.5 w-3.5" />, text: "Windsor Mill, MD" },
+                { icon: <BookOpen className="h-3.5 w-3.5" />, text: currentConference.scripture },
               ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2 rounded-full bg-white/5 px-5 py-2 border border-white/10 backdrop-blur-sm">
+                <div key={idx} className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
                   <span className="text-primary">{item.icon}</span>
-                  <span className="text-white/90">{item.text}</span>
+                  {item.text}
                 </div>
               ))}
             </div>
-          </FadeIn>
-
-          <FadeIn delay={0.45} className="mt-12 w-full sm:w-auto relative z-10">
-            <div className="flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                <Button asChild size="lg" className="h-16 w-full max-w-xs rounded-full bg-gradient-to-r from-primary to-secondary px-10 text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] sm:w-auto border-none" data-testid="button-register-hero">
-                  <Link href="/register">
-                    Register <ArrowRight className="ml-2 h-6 w-6" />
-                  </Link>
-                </Button>
-              </motion.div>
-              <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                <Button asChild variant="outline" size="lg" className="h-16 w-full max-w-xs rounded-full border-white/20 px-10 text-xl font-bold uppercase tracking-widest text-white hover:bg-white/10 backdrop-blur-sm sm:w-auto bg-transparent">
-                  <Link href="/2026">Details</Link>
-                </Button>
-              </motion.div>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                asChild
+                size="lg"
+                className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md"
+                data-testid="button-register-hero"
+              >
+                <Link href="/register">
+                  Register <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
+              >
+                <Link href="/2026">Learn More</Link>
+              </Button>
             </div>
-          </FadeIn>
+          </motion.div>
         </div>
 
-        <motion.a
-          href="#details"
-          aria-label="Scroll to event details"
-          initial={{ opacity: 0, y: -8 }}
-          animate={{ opacity: 1, y: [0, 10, 0] }}
-          transition={{
-            opacity: { duration: 0.6, delay: 1 },
-            y: { duration: 1.5, repeat: Infinity, ease: "easeInOut" },
-          }}
-          className="absolute bottom-8 left-1/2 z-20 -translate-x-1/2 text-white/50 transition-colors hover:text-primary"
-        >
-          <ChevronDown className="h-10 w-10" aria-hidden="true" />
-        </motion.a>
+        {/* Right: Photo */}
+        <div className="relative order-1 lg:order-2 lg:w-[44%] min-h-[55vw] lg:min-h-full overflow-hidden">
+          <img
+            src="/images/home/shalom-hero-worship-hd.png"
+            alt="Shalom worship gathering"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-white/30 via-transparent to-transparent lg:block hidden" />
+        </div>
       </section>
 
-      {/* 2. DETAILS */}
-      <section id="details" className="relative z-10 px-4 py-24 sm:px-6">
-        <div className="container mx-auto grid max-w-6xl gap-16 lg:grid-cols-[1fr_0.85fr] lg:items-center">
+      {/* INVITATION */}
+      <section id="details" className="bg-gray-50 px-4 py-24 sm:px-6">
+        <div className="container mx-auto grid max-w-6xl gap-16 lg:grid-cols-[1fr_0.85fr] lg:items-start">
           <FadeIn>
-            <p className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-gradient">The Invitation</p>
-            <h2 className="mb-8 text-5xl font-bold uppercase leading-none tracking-wide text-white sm:text-6xl md:text-7xl">
+            <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-primary">The Invitation</p>
+            <h2
+              className="mb-8 text-5xl font-bold uppercase leading-none tracking-wide text-gray-900 sm:text-6xl"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
               A simple room for encounter.
             </h2>
-            <div className="space-y-6 text-xl font-medium leading-relaxed text-white/70">
+            <div className="space-y-5 text-lg font-medium leading-relaxed text-gray-500">
               <p>
-                Shalom 2026 is centered on <span className="text-primary">{currentConference.scripture}</span> and
-                the ministry of the Comforter.
+                Shalom 2026 is centered on{" "}
+                <span className="font-bold text-primary">{currentConference.scripture}</span>{" "}
+                — the promise and ministry of the Comforter.
               </p>
               <p>
-                We are gathering for worship, teaching, prayer, deliverance,
-                and spiritual renewal for everyone earnestly seeking Christ.
+                We are gathering for worship, teaching, prayer, deliverance, and spiritual renewal for everyone earnestly seeking Christ.
               </p>
             </div>
           </FadeIn>
 
           <FadeIn delay={0.15}>
-            <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl">
-              <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 rounded-full bg-primary/30 blur-[40px]" />
-              <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 rounded-full bg-secondary/30 blur-[40px]" />
-              
-              <div className="relative z-10 flex flex-col gap-8">
+            <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm">
+              <div className="flex flex-col gap-7">
                 {[
-                  { icon: <Calendar className="h-6 w-6" />, label: "Date", value: currentConference.date },
-                  { icon: <MapPin className="h-6 w-6" />, label: "Location", value: currentConference.location },
-                  { icon: <Sparkles className="h-6 w-6" />, label: "Theme", value: currentConference.theme },
-                ].map((item, idx) => (
-                  <div key={item.label} className="flex gap-5 items-start">
-                    <div className="mt-1 flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-primary/20 text-primary">
+                  { icon: <Calendar className="h-5 w-5" />, label: "Date", value: currentConference.date },
+                  { icon: <MapPin className="h-5 w-5" />, label: "Location", value: currentConference.location },
+                  { icon: <Sparkles className="h-5 w-5" />, label: "Theme", value: currentConference.theme },
+                ].map((item) => (
+                  <div key={item.label} className="flex gap-4 items-start">
+                    <div className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
                       {item.icon}
                     </div>
                     <div>
-                      <p className="text-sm font-bold uppercase tracking-widest text-white/50">{item.label}</p>
-                      <p className="mt-1 text-2xl font-bold text-white">{item.value}</p>
+                      <p className="text-xs font-bold uppercase tracking-widest text-gray-400">{item.label}</p>
+                      <p className="mt-1 text-xl font-bold text-gray-900">{item.value}</p>
                     </div>
                   </div>
                 ))}
@@ -187,19 +155,21 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 3. WORSHIP MOMENT */}
-      <section className="relative z-10 px-4 py-16 sm:px-6">
+      {/* FULL-WIDTH PHOTO */}
+      <section className="px-4 py-16 sm:px-6 bg-white">
         <div className="container mx-auto max-w-7xl">
           <FadeIn>
-            <div className="relative aspect-[21/9] w-full overflow-hidden rounded-3xl border border-white/10 bg-muted shadow-[0_0_50px_rgba(0,0,0,0.5)]">
+            <div className="relative w-full overflow-hidden rounded-2xl aspect-[21/9]">
               <img
                 src="/images/home/shalom-hero-worship-hd.png"
                 alt="Shalom worship moment"
-                className="h-full w-full object-cover opacity-80 mix-blend-luminosity hover:mix-blend-normal transition-all duration-1000"
+                className="h-full w-full object-cover"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 mix-blend-overlay" />
-              <p className="absolute bottom-8 left-8 right-8 max-w-3xl text-3xl font-bold text-white sm:bottom-12 sm:left-12 sm:text-5xl leading-tight">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/10 to-transparent" />
+              <p
+                className="absolute bottom-8 left-8 right-8 max-w-2xl text-2xl font-bold text-white sm:bottom-10 sm:left-12 sm:text-4xl leading-snug"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
                 Worship that makes space to listen, respond, and be renewed.
               </p>
             </div>
@@ -207,13 +177,16 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 4. EXPECTATIONS */}
-      <section className="relative z-10 px-4 py-24 sm:px-6">
+      {/* WHAT TO EXPECT */}
+      <section className="bg-gray-50 px-4 py-24 sm:px-6">
         <div className="container mx-auto max-w-6xl">
           <FadeIn>
-            <div className="mb-16 text-center">
-              <p className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-gradient">What To Expect</p>
-              <h2 className="text-5xl font-bold uppercase tracking-wide text-white sm:text-7xl">
+            <div className="mb-14 text-center">
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">What To Expect</p>
+              <h2
+                className="text-5xl font-bold uppercase tracking-wide text-gray-900 sm:text-6xl"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
                 Worship. Freedom. Renewal.
               </h2>
             </div>
@@ -222,63 +195,56 @@ export default function Home() {
           <div className="grid gap-6 md:grid-cols-3">
             {[
               {
-                icon: <Zap className="h-8 w-8 text-primary" />,
+                icon: <Zap className="h-7 w-7" />,
                 title: "Pure Worship",
-                desc: "Undistracted worship centered on Jesus.",
-                num: "01"
+                desc: "Undistracted worship centered on Jesus — no performance, just presence.",
               },
               {
-                icon: <Heart className="h-8 w-8 text-secondary" />,
+                icon: <Heart className="h-7 w-7" />,
                 title: "Deliverance",
-                desc: "Prayer and ministry for freedom and healing.",
-                num: "02"
+                desc: "Prayer and ministry for freedom, healing, and wholeness.",
               },
               {
-                icon: <Users className="h-8 w-8 text-primary" />,
+                icon: <Users className="h-7 w-7" />,
                 title: "Spiritual Renewal",
-                desc: "A place to be refreshed, restored, and sent.",
-                num: "03"
+                desc: "A place to be refreshed, restored, and sent back renewed.",
               },
             ].map((item, i) => (
               <FadeIn key={item.title} delay={i * 0.1}>
-                <motion.div 
-                  whileHover={{ y: -10, scale: 1.02 }}
-                  className="group relative h-full overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl transition-all duration-300 hover:border-primary/50 hover:bg-white/10 hover:shadow-[0_0_40px_rgba(168,85,247,0.2)]"
-                >
-                  <div className="absolute -top-px left-0 h-1 w-full bg-gradient-to-r from-transparent via-primary to-transparent opacity-50 group-hover:opacity-100 transition-opacity" />
-                  
-                  {/* Decorative background number */}
-                  <div className="absolute -bottom-10 -right-6 text-[10rem] font-bold leading-none text-white/5 group-hover:text-primary/10 transition-colors pointer-events-none select-none" style={{ fontFamily: "var(--font-display)" }}>
-                    {item.num}
+                <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-md transition-shadow h-full">
+                  <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    {item.icon}
                   </div>
-
-                  <div className="relative z-10">
-                    <div className="mb-6 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-white/10 shadow-inner">
-                      {item.icon}
-                    </div>
-                    <h3 className="mb-4 text-3xl font-bold text-white uppercase tracking-wide">{item.title}</h3>
-                    <p className="text-lg font-medium text-white/60 leading-relaxed">{item.desc}</p>
-                  </div>
-                </motion.div>
+                  <h3
+                    className="mb-3 text-2xl font-bold text-gray-900 uppercase tracking-wide"
+                    style={{ fontFamily: "var(--font-display)" }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p className="text-base font-medium text-gray-500 leading-relaxed">{item.desc}</p>
+                </div>
               </FadeIn>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 5. SCHEDULE */}
-      <section className="relative z-10 px-4 py-24 sm:px-6">
-        <div className="container mx-auto max-w-4xl">
+      {/* SCHEDULE */}
+      <section className="bg-white px-4 py-24 sm:px-6">
+        <div className="container mx-auto max-w-3xl">
           <FadeIn>
-            <div className="mb-16 text-center">
-              <p className="mb-4 text-sm font-bold uppercase tracking-[0.2em] text-gradient">Schedule</p>
-              <h2 className="text-5xl font-bold uppercase tracking-wide text-white sm:text-7xl">
+            <div className="mb-14 text-center">
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">Schedule</p>
+              <h2
+                className="text-5xl font-bold uppercase tracking-wide text-gray-900 sm:text-6xl"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
                 Two-Day Flow
               </h2>
             </div>
           </FadeIn>
 
-          <div className="relative border-l-2 border-white/10 ml-4 sm:ml-8 pl-8 sm:pl-12 space-y-12 py-4">
+          <div className="relative border-l-2 border-gray-200 ml-4 sm:ml-8 pl-8 sm:pl-12 space-y-10 py-2">
             {[
               { time: "Fri 7:00 PM", title: "Opening Night: Worship & Prayer" },
               { time: "Sat 10:00 AM", title: "Doors Open & Community" },
@@ -286,16 +252,17 @@ export default function Home() {
               { time: "Sat 3:00 PM", title: "Session 2: The Comforter" },
               { time: "Sat 6:30 PM", title: "Pure Worship & Deliverance Prayer" },
             ].map((event, i) => (
-              <FadeIn key={event.title} delay={i * 0.1}>
+              <FadeIn key={event.title} delay={i * 0.08}>
                 <div className="relative group">
-                  {/* Glowing dot */}
-                  <div className="absolute -left-[39px] sm:-left-[55px] top-2 h-4 w-4 rounded-full bg-background border-2 border-primary group-hover:bg-primary group-hover:shadow-[0_0_15px_rgba(168,85,247,0.8)] transition-all duration-300" />
-                  
-                  <div className="flex flex-col gap-3">
-                    <span className="inline-block w-fit rounded-full bg-white/10 px-4 py-1.5 text-sm font-bold uppercase tracking-widest text-primary border border-white/5 backdrop-blur-md">
+                  <div className="absolute -left-[39px] sm:-left-[55px] top-2 h-4 w-4 rounded-full bg-white border-2 border-gray-300 group-hover:border-primary group-hover:bg-primary transition-all duration-200" />
+                  <div className="flex flex-col gap-2">
+                    <span className="inline-block w-fit rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
                       {event.time}
                     </span>
-                    <span className="text-2xl sm:text-4xl font-bold text-white uppercase tracking-wide group-hover:text-transparent group-hover:bg-clip-text group-hover:bg-gradient-to-r group-hover:from-white group-hover:to-white/70 transition-all duration-300">
+                    <span
+                      className="text-2xl sm:text-3xl font-bold text-gray-900 uppercase tracking-wide"
+                      style={{ fontFamily: "var(--font-display)" }}
+                    >
                       {event.title}
                     </span>
                   </div>
@@ -306,92 +273,85 @@ export default function Home() {
         </div>
       </section>
 
-      {/* 6. CTA */}
-      <section className="relative z-10 overflow-hidden px-4 py-32 sm:px-6">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary to-secondary opacity-20" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] h-[150%] bg-primary/20 -rotate-12 blur-3xl pointer-events-none" />
-        
-        <div className="container relative z-10 mx-auto max-w-4xl text-center">
+      {/* CTA — solid orange */}
+      <section className="bg-primary px-4 py-28 sm:px-6">
+        <div className="container mx-auto max-w-3xl text-center">
           <FadeIn>
-            <p className="mb-6 text-sm font-bold uppercase tracking-[0.3em] text-white">Don't Miss Out</p>
-            <h2 className="mb-8 text-6xl font-bold uppercase tracking-wide text-white sm:text-8xl text-glow" style={{ fontFamily: "var(--font-display)" }}>
+            <p className="mb-5 text-sm font-bold uppercase tracking-[0.3em] text-white/70">Don't Miss Out</p>
+            <h2
+              className="mb-6 text-6xl font-bold uppercase tracking-wide text-white sm:text-8xl"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
               Join Us For 2026
             </h2>
-            <p className="mx-auto mb-12 max-w-2xl text-xl sm:text-2xl font-medium text-white/90">
-              A simple invitation to gather, worship, pray, and encounter the
-              Comforter together.
+            <p className="mx-auto mb-12 max-w-xl text-xl font-medium text-white/85">
+              A simple invitation to gather, worship, pray, and encounter the Comforter together.
             </p>
-            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="inline-block">
-              <Button asChild size="lg" className="h-20 w-full max-w-sm rounded-full bg-white px-12 text-2xl font-bold uppercase tracking-widest text-background shadow-[0_0_40px_rgba(255,255,255,0.3)] hover:bg-white/90 hover:shadow-[0_0_60px_rgba(255,255,255,0.5)] sm:w-auto" data-testid="button-register-footer">
-                <Link href="/register">
-                  Secure Your Spot <ArrowRight className="ml-3 h-8 w-8" />
-                </Link>
-              </Button>
-            </motion.div>
+            <Button
+              asChild
+              size="lg"
+              className="h-16 rounded-full bg-white px-12 text-xl font-bold uppercase tracking-widest text-primary hover:bg-white/92 border-none shadow-lg"
+              data-testid="button-register-footer"
+            >
+              <Link href="/register">
+                Secure Your Spot <ArrowRight className="ml-3 h-6 w-6" />
+              </Link>
+            </Button>
           </FadeIn>
         </div>
       </section>
 
-      <footer className="relative z-10 bg-background px-4 pt-20 pb-10 sm:px-6">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-
+      {/* FOOTER */}
+      <footer className="bg-gray-900 text-white px-4 pt-16 pb-10 sm:px-6">
         <div className="container mx-auto max-w-6xl">
-          {/* Logo */}
-          <div className="flex justify-center mb-14">
-            <div className="relative inline-block">
-              <div className="absolute inset-0 bg-primary/20 blur-[30px] rounded-full" />
-              <img
-                src={shalomLogo}
-                alt="SHALOM"
-                className="relative h-20 w-auto object-contain z-10"
-                data-testid="img-shalom-logo-footer"
-              />
-            </div>
+          <div className="flex justify-center mb-12">
+            <img
+              src={shalomLogo}
+              alt="SHALOM"
+              className="h-14 w-auto object-contain"
+              data-testid="img-shalom-logo-footer"
+            />
           </div>
 
-          {/* Contact columns */}
-          <div className="grid gap-8 text-center sm:grid-cols-3 sm:text-left mb-14">
+          <div className="grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-4 sm:text-left mb-12">
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary">Contact</p>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Contact</p>
               <a
                 href="mailto:admin@shalomconference.com"
-                className="flex items-center justify-center gap-2 text-white/70 hover:text-white transition-colors sm:justify-start"
+                className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors sm:justify-start text-sm"
                 data-testid="link-contact-email"
               >
                 <Mail className="h-4 w-4 shrink-0 text-primary" />
                 admin@shalomconference.com
               </a>
             </div>
-
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary">Giving</p>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Giving</p>
               <a
                 href="mailto:finance@shalomconference.com"
-                className="flex items-center justify-center gap-2 text-white/70 hover:text-white transition-colors sm:justify-start"
+                className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors sm:justify-start text-sm"
                 data-testid="link-finance-email"
               >
                 <Mail className="h-4 w-4 shrink-0 text-primary" />
                 finance@shalomconference.com
               </a>
             </div>
-
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary">Testimonies</p>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Testimonies</p>
               <Link
                 href="/testimonies"
-                className="flex items-center justify-center gap-2 text-white/70 hover:text-white transition-colors sm:justify-start font-medium"
+                className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors sm:justify-start text-sm font-medium"
                 data-testid="link-share-testimony-footer"
               >
                 <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
                 Share Your Testimony
               </Link>
             </div>
-
             <div>
-              <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary">Media</p>
+              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Media</p>
               <a
                 href="mailto:media@shalomconference.com"
-                className="flex items-center justify-center gap-2 text-white/70 hover:text-white transition-colors sm:justify-start"
+                className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors sm:justify-start text-sm"
                 data-testid="link-media-email"
               >
                 <Mail className="h-4 w-4 shrink-0 text-primary" />
@@ -400,12 +360,10 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="h-px w-full bg-white/5 mb-8" />
+          <div className="h-px w-full bg-white/10 mb-8" />
 
-          {/* Bottom row */}
           <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-            <p className="text-white/30 text-sm uppercase tracking-[0.2em] font-bold">
+            <p className="text-gray-500 text-sm uppercase tracking-[0.15em] font-semibold">
               © {new Date().getFullYear()} Shalom Conference. All rights reserved.
             </p>
             <a
@@ -413,7 +371,7 @@ export default function Home() {
               target="_blank"
               rel="noreferrer"
               aria-label="Shalom Conference on Instagram"
-              className="flex items-center gap-2 text-white/40 hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest"
+              className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest"
               data-testid="link-instagram"
             >
               <SiInstagram className="h-5 w-5" />
