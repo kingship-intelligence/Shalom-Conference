@@ -162,58 +162,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* WHAT TO EXPECT */}
-      <section className="bg-gray-50 px-4 py-24 sm:px-6">
-        <div className="container mx-auto max-w-6xl">
-          <FadeIn>
-            <div className="mb-14 text-center">
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.2em] text-primary">What To Expect</p>
-              <h2
-                className="text-5xl font-bold uppercase tracking-wide text-gray-900 sm:text-6xl"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                Worship. Freedom. Renewal.
-              </h2>
-            </div>
-          </FadeIn>
-
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                icon: <Zap className="h-7 w-7" />,
-                title: "Pure Worship",
-                desc: "Undistracted worship centered on Jesus — no performance, just presence.",
-              },
-              {
-                icon: <Heart className="h-7 w-7" />,
-                title: "Deliverance",
-                desc: "Prayer and ministry for freedom, healing, and wholeness.",
-              },
-              {
-                icon: <Users className="h-7 w-7" />,
-                title: "Spiritual Renewal",
-                desc: "A place to be refreshed, restored, and sent back renewed.",
-              },
-            ].map((item, i) => (
-              <FadeIn key={item.title} delay={i * 0.1}>
-                <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-sm hover:shadow-md transition-shadow h-full">
-                  <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    {item.icon}
-                  </div>
-                  <h3
-                    className="mb-3 text-2xl font-bold text-gray-900 uppercase tracking-wide"
-                    style={{ fontFamily: "var(--font-display)" }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p className="text-base font-medium text-gray-500 leading-relaxed">{item.desc}</p>
-                </div>
-              </FadeIn>
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* CTA — solid orange */}
       <section className="bg-primary px-4 py-28 sm:px-6">
         <div className="container mx-auto max-w-3xl text-center">
