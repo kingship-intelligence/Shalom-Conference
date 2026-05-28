@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
+import Register from "@/pages/register";
 import Archive from "@/pages/archive";
 import ConferenceYear from "@/pages/conference-year";
 import About from "@/pages/about";
@@ -16,6 +17,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/register" component={Register} />
       <Route path="/2026">
         <ConferenceYear year="2026" />
       </Route>

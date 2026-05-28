@@ -14,3 +14,31 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * @summary Register for the conference
+ */
+
+export const CreateRegistrationBody = zod.object({
+  firstName: zod.string().min(1),
+  lastName: zod.string().min(1),
+  email: zod.string().email(),
+  phone: zod.string().optional(),
+  conferenceYear: zod.number(),
+});
+
+/**
+ * @summary List all registrations (admin)
+ */
+export const ListRegistrationsResponseItem = zod.object({
+  id: zod.number(),
+  firstName: zod.string(),
+  lastName: zod.string(),
+  email: zod.string(),
+  phone: zod.string().nullish(),
+  conferenceYear: zod.number(),
+  createdAt: zod.coerce.date(),
+});
+export const ListRegistrationsResponse = zod.array(
+  ListRegistrationsResponseItem,
+);
