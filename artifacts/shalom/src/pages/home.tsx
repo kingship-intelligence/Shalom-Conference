@@ -2,7 +2,8 @@ import { Link } from "wouter";
 import shalomLogo from "@assets/logo_1778697155106.png";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles, ChevronDown, BookOpen } from "lucide-react";
+import { ArrowRight, MapPin, Calendar, Heart, Zap, Users, Sparkles, ChevronDown, BookOpen, Mail } from "lucide-react";
+import { SiInstagram } from "react-icons/si";
 import { currentConference } from "@/data/conferences";
 
 const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
@@ -328,22 +329,83 @@ export default function Home() {
         </div>
       </section>
 
-      <footer className="relative z-10 bg-background pt-20 pb-10 px-6 text-center">
+      <footer className="relative z-10 bg-background px-4 pt-20 pb-10 sm:px-6">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
-        
-        <div className="relative inline-block mb-10">
-          <div className="absolute inset-0 bg-primary/20 blur-[30px] rounded-full" />
-          <img
-            src={shalomLogo}
-            alt="SHALOM"
-            className="relative h-20 w-auto mx-auto object-contain z-10"
-            data-testid="img-shalom-logo-footer"
-          />
+
+        <div className="container mx-auto max-w-6xl">
+          {/* Logo */}
+          <div className="flex justify-center mb-14">
+            <div className="relative inline-block">
+              <div className="absolute inset-0 bg-primary/20 blur-[30px] rounded-full" />
+              <img
+                src={shalomLogo}
+                alt="SHALOM"
+                className="relative h-20 w-auto object-contain z-10"
+                data-testid="img-shalom-logo-footer"
+              />
+            </div>
+          </div>
+
+          {/* Contact columns */}
+          <div className="grid gap-8 text-center sm:grid-cols-3 sm:text-left mb-14">
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary">Contact</p>
+              <a
+                href="mailto:admin@shalomconference.com"
+                className="flex items-center justify-center gap-2 text-white/70 hover:text-white transition-colors sm:justify-start"
+                data-testid="link-contact-email"
+              >
+                <Mail className="h-4 w-4 shrink-0 text-primary" />
+                admin@shalomconference.com
+              </a>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary">Giving</p>
+              <a
+                href="mailto:finance@shalomconference.com"
+                className="flex items-center justify-center gap-2 text-white/70 hover:text-white transition-colors sm:justify-start"
+                data-testid="link-finance-email"
+              >
+                <Mail className="h-4 w-4 shrink-0 text-primary" />
+                finance@shalomconference.com
+              </a>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs font-bold uppercase tracking-[0.25em] text-primary">Media</p>
+              <a
+                href="mailto:media@shalomconference.com"
+                className="flex items-center justify-center gap-2 text-white/70 hover:text-white transition-colors sm:justify-start"
+                data-testid="link-media-email"
+              >
+                <Mail className="h-4 w-4 shrink-0 text-primary" />
+                media@shalomconference.com
+              </a>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="h-px w-full bg-white/5 mb-8" />
+
+          {/* Bottom row */}
+          <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+            <p className="text-white/30 text-sm uppercase tracking-[0.2em] font-bold">
+              © {new Date().getFullYear()} Shalom Conference. All rights reserved.
+            </p>
+            <a
+              href="https://www.instagram.com/shalomconference/"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Shalom Conference on Instagram"
+              className="flex items-center gap-2 text-white/40 hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest"
+              data-testid="link-instagram"
+            >
+              <SiInstagram className="h-5 w-5" />
+              @shalomconference
+            </a>
+          </div>
         </div>
-        
-        <p className="text-white/40 font-bold text-sm uppercase tracking-[0.2em]">
-          © {new Date().getFullYear()} Shalom Conference. All rights reserved.
-        </p>
       </footer>
     </div>
   );
