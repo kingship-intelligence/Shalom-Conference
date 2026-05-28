@@ -109,7 +109,7 @@ export default function Home() {
 
       {/* INVITATION */}
       <section id="details" className="bg-gray-50 px-4 py-24 sm:px-6">
-        <div className="container mx-auto grid max-w-5xl gap-12 lg:grid-cols-2 lg:items-center">
+        <div className="container mx-auto max-w-3xl">
           <FadeIn>
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-primary">The Invitation</p>
             <h2
@@ -145,15 +145,6 @@ export default function Home() {
             </div>
           </FadeIn>
 
-          <FadeIn delay={0.15}>
-            <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl shadow-md">
-              <img
-                src="/images/home/shalom-about-worship.png"
-                alt="Shalom worship moment"
-                className="h-full w-full object-cover object-center"
-              />
-            </div>
-          </FadeIn>
         </div>
       </section>
 
