@@ -41,59 +41,70 @@ export default function Home() {
         </nav>
       </header>
 
-      {/* HERO */}
-      <section className="flex min-h-[calc(100vh-65px)] items-center justify-center bg-white px-6 py-20 sm:px-10 text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7 }}
-          className="container max-w-5xl mx-auto flex flex-col items-center"
-        >
-          <span className="inline-block mb-6 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-primary">
-            Shalom 2026
-          </span>
-          <h1
-            className="mb-6 text-[4rem] font-bold uppercase leading-[0.88] tracking-wide text-gray-900 sm:text-7xl lg:text-[6rem] xl:text-[7.5rem] italic"
-            style={{ fontFamily: "var(--font-display)" }}
+      {/* HERO — split layout */}
+      <section className="flex min-h-[calc(100vh-65px)] flex-col lg:flex-row">
+        {/* Left: Text */}
+        <div className="flex flex-col justify-center bg-white px-6 py-20 lg:w-[52%] lg:px-14 xl:px-20">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
           >
-            {currentConference.theme}
-          </h1>
-          <p className="mb-8 text-lg font-medium leading-relaxed text-gray-500 max-w-xl">
-            A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
-          </p>
-          <div className="flex flex-wrap justify-center gap-2.5 mb-10">
-            {[
-              { icon: <Calendar className="h-3.5 w-3.5" />, text: currentConference.shortDate },
-              { icon: <MapPin className="h-3.5 w-3.5" />, text: "Windsor Mill, MD" },
-              { icon: <BookOpen className="h-3.5 w-3.5" />, text: currentConference.scripture },
-            ].map((item, idx) => (
-              <div key={idx} className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
-                <span className="text-primary">{item.icon}</span>
-                {item.text}
-              </div>
-            ))}
-          </div>
-          <div className="flex flex-wrap justify-center gap-3">
-            <Button
-              asChild
-              size="lg"
-              className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md"
-              data-testid="button-register-hero"
+            <span className="inline-block mb-6 rounded-full bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+              Shalom 2026
+            </span>
+            <h1
+              className="mb-6 text-[3.25rem] font-bold uppercase leading-[0.88] tracking-wide text-gray-900 sm:text-6xl lg:text-[4.5rem] xl:text-[5.5rem] italic"
+              style={{ fontFamily: "var(--font-display)" }}
             >
-              <Link href="/register">
-                Register <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              size="lg"
-              className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
-            >
-              <Link href="/2026">Learn More</Link>
-            </Button>
-          </div>
-        </motion.div>
+              {currentConference.theme}
+            </h1>
+            <p className="mb-8 text-lg font-medium leading-relaxed text-gray-500 max-w-md">
+              A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
+            </p>
+            <div className="flex flex-wrap gap-2.5 mb-10">
+              {[
+                { icon: <Calendar className="h-3.5 w-3.5" />, text: currentConference.shortDate },
+                { icon: <MapPin className="h-3.5 w-3.5" />, text: "Windsor Mill, MD" },
+                { icon: <BookOpen className="h-3.5 w-3.5" />, text: currentConference.scripture },
+              ].map((item, idx) => (
+                <div key={idx} className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
+                  <span className="text-primary">{item.icon}</span>
+                  {item.text}
+                </div>
+              ))}
+            </div>
+            <div className="flex flex-wrap gap-3">
+              <Button
+                asChild
+                size="lg"
+                className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md"
+                data-testid="button-register-hero"
+              >
+                <Link href="/register">
+                  Register <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
+              >
+                <Link href="/2026">Learn More</Link>
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Right: Image */}
+        <div className="relative min-h-[55vw] lg:min-h-full lg:w-[48%] overflow-hidden">
+          <img
+            src="/images/home/shalom-hero-worship-hd.png"
+            alt="Shalom worship gathering"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+        </div>
       </section>
 
       {/* INVITATION */}
