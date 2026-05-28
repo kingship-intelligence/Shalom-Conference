@@ -20,12 +20,6 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 export default function Home() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-hidden selection:bg-primary selection:text-primary-foreground relative">
-      {/* Floating particles / ambient glow */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
-        <div className="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-primary/20 blur-[150px] mix-blend-screen" />
-        <div className="absolute top-[40%] right-[-10%] w-[40vw] h-[40vw] rounded-full bg-secondary/20 blur-[150px] mix-blend-screen" />
-        <div className="absolute bottom-[-10%] left-[20%] w-[60vw] h-[60vw] rounded-full bg-primary/10 blur-[180px] mix-blend-screen" />
-      </div>
 
       <header className="absolute left-0 right-0 top-0 z-20 px-4 py-5 sm:px-6">
         <nav className="container mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
@@ -67,7 +61,6 @@ export default function Home() {
         </div>
 
         <div className="container relative z-10 mx-auto flex max-w-5xl flex-col items-center text-center">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] max-w-[600px] h-[400px] bg-gradient-to-br from-primary/40 to-secondary/40 blur-[100px] rounded-full pointer-events-none" />
 
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
@@ -113,7 +106,7 @@ export default function Home() {
           <FadeIn delay={0.45} className="mt-12 w-full sm:w-auto relative z-10">
             <div className="flex w-full flex-col items-center gap-4 sm:w-auto sm:flex-row">
               <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
-                <Button asChild size="lg" className="h-16 w-full max-w-xs rounded-full bg-gradient-to-r from-primary to-secondary px-10 text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(168,85,247,0.4)] hover:shadow-[0_0_50px_rgba(168,85,247,0.6)] sm:w-auto border-none" data-testid="button-register-hero">
+                <Button asChild size="lg" className="h-16 w-full max-w-xs rounded-full bg-gradient-to-r from-primary to-secondary px-10 text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] sm:w-auto border-none" data-testid="button-register-hero">
                   <a href={currentConference.registrationUrl} target="_blank" rel="noreferrer">
                     Register <ArrowRight className="ml-2 h-6 w-6" />
                   </a>
