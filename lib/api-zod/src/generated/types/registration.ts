@@ -14,5 +14,6 @@ export interface Registration {
   /** @nullable */
   phone?: string | null;
   conferenceYear: number;
+  volunteer: boolean;
   createdAt: Date;
 }

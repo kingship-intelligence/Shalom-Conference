@@ -10,3 +10,5 @@ export * from "./errorResponse";
 export * from "./healthStatus";
 export * from "./registration";
 export * from "./registrationInput";
+export * from "./testimony";
+export * from "./testimonyInput";

@@ -21,6 +21,8 @@ import type {
   HealthStatus,
   Registration,
   RegistrationInput,
+  Testimony,
+  TestimonyInput,
 } from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
@@ -261,6 +263,167 @@ export function useListRegistrations<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getListRegistrationsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Submit a testimony
+ */
+export const getCreateTestimonyUrl = () => {
+  return `/api/testimonies`;
+};
+
+export const createTestimony = async (
+  testimonyInput: TestimonyInput,
+  options?: RequestInit,
+): Promise<Testimony> => {
+  return customFetch<Testimony>(getCreateTestimonyUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(testimonyInput),
+  });
+};
+
+export const getCreateTestimonyMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createTestimony>>,
+    TError,
+    { data: BodyType<TestimonyInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createTestimony>>,
+  TError,
+  { data: BodyType<TestimonyInput> },
+  TContext
+> => {
+  const mutationKey = ["createTestimony"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createTestimony>>,
+    { data: BodyType<TestimonyInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createTestimony(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateTestimonyMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createTestimony>>
+>;
+export type CreateTestimonyMutationBody = BodyType<TestimonyInput>;
+export type CreateTestimonyMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Submit a testimony
+ */
+export const useCreateTestimony = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createTestimony>>,
+    TError,
+    { data: BodyType<TestimonyInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createTestimony>>,
+  TError,
+  { data: BodyType<TestimonyInput> },
+  TContext
+> => {
+  return useMutation(getCreateTestimonyMutationOptions(options));
+};
+
+/**
+ * @summary List all testimonies
+ */
+export const getListTestimoniesUrl = () => {
+  return `/api/testimonies`;
+};
+
+export const listTestimonies = async (
+  options?: RequestInit,
+): Promise<Testimony[]> => {
+  return customFetch<Testimony[]>(getListTestimoniesUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListTestimoniesQueryKey = () => {
+  return [`/api/testimonies`] as const;
+};
+
+export const getListTestimoniesQueryOptions = <
+  TData = Awaited<ReturnType<typeof listTestimonies>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listTestimonies>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListTestimoniesQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listTestimonies>>> = ({
+    signal,
+  }) => listTestimonies({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listTestimonies>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListTestimoniesQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listTestimonies>>
+>;
+export type ListTestimoniesQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List all testimonies
+ */
+
+export function useListTestimonies<
+  TData = Awaited<ReturnType<typeof listTestimonies>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listTestimonies>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListTestimoniesQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

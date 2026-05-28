@@ -12,6 +12,8 @@ tags:
     description: Health operations
   - name: registrations
     description: Registration operations
+  - name: testimonies
+    description: Testimony operations
 paths:
   /healthz:
     get:
@@ -69,6 +71,43 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Registration"
+  /testimonies:
+    post:
+      operationId: createTestimony
+      tags: [testimonies]
+      summary: Submit a testimony
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TestimonyInput"
+      responses:
+        "201":
+          description: Testimony submitted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Testimony"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listTestimonies
+      tags: [testimonies]
+      summary: List all testimonies
+      responses:
+        "200":
+          description: List of testimonies
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Testimony"
 components:
   schemas:
     HealthStatus:
@@ -80,15 +119,16 @@ components:
         - status
     Registration:
       type: object
-      required: [id, firstName, lastName, email, conferenceYear, createdAt]
+      required: [id, firstName, lastName, email, conferenceYear, volunteer, createdAt]
       properties:
-        id:            { type: integer }
-        firstName:     { type: string }
-        lastName:      { type: string }
-        email:         { type: string }
-        phone:         { type: ["string", "null"] }
+        id:             { type: integer }
+        firstName:      { type: string }
+        lastName:       { type: string }
+        email:          { type: string }
+        phone:          { type: ["string", "null"] }
         conferenceYear: { type: integer }
-        createdAt:     { type: string, format: date-time }
+        volunteer:      { type: boolean }
+        createdAt:      { type: string, format: date-time }
     RegistrationInput:
       type: object
       required: [firstName, lastName, email, conferenceYear]
@@ -98,6 +138,25 @@ components:
         email:          { type: string, format: email }
         phone:          { type: string }
         conferenceYear: { type: integer }
+        volunteer:      { type: boolean }
+    Testimony:
+      type: object
+      required: [id, name, email, conferenceYear, testimony, createdAt]
+      properties:
+        id:             { type: integer }
+        name:           { type: string }
+        email:          { type: string }
+        conferenceYear: { type: integer }
+        testimony:      { type: string }
+        createdAt:      { type: string, format: date-time }
+    TestimonyInput:
+      type: object
+      required: [name, email, conferenceYear, testimony]
+      properties:
+        name:           { type: string, minLength: 1 }
+        email:          { type: string, format: email }
+        conferenceYear: { type: integer }
+        testimony:      { type: string, minLength: 10 }
     ErrorResponse:
       type: object
       required: [error]

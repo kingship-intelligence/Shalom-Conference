@@ -17,6 +17,7 @@ export interface Registration {
   /** @nullable */
   phone?: string | null;
   conferenceYear: number;
+  volunteer: boolean;
   createdAt: string;
 }
 
@@ -28,6 +29,25 @@ export interface RegistrationInput {
   email: string;
   phone?: string;
   conferenceYear: number;
+  volunteer?: boolean;
+}
+
+export interface Testimony {
+  id: number;
+  name: string;
+  email: string;
+  conferenceYear: number;
+  testimony: string;
+  createdAt: string;
+}
+
+export interface TestimonyInput {
+  /** @minLength 1 */
+  name: string;
+  email: string;
+  conferenceYear: number;
+  /** @minLength 10 */
+  testimony: string;
 }
 
 export interface ErrorResponse {

@@ -19,12 +19,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 
+import { Checkbox } from "@/components/ui/checkbox";
+
 const registrationSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().optional(),
   conferenceYear: z.number().default(2026),
+  volunteer: z.boolean().default(false),
 });
 
 type RegistrationInput = z.infer<typeof registrationSchema>;
@@ -42,6 +45,7 @@ export default function Register() {
       email: "",
       phone: "",
       conferenceYear: 2026,
+      volunteer: false,
     },
   });
 
@@ -255,6 +259,31 @@ export default function Register() {
                       />
                     </FormControl>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="volunteer"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        data-testid="checkbox-volunteer"
+                      />
+                    </FormControl>
+                    <div className="space-y-1">
+                      <FormLabel className="text-white font-bold text-base cursor-pointer">
+                        I would like to volunteer
+                      </FormLabel>
+                      <p className="text-white/50 text-sm">
+                        Help us make Shalom 2026 an unforgettable experience. We'll reach out with details.
+                      </p>
+                    </div>
                   </FormItem>
                 )}
               />
