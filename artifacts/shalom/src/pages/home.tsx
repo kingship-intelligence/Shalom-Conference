@@ -62,15 +62,18 @@ export default function Home() {
             <p className="mb-8 text-lg font-medium leading-relaxed text-gray-500 max-w-md">
               A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
             </p>
-            <div className="flex flex-wrap gap-2.5 mb-10">
+            <div className="flex flex-col gap-3 mb-10">
               {[
-                { icon: <Calendar className="h-3.5 w-3.5" />, text: currentConference.shortDate },
-                { icon: <MapPin className="h-3.5 w-3.5" />, text: "Windsor Mill, MD" },
-                { icon: <BookOpen className="h-3.5 w-3.5" />, text: currentConference.scripture },
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-2 rounded-full bg-gray-100 px-4 py-2 text-sm font-semibold text-gray-600">
-                  <span className="text-primary">{item.icon}</span>
-                  {item.text}
+                { icon: <Calendar className="h-4 w-4" />, label: "Date", value: currentConference.date },
+                { icon: <MapPin className="h-4 w-4" />, label: "Location", value: currentConference.location },
+                { icon: <Sparkles className="h-4 w-4" />, label: "Theme", value: currentConference.theme },
+              ].map((item) => (
+                <div key={item.label} className="flex gap-3 items-center">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    {item.icon}
+                  </div>
+                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400 w-16">{item.label}</span>
+                  <span className="text-sm font-bold text-gray-900">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -104,61 +107,6 @@ export default function Home() {
             alt="Shalom worship gathering"
             className="absolute inset-0 h-full w-full object-cover"
           />
-        </div>
-      </section>
-
-      {/* INVITATION */}
-      <section id="details" className="bg-gray-50 px-4 py-24 sm:px-6">
-        <div className="container mx-auto max-w-3xl">
-          <FadeIn>
-            <p className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-primary">The Invitation</p>
-            <h2
-              className="mb-6 text-4xl font-bold uppercase leading-none tracking-wide text-gray-900 sm:text-5xl"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              A simple room for encounter.
-            </h2>
-            <div className="space-y-4 text-base font-medium leading-relaxed text-gray-500 mb-8">
-              <p>
-                Shalom 2026 is centered on{" "}
-                <span className="font-bold text-primary">{currentConference.scripture}</span>{" "}
-                — the promise and ministry of the Comforter.
-              </p>
-              <p>
-                We are gathering for worship, teaching, prayer, deliverance, and spiritual renewal for everyone earnestly seeking Christ.
-              </p>
-            </div>
-            <div className="flex flex-col gap-4">
-              {[
-                { icon: <Calendar className="h-4 w-4" />, label: "Date", value: currentConference.date },
-                { icon: <MapPin className="h-4 w-4" />, label: "Location", value: currentConference.location },
-                { icon: <Sparkles className="h-4 w-4" />, label: "Theme", value: currentConference.theme },
-              ].map((item) => (
-                <div key={item.label} className="flex gap-3 items-center">
-                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
-                    {item.icon}
-                  </div>
-                  <span className="text-xs font-bold uppercase tracking-widest text-gray-400 w-16">{item.label}</span>
-                  <span className="text-sm font-bold text-gray-900">{item.value}</span>
-                </div>
-              ))}
-            </div>
-          </FadeIn>
-
-        </div>
-      </section>
-
-      {/* QUOTE BREAK */}
-      <section className="bg-white px-4 py-20 sm:px-6">
-        <div className="container mx-auto max-w-4xl">
-          <FadeIn>
-            <p
-              className="text-3xl font-bold text-gray-900 leading-snug sm:text-4xl lg:text-5xl border-l-4 border-primary pl-8"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Worship that makes space to listen, respond, and be renewed.
-            </p>
-          </FadeIn>
         </div>
       </section>
 
