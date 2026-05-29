@@ -103,7 +103,7 @@ export default function Home() {
         {/* Right: Image */}
         <div className="relative min-h-[55vw] lg:min-h-full lg:w-[48%] overflow-hidden">
           <img
-            src="/images/home/shalom-hero-worship-hd.png"
+            src="/images/home/shalom-hero-new.jpg"
             alt="Shalom worship gathering"
             className="absolute inset-0 h-full w-full object-cover"
           />
