@@ -11,6 +11,7 @@ export type Conference = {
   scriptureText?: string;
   registrationUrl?: string;
   image: string;
+  flyer?: string;
   highlights: string[];
   schedule: Array<{
     time: string;
@@ -39,6 +40,7 @@ export const conferences: Conference[] = [
       "But the Comforter, which is the Holy Ghost, whom the Father will send in my name, he shall teach you all things, and bring all things to your remembrance. Peace I leave with you, my peace I give unto you.",
     registrationUrl: "https://example.com/register",
     image: "/images/worship.png",
+    flyer: "/images/2026/the-comforter-flyer.png",
     highlights: [
       "Pure worship",
       "Teaching on the Comforter",
