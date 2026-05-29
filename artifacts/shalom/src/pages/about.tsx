@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import shalomLogo from "@assets/logo_1778697155106.png";
-import { ArrowRight, Flame, Heart, Sparkles, Users } from "lucide-react";
+import { ArrowRight, Flame, Heart, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { currentConference } from "@/data/conferences";
 
@@ -92,19 +92,7 @@ export default function About() {
         </section>
 
         <section className="px-4 py-20 sm:px-6 sm:py-24">
-          <div className="container mx-auto grid max-w-7xl gap-16 lg:grid-cols-[0.8fr_1fr]">
-            <div className="rounded-2xl border border-white/10 bg-card p-8 text-center lg:text-left">
-              <Users className="mx-auto mb-6 h-10 w-10 text-primary lg:mx-0" />
-              <h2 className="mb-4 text-3xl font-black uppercase tracking-tight text-white">
-                Shalom {currentConference.year}
-              </h2>
-              <p className="mb-6 text-muted-foreground">{currentConference.description}</p>
-              <p className="font-mono text-sm uppercase tracking-widest text-primary">
-                {currentConference.date}
-              </p>
-              <p className="mt-2 text-muted-foreground">{currentConference.location}</p>
-            </div>
-
+          <div className="container mx-auto max-w-4xl">
             <div className="text-center lg:text-left">
               <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
                 The Heart
