@@ -31,3 +31,8 @@ externalPort = 8081
 localPort = 25899
 externalPort = 80
 exposeLocalhost = true
+
+[userenv]
+
+[userenv.shared]
+ADMIN_USERNAME = "admin@shalomconference.com"
