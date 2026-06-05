@@ -10,6 +10,7 @@ export const registrationsTable = pgTable("registrations", {
   phone: text("phone"),
   conferenceYear: integer("conference_year").notNull().default(2026),
   volunteer: boolean("volunteer").notNull().default(false),
+  volunteerRole: text("volunteer_role"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

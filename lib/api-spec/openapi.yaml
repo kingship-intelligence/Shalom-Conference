@@ -128,6 +128,7 @@ components:
         phone:          { type: ["string", "null"] }
         conferenceYear: { type: integer }
         volunteer:      { type: boolean }
+        volunteerRole:  { type: ["string", "null"] }
         createdAt:      { type: string, format: date-time }
     RegistrationInput:
       type: object
@@ -139,6 +140,7 @@ components:
         phone:          { type: string }
         conferenceYear: { type: integer }
         volunteer:      { type: boolean }
+        volunteerRole:  { type: string }
     Testimony:
       type: object
       required: [id, name, email, conferenceYear, testimony, createdAt]

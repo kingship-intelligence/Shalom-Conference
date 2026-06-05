@@ -18,6 +18,8 @@ export interface Registration {
   phone?: string | null;
   conferenceYear: number;
   volunteer: boolean;
+  /** @nullable */
+  volunteerRole?: string | null;
   createdAt: string;
 }
 
@@ -30,6 +32,7 @@ export interface RegistrationInput {
   phone?: string;
   conferenceYear: number;
   volunteer?: boolean;
+  volunteerRole?: string;
 }
 
 export interface Testimony {
