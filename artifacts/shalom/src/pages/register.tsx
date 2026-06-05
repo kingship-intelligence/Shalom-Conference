@@ -21,6 +21,18 @@ import { useToast } from "@/hooks/use-toast";
 
 import { Checkbox } from "@/components/ui/checkbox";
 
+const VOLUNTEER_ROLES = [
+  "Media",
+  "Ushers",
+  "Protocol",
+  "Parking",
+  "Welcome Team",
+  "Setup Crew",
+  "Clean Up Crew",
+  "Child Care Crew",
+  "Merch Crew",
+] as const;
+
 const registrationSchema = z.object({
   firstName: z.string().min(1, "First name is required"),
   lastName: z.string().min(1, "Last name is required"),
@@ -28,7 +40,11 @@ const registrationSchema = z.object({
   phone: z.string().optional(),
   conferenceYear: z.number().default(2026),
   volunteer: z.boolean().default(false),
-});
+  volunteerRole: z.string().optional(),
+}).refine(
+  (d) => !d.volunteer || !!d.volunteerRole,
+  { message: "Please select a volunteer role", path: ["volunteerRole"] }
+);
 
 type RegistrationInput = z.infer<typeof registrationSchema>;
 
@@ -46,8 +62,11 @@ export default function Register() {
       phone: "",
       conferenceYear: 2026,
       volunteer: false,
+      volunteerRole: "",
     },
   });
+
+  const isVolunteer = form.watch("volunteer");
 
   const onSubmit = (data: RegistrationInput) => {
     createRegistration.mutate(
@@ -271,7 +290,10 @@ export default function Register() {
                     <FormControl>
                       <Checkbox
                         checked={field.value}
-                        onCheckedChange={field.onChange}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          if (!checked) form.setValue("volunteerRole", "");
+                        }}
                         className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
                         data-testid="checkbox-volunteer"
                       />
@@ -287,6 +309,40 @@ export default function Register() {
                   </FormItem>
                 )}
               />
+
+              {isVolunteer && (
+                <FormField
+                  control={form.control}
+                  name="volunteerRole"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
+                        Volunteer Role
+                      </FormLabel>
+                      <div className="flex flex-wrap gap-2 pt-1">
+                        {VOLUNTEER_ROLES.map((role) => {
+                          const selected = field.value === role;
+                          return (
+                            <button
+                              key={role}
+                              type="button"
+                              onClick={() => field.onChange(role)}
+                              className={`px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide border transition-all ${
+                                selected
+                                  ? "bg-primary border-primary text-white"
+                                  : "bg-white/5 border-white/10 text-white/60 hover:border-primary/50 hover:text-white"
+                              }`}
+                            >
+                              {role}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              )}
 
               <Button
                 type="submit"

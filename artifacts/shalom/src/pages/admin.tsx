@@ -211,12 +211,12 @@ export default function Admin() {
                     className="bg-white/5 rounded-xl p-5 border border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                   >
                     <div className="space-y-1">
-                      <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-2 flex-wrap">
                         <User className="h-4 w-4 text-primary" />
                         <span className="text-white font-bold">{reg.firstName} {reg.lastName}</span>
                         {reg.volunteer && (
                           <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/20 text-[10px] uppercase font-bold px-2 py-0">
-                            Volunteer
+                            {reg.volunteerRole || "Volunteer"}
                           </Badge>
                         )}
                       </div>

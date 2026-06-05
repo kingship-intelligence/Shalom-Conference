@@ -15,4 +15,5 @@ export interface RegistrationInput {
   phone?: string;
   conferenceYear: number;
   volunteer?: boolean;
+  volunteerRole?: string;
 }

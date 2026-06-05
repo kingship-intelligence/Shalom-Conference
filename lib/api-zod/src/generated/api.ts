@@ -26,6 +26,7 @@ export const CreateRegistrationBody = zod.object({
   phone: zod.string().optional(),
   conferenceYear: zod.number(),
   volunteer: zod.boolean().optional(),
+  volunteerRole: zod.string().optional(),
 });
 
 /**
@@ -39,6 +40,7 @@ export const ListRegistrationsResponseItem = zod.object({
   phone: zod.string().nullish(),
   conferenceYear: zod.number(),
   volunteer: zod.boolean(),
+  volunteerRole: zod.string().nullish(),
   createdAt: zod.coerce.date(),
 });
 export const ListRegistrationsResponse = zod.array(
