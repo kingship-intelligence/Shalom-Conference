@@ -7,9 +7,33 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff } from "lucide-react";
+import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download } from "lucide-react";
 
 const SESSION_KEY = "shalom_admin_auth";
+
+function exportCSV(registrations: any[]) {
+  const headers = ["First Name", "Last Name", "Email", "Phone", "Year", "Volunteer", "Role", "Registered At"];
+  const rows = registrations.map((r) => [
+    r.firstName,
+    r.lastName,
+    r.email,
+    r.phone ?? "",
+    r.conferenceYear,
+    r.volunteer ? "Yes" : "No",
+    r.volunteerRole ?? "",
+    new Date(r.createdAt).toLocaleString(),
+  ]);
+  const csv = [headers, ...rows]
+    .map((row) => row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `shalom-registrations-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
 
 function useAdminAuth() {
   const [authed, setAuthed] = useState(() => sessionStorage.getItem(SESSION_KEY) === "1");
@@ -186,9 +210,21 @@ export default function Admin() {
           <section data-testid="section-registrations" className="space-y-6">
             <div className="flex items-center justify-between border-t-2 border-primary pt-4">
               <h2 className="text-2xl font-bold text-white uppercase tracking-wider">Registrations</h2>
-              <Badge className="bg-primary text-white">
-                {registrationsQuery.isLoading ? "..." : registrations.length}
-              </Badge>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-primary text-white">
+                  {registrationsQuery.isLoading ? "..." : registrations.length}
+                </Badge>
+                {registrations.length > 0 && (
+                  <button
+                    onClick={() => exportCSV(registrations)}
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
+                    title="Export CSV"
+                  >
+                    <Download className="h-4 w-4" />
+                    Export
+                  </button>
+                )}
+              </div>
             </div>
 
             {registrationsQuery.isLoading ? (
