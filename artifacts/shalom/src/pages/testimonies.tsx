@@ -6,8 +6,9 @@ import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, CheckCircle2, MessageSquare } from "lucide-react";
 import { useCreateTestimony } from "@workspace/api-client-react";
-import shalomLogo from "@assets/logo_1778697155106.png";
 import { Button } from "@/components/ui/button";
+import SiteHeader from "@/components/SiteHeader";
+import shalomLogo from "@assets/logo_1778697155106.png";
 import {
   Form,
   FormControl,
@@ -121,17 +122,7 @@ export default function Testimonies() {
         <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 rounded-full bg-secondary/10 blur-[100px]" />
       </div>
 
-      <header className="relative z-20 px-4 py-6 sm:px-6">
-        <div className="container mx-auto max-w-7xl flex items-center">
-          <Link
-            href="/"
-            className="group flex items-center gap-2 text-white/50 hover:text-white transition-colors font-bold uppercase tracking-widest text-sm"
-          >
-            <ArrowLeft className="h-5 w-5 group-hover:-translate-x-1 transition-transform" />
-            Back
-          </Link>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="container relative z-10 mx-auto max-w-2xl px-4 mt-8">
         <div className="text-center mb-12">

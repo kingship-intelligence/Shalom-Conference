@@ -1,33 +1,13 @@
 import { Link } from "wouter";
-import shalomLogo from "@assets/logo_1778697155106.png";
 import { ArrowRight, Calendar, MapPin } from "lucide-react";
 import { archivedConferences } from "@/data/conferences";
 import { Button } from "@/components/ui/button";
+import SiteHeader from "@/components/SiteHeader";
 
 export default function Archive() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="border-b border-white/10 px-4 py-5 sm:px-6">
-        <nav className="container mx-auto flex max-w-7xl flex-col items-center justify-center gap-4 sm:flex-row sm:justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <img src={shalomLogo} alt="SHALOM" className="h-10 w-auto object-contain" />
-          </Link>
-          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-medium uppercase tracking-widest text-muted-foreground sm:gap-5 sm:text-sm">
-            <Link href="/2026" className="hover:text-primary">
-              2026
-            </Link>
-            <Link href="/about" className="hover:text-primary">
-              About
-            </Link>
-            <Link href="/partner" className="hover:text-primary">
-              Partner
-            </Link>
-            <Link href="/archive" className="text-primary">
-              Archive
-            </Link>
-          </div>
-        </nav>
-      </header>
+      <SiteHeader />
 
       <main>
         <section className="px-4 py-20 sm:px-6 sm:py-24">
