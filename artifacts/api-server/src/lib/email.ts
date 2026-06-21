@@ -1,6 +1,16 @@
-import { ReplitConnectors } from "@replit/connectors-sdk";
+import nodemailer from "nodemailer";
 
-const FROM = "Shalom Conference <admin@shalomconference.com>";
+const FROM = '"Shalom Conference" <admin@shalomconference.com>';
+
+function createTransport() {
+  return nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: "admin@shalomconference.com",
+      pass: process.env.SMTP_PASSWORD,
+    },
+  });
+}
 
 export async function sendRegistrationConfirmation(opts: {
   firstName: string;
@@ -10,8 +20,6 @@ export async function sendRegistrationConfirmation(opts: {
   isVolunteer: boolean;
   volunteerRole?: string | null;
 }): Promise<void> {
-  const connectors = new ReplitConnectors();
-
   const volunteerLine = opts.isVolunteer && opts.volunteerRole
     ? `<p>You signed up to volunteer as part of the <strong>${opts.volunteerRole}</strong> team — we'll be in touch with more details.</p>`
     : opts.isVolunteer
@@ -44,7 +52,7 @@ export async function sendRegistrationConfirmation(opts: {
                   Hi ${opts.firstName}, thanks for signing up for Shalom ${opts.conferenceYear}.
                 </p>
                 <p style="margin:0 0 16px;color:#d0d0d0;font-size:15px;line-height:1.6;">
-                  We're so excited to have you join us. Get ready for a powerful time of worship, 
+                  We're so excited to have you join us. Get ready for a powerful time of worship,
                   the Word, and genuine community.
                 </p>
                 ${volunteerLine}
@@ -68,18 +76,11 @@ export async function sendRegistrationConfirmation(opts: {
 </html>
 `;
 
-  const response = await connectors.proxy("resend", "/emails", {
-    method: "POST",
-    body: JSON.stringify({
-      from: FROM,
-      to: [opts.email],
-      subject: `You're registered for Shalom ${opts.conferenceYear}! 🙌`,
-      html,
-    }),
+  const transporter = createTransport();
+  await transporter.sendMail({
+    from: FROM,
+    to: opts.email,
+    subject: `You're registered for Shalom ${opts.conferenceYear}! 🙌`,
+    html,
   });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Resend error ${response.status}: ${text}`);
-  }
 }
