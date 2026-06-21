@@ -2,6 +2,7 @@ import { Router, type IRouter } from "express";
 import { eq, and } from "drizzle-orm";
 import { db, registrationsTable } from "@workspace/db";
 import { CreateRegistrationBody, ListRegistrationsResponse, ListRegistrationsResponseItem } from "@workspace/api-zod";
+import { sendRegistrationConfirmation } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -33,6 +34,17 @@ router.post("/registrations", async (req, res): Promise<void> => {
     .insert(registrationsTable)
     .values(parsed.data)
     .returning();
+
+  sendRegistrationConfirmation({
+    firstName: parsed.data.firstName,
+    lastName: parsed.data.lastName,
+    email: parsed.data.email,
+    conferenceYear: String(parsed.data.conferenceYear),
+    isVolunteer: parsed.data.volunteer ?? false,
+    volunteerRole: parsed.data.volunteerRole,
+  }).catch((err: unknown) => {
+    req.log.error({ err }, "Failed to send registration confirmation email");
+  });
 
   res.status(201).json(ListRegistrationsResponseItem.parse(registration));
 });
