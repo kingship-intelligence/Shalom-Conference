@@ -1,12 +1,12 @@
 import nodemailer from "nodemailer";
 
-const FROM = '"Shalom Conference" <admin@shalomconference.com>';
+const FROM = '"Shalom Conference" <media@shalomconference.com>';
 
 function createTransport() {
   return nodemailer.createTransport({
     service: "gmail",
     auth: {
-      user: "admin@shalomconference.com",
+      user: "media@shalomconference.com",
       pass: process.env.SMTP_PASSWORD,
     },
   });
