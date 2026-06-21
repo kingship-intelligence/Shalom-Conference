@@ -162,7 +162,7 @@ export async function sendRegistrationConfirmation(opts: {
   const connectors = new ReplitConnectors();
   const raw = buildRawMessage({
     to: opts.email,
-    subject: `You're registered for Shalom ${opts.conferenceYear}! 🔥`,
+    subject: `You're registered for Shalom ${opts.conferenceYear}!`,
     html,
   });
 
