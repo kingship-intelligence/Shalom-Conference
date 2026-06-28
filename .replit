@@ -57,6 +57,7 @@ exposeLocalhost = true
 
 [userenv.shared]
 ADMIN_USERNAME = "admin@shalomconference.com"
+SITE_URL = "https://shalomconference.com"
 
 [nix]
 channel = "stable-25_05"
