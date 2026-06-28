@@ -5,9 +5,7 @@ import { ReplitConnectors } from "@replit/connectors-sdk";
 const FROM = "Shalom Conference <media@shalomconference.com>";
 
 function getSiteUrl(): string {
-  const domains = process.env.REPLIT_DOMAINS;
-  if (domains) return `https://${domains.split(",")[0]}`;
-  return "https://shalomconference.com";
+  return process.env.SITE_URL ?? "https://shalomconference.com";
 }
 
 function buildRawMessage(opts: {
