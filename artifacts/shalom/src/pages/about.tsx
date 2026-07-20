@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function About() {
   return (
@@ -115,6 +116,7 @@ export default function About() {
           </div>
         </section>
       </main>
+      <SiteFooter />
     </div>
   );
 }

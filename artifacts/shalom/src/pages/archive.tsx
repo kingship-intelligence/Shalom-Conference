@@ -3,6 +3,7 @@ import { ArrowRight, Calendar, MapPin } from "lucide-react";
 import { archivedConferences } from "@/data/conferences";
 import { Button } from "@/components/ui/button";
 import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 export default function Archive() {
   return (
@@ -76,6 +77,7 @@ export default function Archive() {
           </div>
         </section>
       </main>
+      <SiteFooter />
     </div>
   );
 }

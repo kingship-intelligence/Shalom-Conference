@@ -3,6 +3,7 @@ import { ArrowRight, HandHeart, HeartHandshake, Megaphone, ShieldCheck } from "l
 import { Button } from "@/components/ui/button";
 import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 
 const partnerPaths = [
   {
@@ -114,6 +115,7 @@ export default function Partner() {
           </div>
         </section>
       </main>
+      <SiteFooter />
     </div>
   );
 }
