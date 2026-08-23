@@ -1,0 +1,1 @@
+- [API test runner](api-test-runner.md) — API package tests use the workspace catalog TypeScript runner as a package-local dev dependency.
