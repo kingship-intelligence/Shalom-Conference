@@ -21,7 +21,7 @@ function escapeHtml(value: string): string {
   });
 }
 
-function buildRawMessage(opts: {
+export function buildRawMessage(opts: {
   to: string;
   subject: string;
   html: string;
