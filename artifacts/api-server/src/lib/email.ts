@@ -8,29 +8,70 @@ function getSiteUrl(): string {
   return process.env.SITE_URL ?? "https://shalomconference.com";
 }
 
+function escapeHtml(value: string): string {
+  return value.replace(/[&<>"']/g, (character) => {
+    const entities: Record<string, string> = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+    return entities[character];
+  });
+}
+
 function buildRawMessage(opts: {
   to: string;
   subject: string;
   html: string;
+  attachment?: {
+    filename: string;
+    contentType: string;
+    content: Buffer;
+  };
 }): string {
-  const boundary = "boundary_shalom_" + Date.now();
+  const outerBoundary = `outer_shalom_${Date.now()}`;
+  const innerBoundary = `inner_shalom_${Date.now()}`;
+  const toBase64Lines = (value: Buffer | string): string =>
+    Buffer.from(value)
+      .toString("base64")
+      .match(/.{1,76}/g)
+      ?.join("\r\n") ?? "";
   const message = [
     `From: ${FROM}`,
     `To: ${opts.to}`,
     `Subject: ${opts.subject}`,
     `MIME-Version: 1.0`,
-    `Content-Type: multipart/alternative; boundary="${boundary}"`,
+    `Content-Type: multipart/mixed; boundary="${outerBoundary}"`,
     ``,
-    `--${boundary}`,
+    `--${outerBoundary}`,
+    `Content-Type: multipart/alternative; boundary="${innerBoundary}"`,
+    ``,
+    `--${innerBoundary}`,
     `Content-Type: text/html; charset="UTF-8"`,
     `Content-Transfer-Encoding: base64`,
     ``,
-    Buffer.from(opts.html).toString("base64"),
+    toBase64Lines(opts.html),
     ``,
-    `--${boundary}--`,
-  ].join("\r\n");
+    `--${innerBoundary}--`,
+  ];
 
-  return Buffer.from(message)
+  if (opts.attachment) {
+    message.push(
+      ``,
+      `--${outerBoundary}`,
+      `Content-Type: ${opts.attachment.contentType}; name="${opts.attachment.filename}"`,
+      `Content-Transfer-Encoding: base64`,
+      `Content-Disposition: attachment; filename="${opts.attachment.filename}"`,
+      ``,
+      toBase64Lines(opts.attachment.content),
+    );
+  }
+
+  message.push(``, `--${outerBoundary}--`);
+
+  return Buffer.from(message.join("\r\n"))
     .toString("base64")
     .replace(/\+/g, "-")
     .replace(/\//g, "_")
@@ -44,18 +85,21 @@ export async function sendRegistrationConfirmation(opts: {
   conferenceYear: string;
   isVolunteer: boolean;
   volunteerRole?: string | null;
+  attendeeBadge?: Buffer;
 }): Promise<void> {
   const siteUrl = getSiteUrl();
   const logoUrl = `${siteUrl}/logo.png`;
+  const firstName = escapeHtml(opts.firstName);
+  const volunteerRole = opts.volunteerRole ? escapeHtml(opts.volunteerRole) : null;
 
   const volunteerLine =
-    opts.isVolunteer && opts.volunteerRole
+    opts.isVolunteer && volunteerRole
       ? `
         <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0 0;">
           <tr>
             <td style="background:linear-gradient(135deg,#f97316,#ea580c);border-radius:10px;padding:16px 20px;">
               <p style="margin:0;font-size:13px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fff5eb;">Volunteer Role</p>
-              <p style="margin:4px 0 0;font-size:18px;font-weight:800;color:#ffffff;">${opts.volunteerRole}</p>
+               <p style="margin:4px 0 0;font-size:18px;font-weight:800;color:#ffffff;">${volunteerRole}</p>
               <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,0.8);">We'll reach out with more details before the conference.</p>
             </td>
           </tr>
@@ -95,7 +139,7 @@ export async function sendRegistrationConfirmation(opts: {
         <tr>
           <td style="background:linear-gradient(135deg,#f97316 0%,#dc2626 100%);padding:28px 32px;text-align:center;">
             <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:rgba(255,255,255,0.75);">Shalom ${opts.conferenceYear}</p>
-            <h1 style="margin:8px 0 0;font-size:32px;font-weight:900;letter-spacing:1px;color:#ffffff;line-height:1.1;">You're In! 🔥</h1>
+             <h1 style="margin:8px 0 0;font-size:32px;font-weight:900;letter-spacing:1px;color:#ffffff;line-height:1.1;">You're In!</h1>
           </td>
         </tr>
 
@@ -104,13 +148,22 @@ export async function sendRegistrationConfirmation(opts: {
           <td style="background:#141414;padding:36px 32px;">
 
             <p style="margin:0 0 16px;font-size:18px;font-weight:700;color:#ffffff;">
-              Hey ${opts.firstName} 👋
+               Hey ${firstName}
             </p>
             <p style="margin:0 0 20px;font-size:15px;line-height:1.7;color:#c0c0c0;">
               Your registration for <strong style="color:#f97316;">Shalom ${opts.conferenceYear}</strong> is confirmed.
               We are so excited to have you with us — get ready for a powerful time of worship,
               the Word, and genuine community.
             </p>
+             ${opts.attendeeBadge ? `
+             <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+               <tr>
+                 <td style="background:#23120a;border:1px solid #f97316;border-radius:10px;padding:16px 20px;">
+                   <p style="margin:0;font-size:14px;font-weight:800;color:#ffffff;">Your “I’m Attending” badge is ready.</p>
+                   <p style="margin:7px 0 0;font-size:13px;line-height:1.6;color:#c0c0c0;">It is attached to this email as a PNG image, ready to save and share.</p>
+                 </td>
+               </tr>
+             </table>` : ""}
 
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
@@ -160,8 +213,17 @@ export async function sendRegistrationConfirmation(opts: {
   const connectors = new ReplitConnectors();
   const raw = buildRawMessage({
     to: opts.email,
-    subject: `You're registered for Shalom ${opts.conferenceYear}!`,
+    subject: opts.attendeeBadge
+      ? `Your Shalom ${opts.conferenceYear} attendee badge`
+      : `You're registered for Shalom ${opts.conferenceYear}!`,
     html,
+    attachment: opts.attendeeBadge
+      ? {
+          filename: `shalom-${opts.conferenceYear}-attendee-badge.png`,
+          contentType: "image/png",
+          content: opts.attendeeBadge,
+        }
+      : undefined,
   });
 
   const response = await connectors.proxy(

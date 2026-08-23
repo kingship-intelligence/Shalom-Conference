@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { RegistrationBadgeDeliveryStatus } from "./registrationBadgeDeliveryStatus";
 
 export interface Registration {
   id: number;
@@ -17,5 +18,6 @@ export interface Registration {
   volunteer: boolean;
   /** @nullable */
   volunteerRole?: string | null;
+  badgeDeliveryStatus?: RegistrationBadgeDeliveryStatus;
   createdAt: Date;
 }

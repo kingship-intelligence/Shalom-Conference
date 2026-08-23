@@ -12,6 +12,8 @@ tags:
     description: Health operations
   - name: registrations
     description: Registration operations
+  - name: badges
+    description: Attendee badge upload and delivery operations
   - name: testimonies
     description: Testimony operations
 paths:
@@ -45,7 +47,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/Registration"
+                $ref: "#/components/schemas/RegistrationCreated"
         "400":
           description: Validation error
           content:
@@ -71,6 +73,102 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Registration"
+  /registrations/{registrationId}/badge/upload-url:
+    post:
+      operationId: requestRegistrationBadgeUploadUrl
+      tags: [badges]
+      summary: Request a private attendee photo upload URL
+      parameters:
+        - $ref: "#/components/parameters/RegistrationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BadgeUploadInput"
+      responses:
+        "200":
+          description: Short-lived URL for uploading the attendee portrait
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadgeUploadUrl"
+        "400":
+          description: Invalid badge upload request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Invalid or expired badge authorization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /registrations/{registrationId}/badge/complete:
+    post:
+      operationId: completeRegistrationBadge
+      tags: [badges]
+      summary: Create and deliver an attendee badge
+      parameters:
+        - $ref: "#/components/parameters/RegistrationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BadgeCompleteInput"
+      responses:
+        "200":
+          description: Badge delivered in the confirmation email
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+        "202":
+          description: Registration was confirmed but badge generation failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+        "400":
+          description: Invalid badge completion request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Invalid or expired badge authorization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /registrations/{registrationId}/badge/skip:
+    post:
+      operationId: skipRegistrationBadge
+      tags: [badges]
+      summary: Send the standard confirmation without an attendee badge
+      parameters:
+        - $ref: "#/components/parameters/RegistrationId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BadgeSkipInput"
+      responses:
+        "200":
+          description: Standard confirmation delivered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Registration"
+        "401":
+          description: Invalid or expired badge authorization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /testimonies:
     post:
       operationId: createTestimony
@@ -129,7 +227,17 @@ components:
         conferenceYear: { type: integer }
         volunteer:      { type: boolean }
         volunteerRole:  { type: ["string", "null"] }
+        badgeDeliveryStatus:
+          type: string
+          enum: [delivered, fallback]
         createdAt:      { type: string, format: date-time }
+    RegistrationCreated:
+      allOf:
+        - $ref: "#/components/schemas/Registration"
+        - type: object
+          properties:
+            badgeUploadToken:
+              type: string
     RegistrationInput:
       type: object
       required: [firstName, lastName, email, conferenceYear]
@@ -141,6 +249,34 @@ components:
         conferenceYear: { type: integer }
         volunteer:      { type: boolean }
         volunteerRole:  { type: string }
+        wantsAttendeeBadge:
+          type: boolean
+          description: Whether a portrait will be uploaded to create an attendee badge.
+    BadgeUploadInput:
+      type: object
+      required: [token, name, size, contentType]
+      properties:
+        token:       { type: string, minLength: 32 }
+        name:        { type: string, minLength: 1, maxLength: 200 }
+        size:        { type: integer, minimum: 1, maximum: 5242880 }
+        contentType: { type: string, enum: [image/jpeg, image/png, image/webp] }
+    BadgeUploadUrl:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL:  { type: string, format: uri }
+        objectPath: { type: string }
+    BadgeCompleteInput:
+      type: object
+      required: [token, objectPath]
+      properties:
+        token:      { type: string, minLength: 32 }
+        objectPath: { type: string, minLength: 1 }
+    BadgeSkipInput:
+      type: object
+      required: [token]
+      properties:
+        token: { type: string, minLength: 32 }
     Testimony:
       type: object
       required: [id, name, email, conferenceYear, testimony, createdAt]
@@ -164,3 +300,10 @@ components:
       required: [error]
       properties:
         error: { type: string }
+  parameters:
+    RegistrationId:
+      name: registrationId
+      in: path
+      required: true
+      schema:
+        type: integer

@@ -9,6 +9,14 @@ export interface HealthStatus {
   status: string;
 }
 
+export type RegistrationBadgeDeliveryStatus =
+  (typeof RegistrationBadgeDeliveryStatus)[keyof typeof RegistrationBadgeDeliveryStatus];
+
+export const RegistrationBadgeDeliveryStatus = {
+  delivered: "delivered",
+  fallback: "fallback",
+} as const;
+
 export interface Registration {
   id: number;
   firstName: string;
@@ -20,8 +28,13 @@ export interface Registration {
   volunteer: boolean;
   /** @nullable */
   volunteerRole?: string | null;
+  badgeDeliveryStatus?: RegistrationBadgeDeliveryStatus;
   createdAt: string;
 }
+
+export type RegistrationCreated = Registration & {
+  badgeUploadToken?: string;
+};
 
 export interface RegistrationInput {
   /** @minLength 1 */
@@ -33,6 +46,50 @@ export interface RegistrationInput {
   conferenceYear: number;
   volunteer?: boolean;
   volunteerRole?: string;
+  /** Whether a portrait will be uploaded to create an attendee badge. */
+  wantsAttendeeBadge?: boolean;
+}
+
+export type BadgeUploadInputContentType =
+  (typeof BadgeUploadInputContentType)[keyof typeof BadgeUploadInputContentType];
+
+export const BadgeUploadInputContentType = {
+  "image/jpeg": "image/jpeg",
+  "image/png": "image/png",
+  "image/webp": "image/webp",
+} as const;
+
+export interface BadgeUploadInput {
+  /** @minLength 32 */
+  token: string;
+  /**
+   * @minLength 1
+   * @maxLength 200
+   */
+  name: string;
+  /**
+   * @minimum 1
+   * @maximum 5242880
+   */
+  size: number;
+  contentType: BadgeUploadInputContentType;
+}
+
+export interface BadgeUploadUrl {
+  uploadURL: string;
+  objectPath: string;
+}
+
+export interface BadgeCompleteInput {
+  /** @minLength 32 */
+  token: string;
+  /** @minLength 1 */
+  objectPath: string;
+}
+
+export interface BadgeSkipInput {
+  /** @minLength 32 */
+  token: string;
 }
 
 export interface Testimony {

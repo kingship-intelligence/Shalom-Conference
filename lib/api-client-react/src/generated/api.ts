@@ -17,9 +17,14 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  BadgeCompleteInput,
+  BadgeSkipInput,
+  BadgeUploadInput,
+  BadgeUploadUrl,
   ErrorResponse,
   HealthStatus,
   Registration,
+  RegistrationCreated,
   RegistrationInput,
   Testimony,
   TestimonyInput,
@@ -120,8 +125,8 @@ export const getCreateRegistrationUrl = () => {
 export const createRegistration = async (
   registrationInput: RegistrationInput,
   options?: RequestInit,
-): Promise<Registration> => {
-  return customFetch<Registration>(getCreateRegistrationUrl(), {
+): Promise<RegistrationCreated> => {
+  return customFetch<RegistrationCreated>(getCreateRegistrationUrl(), {
     ...options,
     method: "POST",
     headers: { "Content-Type": "application/json", ...options?.headers },
@@ -270,6 +275,287 @@ export function useListRegistrations<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Request a private attendee photo upload URL
+ */
+export const getRequestRegistrationBadgeUploadUrlUrl = (
+  registrationId: number,
+) => {
+  return `/api/registrations/${registrationId}/badge/upload-url`;
+};
+
+export const requestRegistrationBadgeUploadUrl = async (
+  registrationId: number,
+  badgeUploadInput: BadgeUploadInput,
+  options?: RequestInit,
+): Promise<BadgeUploadUrl> => {
+  return customFetch<BadgeUploadUrl>(
+    getRequestRegistrationBadgeUploadUrlUrl(registrationId),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(badgeUploadInput),
+    },
+  );
+};
+
+export const getRequestRegistrationBadgeUploadUrlMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestRegistrationBadgeUploadUrl>>,
+    TError,
+    { registrationId: number; data: BodyType<BadgeUploadInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof requestRegistrationBadgeUploadUrl>>,
+  TError,
+  { registrationId: number; data: BodyType<BadgeUploadInput> },
+  TContext
+> => {
+  const mutationKey = ["requestRegistrationBadgeUploadUrl"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof requestRegistrationBadgeUploadUrl>>,
+    { registrationId: number; data: BodyType<BadgeUploadInput> }
+  > = (props) => {
+    const { registrationId, data } = props ?? {};
+
+    return requestRegistrationBadgeUploadUrl(
+      registrationId,
+      data,
+      requestOptions,
+    );
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RequestRegistrationBadgeUploadUrlMutationResult = NonNullable<
+  Awaited<ReturnType<typeof requestRegistrationBadgeUploadUrl>>
+>;
+export type RequestRegistrationBadgeUploadUrlMutationBody =
+  BodyType<BadgeUploadInput>;
+export type RequestRegistrationBadgeUploadUrlMutationError =
+  ErrorType<ErrorResponse>;
+
+/**
+ * @summary Request a private attendee photo upload URL
+ */
+export const useRequestRegistrationBadgeUploadUrl = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestRegistrationBadgeUploadUrl>>,
+    TError,
+    { registrationId: number; data: BodyType<BadgeUploadInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof requestRegistrationBadgeUploadUrl>>,
+  TError,
+  { registrationId: number; data: BodyType<BadgeUploadInput> },
+  TContext
+> => {
+  return useMutation(
+    getRequestRegistrationBadgeUploadUrlMutationOptions(options),
+  );
+};
+
+/**
+ * @summary Create and deliver an attendee badge
+ */
+export const getCompleteRegistrationBadgeUrl = (registrationId: number) => {
+  return `/api/registrations/${registrationId}/badge/complete`;
+};
+
+export const completeRegistrationBadge = async (
+  registrationId: number,
+  badgeCompleteInput: BadgeCompleteInput,
+  options?: RequestInit,
+): Promise<Registration> => {
+  return customFetch<Registration>(
+    getCompleteRegistrationBadgeUrl(registrationId),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(badgeCompleteInput),
+    },
+  );
+};
+
+export const getCompleteRegistrationBadgeMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof completeRegistrationBadge>>,
+    TError,
+    { registrationId: number; data: BodyType<BadgeCompleteInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof completeRegistrationBadge>>,
+  TError,
+  { registrationId: number; data: BodyType<BadgeCompleteInput> },
+  TContext
+> => {
+  const mutationKey = ["completeRegistrationBadge"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof completeRegistrationBadge>>,
+    { registrationId: number; data: BodyType<BadgeCompleteInput> }
+  > = (props) => {
+    const { registrationId, data } = props ?? {};
+
+    return completeRegistrationBadge(registrationId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CompleteRegistrationBadgeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof completeRegistrationBadge>>
+>;
+export type CompleteRegistrationBadgeMutationBody =
+  BodyType<BadgeCompleteInput>;
+export type CompleteRegistrationBadgeMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Create and deliver an attendee badge
+ */
+export const useCompleteRegistrationBadge = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof completeRegistrationBadge>>,
+    TError,
+    { registrationId: number; data: BodyType<BadgeCompleteInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof completeRegistrationBadge>>,
+  TError,
+  { registrationId: number; data: BodyType<BadgeCompleteInput> },
+  TContext
+> => {
+  return useMutation(getCompleteRegistrationBadgeMutationOptions(options));
+};
+
+/**
+ * @summary Send the standard confirmation without an attendee badge
+ */
+export const getSkipRegistrationBadgeUrl = (registrationId: number) => {
+  return `/api/registrations/${registrationId}/badge/skip`;
+};
+
+export const skipRegistrationBadge = async (
+  registrationId: number,
+  badgeSkipInput: BadgeSkipInput,
+  options?: RequestInit,
+): Promise<Registration> => {
+  return customFetch<Registration>(
+    getSkipRegistrationBadgeUrl(registrationId),
+    {
+      ...options,
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...options?.headers },
+      body: JSON.stringify(badgeSkipInput),
+    },
+  );
+};
+
+export const getSkipRegistrationBadgeMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof skipRegistrationBadge>>,
+    TError,
+    { registrationId: number; data: BodyType<BadgeSkipInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof skipRegistrationBadge>>,
+  TError,
+  { registrationId: number; data: BodyType<BadgeSkipInput> },
+  TContext
+> => {
+  const mutationKey = ["skipRegistrationBadge"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof skipRegistrationBadge>>,
+    { registrationId: number; data: BodyType<BadgeSkipInput> }
+  > = (props) => {
+    const { registrationId, data } = props ?? {};
+
+    return skipRegistrationBadge(registrationId, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type SkipRegistrationBadgeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof skipRegistrationBadge>>
+>;
+export type SkipRegistrationBadgeMutationBody = BodyType<BadgeSkipInput>;
+export type SkipRegistrationBadgeMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Send the standard confirmation without an attendee badge
+ */
+export const useSkipRegistrationBadge = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof skipRegistrationBadge>>,
+    TError,
+    { registrationId: number; data: BodyType<BadgeSkipInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof skipRegistrationBadge>>,
+  TError,
+  { registrationId: number; data: BodyType<BadgeSkipInput> },
+  TContext
+> => {
+  return useMutation(getSkipRegistrationBadgeMutationOptions(options));
+};
 
 /**
  * @summary Submit a testimony
