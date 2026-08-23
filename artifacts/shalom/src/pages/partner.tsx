@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, ArrowUpRight, HandHeart, HeartHandshake, Megaphone, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, HandHeart, HeartHandshake, Mail, Megaphone, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
@@ -24,6 +24,7 @@ const partnerPaths = [
 ];
 
 const CASH_APP_URL = "https://cash.app/$HGAReveille";
+const FINANCE_EMAIL = "finance@shalomconference.com";
 
 export default function Partner() {
   return (
@@ -128,7 +129,54 @@ export default function Partner() {
                       Give via Cash App <ArrowUpRight className="h-5 w-5" />
                     </a>
                   </Button>
+                  <div className="mt-8 border-t border-primary/20 pt-6">
+                    <div className="flex items-start gap-3 text-left">
+                      <Mail className="mt-1 h-5 w-5 shrink-0 text-primary" />
+                      <div>
+                        <h4 className="font-bold uppercase tracking-wide text-white">
+                          Need a receipt or payment confirmation?
+                        </h4>
+                        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+                          Email{" "}
+                          <a
+                            href={`mailto:${FINANCE_EMAIL}?subject=Donation%20receipt%20request`}
+                            className="font-semibold text-primary underline decoration-primary/40 underline-offset-4 hover:text-white"
+                          >
+                            {FINANCE_EMAIL}
+                          </a>{" "}
+                          after giving. To help us find the gift, share only the
+                          donation date, amount, Cash App name or transaction
+                          reference, and whether it was personal or organizational.
+                          Please do not send bank details, passwords, or other
+                          sensitive payment information.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
+              <div className="mt-8 rounded-2xl border border-white/10 bg-card/60 p-6 text-left sm:p-8">
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
+                  Finance Follow-Up
+                </p>
+                <h3 className="text-2xl font-black uppercase tracking-tight text-white">
+                  Sponsorships &amp; larger gifts
+                </h3>
+                <p className="mt-3 text-base leading-relaxed text-muted-foreground">
+                  For sponsorship questions, matching gifts, or a larger
+                  contribution, email the finance team before or after giving.
+                  Finance will confirm the gift, clarify any receipt or
+                  payment-confirmation needs, and follow up directly about
+                  sponsorship details. Please send donor information only when it
+                  is needed for that follow-up.
+                </p>
+                <a
+                  href={`mailto:${FINANCE_EMAIL}?subject=Sponsorship%20or%20donation%20question`}
+                  className="mt-5 inline-flex items-center gap-2 font-bold uppercase tracking-wider text-primary hover:text-white"
+                >
+                  Email finance <ArrowRight className="h-4 w-4" />
+                </a>
+              </div>
 
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
                 <Button asChild size="lg" className="w-full max-w-xs rounded-none uppercase tracking-wider sm:w-auto">
