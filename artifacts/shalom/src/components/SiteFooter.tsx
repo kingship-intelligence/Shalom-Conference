@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Mail, MessageSquare } from "lucide-react";
+import { ExternalLink, Mail, MessageSquare } from "lucide-react";
 import { SiInstagram } from "react-icons/si";
 import shalomLogo from "@assets/logo_1778697155106.png";
 
@@ -29,11 +29,21 @@ export default function SiteFooter() {
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Giving</p>
             <a
-              href="mailto:finance@shalomconference.com"
+              href="https://cash.app/$HGAReveille"
+              target="_blank"
+              rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
+              aria-label="Give via Cash App to HGA Reveille"
             >
-              <Mail className="h-4 w-4 shrink-0 text-primary" />
-              finance@shalomconference.com
+              <ExternalLink className="h-4 w-4 shrink-0 text-primary" />
+              Cash App: $HGAReveille
+            </a>
+            <a
+              href="mailto:finance@shalomconference.com"
+              className="mt-2 flex items-center justify-center gap-2 text-gray-500 hover:text-white transition-colors text-xs"
+            >
+              <Mail className="h-3.5 w-3.5 shrink-0 text-primary" />
+              Contact finance
             </a>
           </div>
           <div>
