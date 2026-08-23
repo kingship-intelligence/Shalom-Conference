@@ -1,18 +1,11 @@
 import { Link } from "wouter";
-import {
-  motion,
-  useMotionValueEvent,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-} from "framer-motion";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, CalendarDays, Mail, MapPin, MessageSquare } from "lucide-react";
+import { ArrowRight, Mail, MessageSquare } from "lucide-react";
 import { SiInstagram } from "react-icons/si";
 import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
 import shalomLogo from "@assets/logo_1778697155106.png";
-import { useRef } from "react";
 
 const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
   <motion.div
@@ -26,135 +19,67 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
   </motion.div>
 );
 
-function ScrollHero() {
-  const heroRef = useRef<HTMLElement>(null);
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const prefersReducedMotion = useReducedMotion();
-  const { scrollYProgress } = useScroll({
-    target: heroRef,
-    offset: ["start start", "end end"],
-  });
-
-  useMotionValueEvent(scrollYProgress, "change", (progress) => {
-    const video = videoRef.current;
-    if (!video || prefersReducedMotion || !Number.isFinite(video.duration) || video.duration <= 0) {
-      return;
-    }
-
-    try {
-      video.currentTime = progress * Math.max(video.duration - 0.05, 0);
-    } catch {
-      // Some mobile browsers prevent seeking until the video has buffered.
-    }
-  });
-
-  const introOpacity = useTransform(scrollYProgress, [0, 0.16, 0.34], [1, 1, 0]);
-  const introY = useTransform(scrollYProgress, [0, 0.34], [0, -72]);
-  const storyOpacity = useTransform(scrollYProgress, [0.22, 0.4, 0.68, 0.84], [0, 1, 1, 0]);
-  const storyY = useTransform(scrollYProgress, [0.22, 0.4, 0.84], [48, 0, -24]);
-  const registerOpacity = useTransform(scrollYProgress, [0.62, 0.78, 1], [0, 1, 1]);
-  const registerY = useTransform(scrollYProgress, [0.62, 0.78], [34, 0]);
-
-  return (
-    <section ref={heroRef} className="relative h-[220vh] bg-black">
-      <div className="sticky top-0 h-screen overflow-hidden">
-        <video
-          ref={videoRef}
-          className="absolute inset-0 h-full w-full object-cover"
-          src="/videos/hero-video.mp4"
-          poster="/images/home/shalom-hero-worship-hd.png"
-          muted
-          playsInline
-          autoPlay={!prefersReducedMotion}
-          loop={!prefersReducedMotion}
-          aria-hidden="true"
-        />
-
-        <div className="absolute inset-0 bg-black/35" />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/15 to-black/80" />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/35 via-transparent to-primary/10" />
-
-        <div className="relative z-10 flex h-full items-center justify-center px-6 text-white">
-          <motion.div
-            style={{ opacity: introOpacity, y: introY }}
-            className="absolute inset-x-6 top-[18%] mx-auto max-w-4xl text-center"
-          >
-            <p className="mb-5 text-xs font-bold uppercase tracking-[0.45em] text-primary sm:text-sm">
-              Shalom Conference
-            </p>
-            <h1
-              className="text-[clamp(4rem,13vw,10rem)] font-bold uppercase leading-[0.78] tracking-[0.02em] text-white"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              {currentConference.year}
-              <span className="block text-primary">{currentConference.theme}</span>
-            </h1>
-            <p className="mx-auto mt-8 max-w-xl text-base font-medium leading-relaxed text-white/75 sm:text-xl">
-              A place to gather, worship, and encounter the presence of God.
-            </p>
-          </motion.div>
-
-          <motion.div
-            style={{ opacity: storyOpacity, y: storyY }}
-            className="absolute inset-x-6 bottom-[18%] mx-auto max-w-xl text-center"
-          >
-            <p className="mb-4 text-sm font-bold uppercase tracking-[0.35em] text-primary">
-              Come expecting
-            </p>
-            <p className="text-3xl font-bold leading-tight sm:text-5xl">
-              Undistracted worship.
-              <br />
-              Spiritual renewal.
-            </p>
-          </motion.div>
-
-          <motion.div
-            style={{ opacity: registerOpacity, y: registerY }}
-            className="absolute inset-x-6 bottom-[10%] mx-auto max-w-3xl text-center"
-          >
-            <div className="mb-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-bold uppercase tracking-[0.2em] text-white/75 sm:text-sm">
-              <span className="inline-flex items-center gap-2">
-                <CalendarDays className="h-4 w-4 text-primary" />
-                {currentConference.date}
-              </span>
-              <span className="inline-flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-primary" />
-                Baltimore, MD
-              </span>
-            </div>
-            <Button
-              asChild
-              size="lg"
-              className="h-14 rounded-full bg-primary px-10 text-base font-bold uppercase tracking-[0.2em] text-white shadow-[0_0_45px_rgba(255,85,35,0.45)] hover:bg-primary/90"
-              data-testid="button-register-hero"
-            >
-              <Link href="/register">
-                Register <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </motion.div>
-        </div>
-
-        <div className="absolute bottom-8 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-3 text-[10px] font-bold uppercase tracking-[0.35em] text-white/60">
-          <span>Scroll to enter</span>
-          <div className="h-12 w-px overflow-hidden bg-white/25">
-            <motion.div
-              className="h-full w-full origin-top bg-primary"
-              style={{ scaleY: scrollYProgress }}
-            />
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 export default function Home() {
   return (
     <div className="min-h-screen text-gray-900 bg-white">
       <SiteHeader />
 
-      <ScrollHero />
+      {/* HERO — centered text + image pair */}
+      <section className="bg-white px-6 py-16 sm:px-6 lg:py-24">
+        <div className="container mx-auto flex max-w-5xl flex-col items-center justify-center gap-12 lg:flex-row lg:gap-16">
+          {/* Text */}
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="flex max-w-lg flex-col items-center text-center"
+          >
+            <h1
+              className="mb-6 text-[3.25rem] font-bold uppercase leading-[0.88] tracking-wide text-gray-900 sm:text-6xl lg:text-[4.5rem] xl:text-[5.5rem] italic"
+              style={{ fontFamily: "var(--font-display)" }}
+            >
+              {currentConference.year}: {currentConference.theme}
+            </h1>
+            <p className="mb-8 text-lg font-medium leading-relaxed text-gray-500 max-w-md">
+              A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
+            </p>
+            <div className="flex flex-wrap justify-center gap-3">
+              <Button
+                asChild
+                size="lg"
+                className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md"
+                data-testid="button-register-hero"
+              >
+                <Link href="/register">
+                  Register <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
+              </Button>
+              <Button
+                asChild
+                variant="outline"
+                size="lg"
+                className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
+              >
+                <Link href="/2026">Learn More</Link>
+              </Button>
+            </div>
+          </motion.div>
+
+          {/* Floating image card */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.96 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, delay: 0.15 }}
+            className="relative w-full max-w-sm shrink-0 overflow-hidden rounded-3xl shadow-2xl ring-1 ring-black/5"
+          >
+            <img
+              src="/images/home/shalom-hero-new.jpg"
+              alt="Shalom worship gathering"
+              className="aspect-[4/5] h-full w-full object-cover"
+            />
+          </motion.div>
+        </div>
+      </section>
 
       {/* CTA — solid orange */}
       <section className="bg-primary px-4 py-28 sm:px-6">
