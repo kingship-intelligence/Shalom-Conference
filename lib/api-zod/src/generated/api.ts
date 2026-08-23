@@ -27,6 +27,12 @@ export const CreateRegistrationBody = zod.object({
   conferenceYear: zod.number(),
   volunteer: zod.boolean().optional(),
   volunteerRole: zod.string().optional(),
+  wantsAttendeeBadge: zod
+    .boolean()
+    .optional()
+    .describe(
+      "Whether a portrait will be uploaded to create an attendee badge.",
+    ),
 });
 
 /**
@@ -41,11 +47,90 @@ export const ListRegistrationsResponseItem = zod.object({
   conferenceYear: zod.number(),
   volunteer: zod.boolean(),
   volunteerRole: zod.string().nullish(),
+  badgeDeliveryStatus: zod.enum(["delivered", "fallback"]).optional(),
   createdAt: zod.coerce.date(),
 });
 export const ListRegistrationsResponse = zod.array(
   ListRegistrationsResponseItem,
 );
+
+/**
+ * @summary Request a private attendee photo upload URL
+ */
+export const RequestRegistrationBadgeUploadUrlParams = zod.object({
+  registrationId: zod.coerce.number(),
+});
+
+export const requestRegistrationBadgeUploadUrlBodyTokenMin = 32;
+
+export const requestRegistrationBadgeUploadUrlBodyNameMax = 200;
+
+export const requestRegistrationBadgeUploadUrlBodySizeMax = 5242880;
+
+export const RequestRegistrationBadgeUploadUrlBody = zod.object({
+  token: zod.string().min(requestRegistrationBadgeUploadUrlBodyTokenMin),
+  name: zod.string().min(1).max(requestRegistrationBadgeUploadUrlBodyNameMax),
+  size: zod.number().min(1).max(requestRegistrationBadgeUploadUrlBodySizeMax),
+  contentType: zod.enum(["image/jpeg", "image/png", "image/webp"]),
+});
+
+export const RequestRegistrationBadgeUploadUrlResponse = zod.object({
+  uploadURL: zod.string().url(),
+  objectPath: zod.string(),
+});
+
+/**
+ * @summary Create and deliver an attendee badge
+ */
+export const CompleteRegistrationBadgeParams = zod.object({
+  registrationId: zod.coerce.number(),
+});
+
+export const completeRegistrationBadgeBodyTokenMin = 32;
+
+export const CompleteRegistrationBadgeBody = zod.object({
+  token: zod.string().min(completeRegistrationBadgeBodyTokenMin),
+  objectPath: zod.string().min(1),
+});
+
+export const CompleteRegistrationBadgeResponse = zod.object({
+  id: zod.number(),
+  firstName: zod.string(),
+  lastName: zod.string(),
+  email: zod.string(),
+  phone: zod.string().nullish(),
+  conferenceYear: zod.number(),
+  volunteer: zod.boolean(),
+  volunteerRole: zod.string().nullish(),
+  badgeDeliveryStatus: zod.enum(["delivered", "fallback"]).optional(),
+  createdAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Send the standard confirmation without an attendee badge
+ */
+export const SkipRegistrationBadgeParams = zod.object({
+  registrationId: zod.coerce.number(),
+});
+
+export const skipRegistrationBadgeBodyTokenMin = 32;
+
+export const SkipRegistrationBadgeBody = zod.object({
+  token: zod.string().min(skipRegistrationBadgeBodyTokenMin),
+});
+
+export const SkipRegistrationBadgeResponse = zod.object({
+  id: zod.number(),
+  firstName: zod.string(),
+  lastName: zod.string(),
+  email: zod.string(),
+  phone: zod.string().nullish(),
+  conferenceYear: zod.number(),
+  volunteer: zod.boolean(),
+  volunteerRole: zod.string().nullish(),
+  badgeDeliveryStatus: zod.enum(["delivered", "fallback"]).optional(),
+  createdAt: zod.coerce.date(),
+});
 
 /**
  * @summary Submit a testimony

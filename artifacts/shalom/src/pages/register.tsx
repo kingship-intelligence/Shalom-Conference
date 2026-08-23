@@ -1,11 +1,16 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
-import { ArrowLeft, ArrowRight, CheckCircle2, Calendar, MapPin, Sparkles } from "lucide-react";
-import { useCreateRegistration } from "@workspace/api-client-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowRight, CheckCircle2, Calendar, MapPin, Sparkles, Upload, X } from "lucide-react";
+import {
+  useCreateRegistration,
+  useRequestRegistrationBadgeUploadUrl,
+  useCompleteRegistrationBadge,
+  useSkipRegistrationBadge
+} from "@workspace/api-client-react";
 import shalomLogo from "@assets/logo_1778697155106.png";
 import { Button } from "@/components/ui/button";
 import SiteHeader from "@/components/SiteHeader";
@@ -19,7 +24,6 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-
 import { Checkbox } from "@/components/ui/checkbox";
 
 const VOLUNTEER_ROLES = [
@@ -42,17 +46,172 @@ const registrationSchema = z.object({
   conferenceYear: z.number().default(2026),
   volunteer: z.boolean().default(false),
   volunteerRole: z.string().optional(),
+  wantsAttendeeBadge: z.boolean().default(false),
+  portraitFile: z.any().optional(),
 }).refine(
   (d) => !d.volunteer || !!d.volunteerRole,
   { message: "Please select a volunteer role", path: ["volunteerRole"] }
+).refine(
+  (d) => {
+    if (d.wantsAttendeeBadge && !d.portraitFile) return false;
+    return true;
+  },
+  { message: "Please select a portrait photo for your badge", path: ["portraitFile"] }
+).refine(
+  (d) => {
+    if (d.wantsAttendeeBadge && d.portraitFile) {
+      const file = d.portraitFile as File;
+      if (file.size > 5 * 1024 * 1024) return false;
+    }
+    return true;
+  },
+  { message: "Photo must be less than 5MB", path: ["portraitFile"] }
+).refine(
+  (d) => {
+    if (d.wantsAttendeeBadge && d.portraitFile) {
+      const file = d.portraitFile as File;
+      if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) return false;
+    }
+    return true;
+  },
+  { message: "Photo must be JPG, PNG, or WebP", path: ["portraitFile"] }
 );
 
 type RegistrationInput = z.infer<typeof registrationSchema>;
+type SubmitStage = "idle" | "registering" | "preparing" | "uploading" | "finishing";
+
+const STAGE_MESSAGES: Record<SubmitStage, string> = {
+  idle: "Confirm Registration",
+  registering: "Securing your spot...",
+  preparing: "Preparing badge...",
+  uploading: "Uploading photo...",
+  finishing: "Finalizing details...",
+};
+
+function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File) => void }) {
+  const [preview, setPreview] = useState<string | null>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+
+  useEffect(() => {
+    if (value) {
+      const url = URL.createObjectURL(value);
+      setPreview(url);
+      return () => URL.revokeObjectURL(url);
+    }
+    setPreview(null);
+    return undefined;
+  }, [value]);
+
+  const handleFile = (file?: File) => {
+    if (file) {
+      onChange(file);
+    }
+  };
+
+  return (
+    <div
+      className={`group relative w-full rounded-2xl border-2 border-dashed transition-all p-8 text-center flex flex-col items-center justify-center min-h-[240px] overflow-hidden ${
+        isDragging
+          ? "border-primary bg-primary/10"
+          : value
+          ? "border-white/20 bg-white/5"
+          : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
+      }`}
+      onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+      onDragLeave={() => setIsDragging(false)}
+      onDrop={(e) => {
+        e.preventDefault();
+        setIsDragging(false);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+          handleFile(e.dataTransfer.files[0]);
+        }
+      }}
+    >
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={(e) => {
+          if (e.target.files && e.target.files[0]) {
+            handleFile(e.target.files[0]);
+          }
+        }}
+        aria-label="Upload portrait photo"
+      />
+
+      <AnimatePresence mode="wait">
+        {preview ? (
+          <motion.div
+            key="preview"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.9 }}
+            className="flex flex-col items-center gap-5 w-full relative z-10"
+          >
+            <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-primary shadow-[0_0_30px_rgba(234,88,12,0.3)]">
+              <img src={preview} alt="Portrait preview" className="w-full h-full object-cover" />
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onChange(undefined);
+                }}
+                className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+                aria-label="Remove photo"
+              >
+                <X className="w-8 h-8 text-white" />
+              </button>
+            </div>
+            <div className="space-y-3 w-full">
+              <div className="text-sm font-bold text-white/90 truncate px-4 max-w-xs mx-auto">
+                {value?.name}
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => inputRef.current?.click()}
+                className="rounded-full bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white h-10 px-6"
+              >
+                Change Photo
+              </Button>
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            key="upload"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="flex flex-col items-center gap-4 cursor-pointer w-full h-full justify-center relative z-10"
+            onClick={() => inputRef.current?.click()}
+          >
+            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Upload className="w-8 h-8 text-primary" />
+            </div>
+            <div className="space-y-2">
+              <p className="text-white font-bold text-lg">Click to upload or drag and drop</p>
+              <p className="text-white/50 text-sm">JPG, PNG, WebP (Max 5MB)</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}
 
 export default function Register() {
   const [isSuccess, setIsSuccess] = useState(false);
+  const [badgeDelivered, setBadgeDelivered] = useState(false);
+  const [submitStage, setSubmitStage] = useState<SubmitStage>("idle");
+
   const { toast } = useToast();
+
   const createRegistration = useCreateRegistration();
+  const requestUploadUrl = useRequestRegistrationBadgeUploadUrl();
+  const completeBadge = useCompleteRegistrationBadge();
+  const skipBadge = useSkipRegistrationBadge();
 
   const form = useForm<RegistrationInput>({
     resolver: zodResolver(registrationSchema),
@@ -64,35 +223,103 @@ export default function Register() {
       conferenceYear: 2026,
       volunteer: false,
       volunteerRole: "",
+      wantsAttendeeBadge: false,
+      portraitFile: undefined,
     },
   });
 
   const isVolunteer = form.watch("volunteer");
+  const wantsBadge = form.watch("wantsAttendeeBadge");
+  const isLoading = submitStage !== "idle";
 
-  const onSubmit = (data: RegistrationInput) => {
-    createRegistration.mutate(
-      { data },
-      {
-        onSuccess: () => {
-          setIsSuccess(true);
-        },
-        onError: (error: any) => {
-          if (error.status === 409) {
-            toast({
-              title: "Already Registered",
-              description: "This email is already registered for Shalom 2026.",
-              variant: "destructive",
-            });
-          } else {
-            toast({
-              title: "Registration Failed",
-              description: error.data?.error || "Something went wrong. Please try again.",
-              variant: "destructive",
-            });
+  const onSubmit = async (data: RegistrationInput) => {
+    try {
+      setSubmitStage("registering");
+
+      const regData = {
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone || undefined,
+        conferenceYear: data.conferenceYear,
+        volunteer: data.volunteer,
+        volunteerRole: data.volunteerRole || undefined,
+        wantsAttendeeBadge: data.wantsAttendeeBadge,
+      };
+
+      const created = await createRegistration.mutateAsync({ data: regData });
+
+      let delivered = false;
+
+      if (data.wantsAttendeeBadge && data.portraitFile && created.badgeUploadToken) {
+        const file = data.portraitFile as File;
+        try {
+          setSubmitStage("preparing");
+          const uploadUrlRes = await requestUploadUrl.mutateAsync({
+            registrationId: created.id,
+            data: {
+              token: created.badgeUploadToken,
+              name: file.name,
+              size: file.size,
+              contentType: file.type as "image/jpeg" | "image/png" | "image/webp",
+            },
+          });
+
+          setSubmitStage("uploading");
+          const putRes = await fetch(uploadUrlRes.uploadURL, {
+            method: "PUT",
+            headers: {
+              "Content-Type": file.type,
+            },
+            body: file,
+          });
+
+          if (!putRes.ok) {
+            throw new Error(`Upload failed with status: ${putRes.status}`);
           }
-        },
+
+          setSubmitStage("finishing");
+          const completion = await completeBadge.mutateAsync({
+            registrationId: created.id,
+            data: {
+              token: created.badgeUploadToken,
+              objectPath: uploadUrlRes.objectPath,
+            },
+          });
+          delivered = completion.badgeDeliveryStatus === "delivered";
+        } catch (err: any) {
+          await skipBadge.mutateAsync({
+            registrationId: created.id,
+            data: {
+              token: created.badgeUploadToken,
+            },
+          });
+          toast({
+            title: "Badge Generation Failed",
+            description: "We registered you successfully, but there was an issue generating your badge. Your standard confirmation email has been sent.",
+            variant: "destructive",
+          });
+        }
       }
-    );
+
+      setBadgeDelivered(delivered);
+      setIsSuccess(true);
+    } catch (error: any) {
+      setSubmitStage("idle");
+      if (error.status === 409) {
+        toast({
+          title: "Already Registered",
+          description: "This email is already registered for Shalom 2026.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Registration Failed",
+          description: error.data?.error || error.message || "Something went wrong. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
   };
 
   if (isSuccess) {
@@ -101,14 +328,17 @@ export default function Register() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full text-center space-y-8 p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl"
+          className="max-w-md w-full text-center space-y-8 p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl relative overflow-hidden"
         >
-          <div className="flex justify-center">
-            <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center text-primary">
-              <CheckCircle2 className="h-12 w-12" />
+          {badgeDelivered && (
+            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-primary/20 rounded-full blur-[50px] pointer-events-none" />
+          )}
+          <div className="flex justify-center relative z-10">
+            <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center text-primary shadow-[0_0_30px_rgba(234,88,12,0.3)]">
+              <CheckCircle2 className="h-10 w-10" />
             </div>
           </div>
-          <div className="space-y-4">
+          <div className="space-y-4 relative z-10">
             <h1
               className="text-4xl font-bold italic text-white"
               style={{ fontFamily: "var(--font-display)" }}
@@ -118,8 +348,20 @@ export default function Register() {
             <p className="text-white/70 text-lg">
               Your registration for Shalom 2026 is confirmed. We can't wait to worship with you.
             </p>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+              className="p-4 rounded-2xl bg-white/5 border border-white/10 mt-6"
+            >
+              <p className="text-white/90 text-sm font-medium">
+                {badgeDelivered
+                  ? "Your confirmation email with your personalized badge attached has been sent."
+                  : "Your confirmation email has been sent."}
+              </p>
+            </motion.div>
           </div>
-          <Button asChild className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none">
+          <Button asChild className="w-full h-14 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-bold uppercase tracking-widest border-none hover:shadow-[0_0_30px_rgba(234,88,12,0.4)] transition-all">
             <Link href="/">Back to Home</Link>
           </Button>
         </motion.div>
@@ -334,19 +576,95 @@ export default function Register() {
                 />
               )}
 
+              <FormField
+                control={form.control}
+                name="wantsAttendeeBadge"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          if (!checked) form.setValue("portraitFile", undefined);
+                        }}
+                        className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        data-testid="checkbox-badge"
+                      />
+                    </FormControl>
+                    <div className="space-y-1">
+                      <FormLabel className="text-white font-bold text-base cursor-pointer">
+                        I want a personalized "I'm Attending" badge
+                      </FormLabel>
+                      <p className="text-white/50 text-sm">
+                        Receive a custom digital badge with your portrait to share with friends.
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <AnimatePresence>
+                {wantsBadge && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="pt-2 pb-2">
+                      <FormField
+                        control={form.control}
+                        name="portraitFile"
+                        render={({ field: { value, onChange } }) => (
+                          <FormItem>
+                            <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
+                              Portrait Photo
+                            </FormLabel>
+                            <FormControl>
+                              <PortraitUpload value={value} onChange={onChange} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
               <Button
                 type="submit"
-                disabled={createRegistration.isPending}
-                className="w-full h-16 rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4"
+                disabled={isLoading}
+                className="w-full h-16 rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4 relative overflow-hidden"
                 data-testid="button-submit"
               >
-                {createRegistration.isPending ? (
-                  "Registering..."
-                ) : (
-                  <>
-                    Confirm Registration <ArrowRight className="ml-2 h-6 w-6" />
-                  </>
-                )}
+                <AnimatePresence mode="wait">
+                  {isLoading ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="flex items-center gap-3 absolute inset-0 justify-center"
+                    >
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span className="text-lg">{STAGE_MESSAGES[submitStage]}</span>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="idle"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="flex items-center gap-2 absolute inset-0 justify-center"
+                    >
+                      Confirm Registration <ArrowRight className="h-6 w-6" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                {/* Invisible placeholder to keep the height structure */}
+                <div className="opacity-0 flex items-center gap-2">Confirm Registration <ArrowRight className="h-6 w-6" /></div>
               </Button>
             </form>
           </Form>

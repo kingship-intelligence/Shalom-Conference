@@ -6,9 +6,16 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./badgeCompleteInput";
+export * from "./badgeSkipInput";
+export * from "./badgeUploadInput";
+export * from "./badgeUploadInputContentType";
+export * from "./badgeUploadUrl";
 export * from "./errorResponse";
 export * from "./healthStatus";
 export * from "./registration";
+export * from "./registrationBadgeDeliveryStatus";
+export * from "./registrationCreated";
 export * from "./registrationInput";
 export * from "./testimony";
 export * from "./testimonyInput";

@@ -11,6 +11,10 @@ export const registrationsTable = pgTable("registrations", {
   conferenceYear: integer("conference_year").notNull().default(2026),
   volunteer: boolean("volunteer").notNull().default(false),
   volunteerRole: text("volunteer_role"),
+  badgePhotoObjectPath: text("badge_photo_object_path"),
+  badgeUploadTokenHash: text("badge_upload_token_hash"),
+  badgeUploadExpiresAt: timestamp("badge_upload_expires_at", { withTimezone: true }),
+  badgeSentAt: timestamp("badge_sent_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

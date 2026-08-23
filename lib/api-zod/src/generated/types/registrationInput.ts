@@ -16,4 +16,6 @@ export interface RegistrationInput {
   conferenceYear: number;
   volunteer?: boolean;
   volunteerRole?: string;
+  /** Whether a portrait will be uploaded to create an attendee badge. */
+  wantsAttendeeBadge?: boolean;
 }
