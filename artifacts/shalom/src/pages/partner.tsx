@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, HandHeart, HeartHandshake, Megaphone, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, HandHeart, HeartHandshake, Megaphone, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
@@ -22,6 +22,8 @@ const partnerPaths = [
     text: "Invite your church, youth group, campus ministry, and community into what God is doing through Shalom.",
   },
 ];
+
+const CASH_APP_URL = "https://cash.app/$HGAReveille";
 
 export default function Partner() {
   return (
@@ -93,6 +95,40 @@ export default function Partner() {
                   promote Shalom 2026, start the conversation with our team.
                 </p>
               </div>
+
+                <div className="mt-10 rounded-2xl border border-primary/30 bg-primary/10 p-6 sm:p-8">
+                  <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
+                    <div>
+                      <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
+                        Support The Gathering
+                      </p>
+                      <h3 className="text-2xl font-black uppercase tracking-tight text-white">
+                        Give via Cash App
+                      </h3>
+                      <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground">
+                        Help make Shalom possible through a one-time gift. Use
+                        the button or search this handle directly in Cash App.
+                      </p>
+                    </div>
+                    <p className="shrink-0 rounded-full border border-primary/40 bg-background/70 px-4 py-2 font-mono text-base font-bold text-white">
+                      $HGAReveille
+                    </p>
+                  </div>
+                  <Button
+                    asChild
+                    size="lg"
+                    className="mt-6 w-full rounded-none bg-primary uppercase tracking-wider text-primary-foreground hover:bg-primary/90 sm:w-auto"
+                  >
+                    <a
+                      href={CASH_APP_URL}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label="Give via Cash App to HGA Reveille"
+                    >
+                      Give via Cash App <ArrowUpRight className="h-5 w-5" />
+                    </a>
+                  </Button>
+                </div>
 
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
                 <Button asChild size="lg" className="w-full max-w-xs rounded-none uppercase tracking-wider sm:w-auto">
