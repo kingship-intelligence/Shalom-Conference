@@ -339,7 +339,7 @@ components:
       required: [productName, size, quantity]
       properties:
         productName: { type: string, minLength: 1 }
-        size: { type: string, enum: [S, M, L, XL] }
+        size: { type: string, enum: [S, M, L, XL, XXL] }
         quantity: { type: integer, minimum: 1 }
     MerchOrder:
       type: object
