@@ -1,1 +1,2 @@
 - [API test runner](api-test-runner.md) — API package tests use the workspace catalog TypeScript runner as a package-local dev dependency.
+- [Merch payment confirmation](merch-payment-confirmation.md) — Cash App orders are received first, then manually verified; never claim payment is confirmed on submission.

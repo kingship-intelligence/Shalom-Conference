@@ -2,7 +2,8 @@ import { Router, type IRouter } from "express";
 import { desc } from "drizzle-orm";
 import { db, merchOrdersTable } from "@workspace/db";
 import { CreateMerchOrderBody, ListMerchOrdersResponse } from "@workspace/api-zod";
-import { sendMerchOrderReceived } from "../lib/email";
+import { sendMerchOrderNotification, sendMerchOrderReceived } from "../lib/email";
+import { hasAdminSession } from "../lib/admin-session";
 
 const router: IRouter = Router();
 
@@ -22,7 +23,14 @@ router.post("/merch-orders", async (req, res): Promise<void> => {
     })
     .returning();
 
-  sendMerchOrderReceived(order).catch((err: unknown) => {
+  const emailOrder = {
+    ...order,
+    items: parsed.data.items,
+  };
+  Promise.all([
+    sendMerchOrderReceived(emailOrder),
+    sendMerchOrderNotification(emailOrder),
+  ]).catch((err: unknown) => {
     req.log.error({ err, orderId: order.id }, "Failed to send merch order confirmation");
   });
 
@@ -39,7 +47,11 @@ router.post("/merch-orders", async (req, res): Promise<void> => {
   });
 });
 
-router.get("/merch-orders", async (_req, res): Promise<void> => {
+router.get("/merch-orders", async (req, res): Promise<void> => {
+  if (!hasAdminSession(req)) {
+    res.status(401).json({ error: "Admin sign-in is required." });
+    return;
+  }
   const orders = await db
     .select()
     .from(merchOrdersTable)

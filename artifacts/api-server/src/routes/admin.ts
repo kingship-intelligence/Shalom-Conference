@@ -1,4 +1,5 @@
 import { Router, type IRouter } from "express";
+import { establishAdminSession } from "../lib/admin-session";
 
 const router: IRouter = Router();
 
@@ -15,6 +16,11 @@ router.post("/admin/login", (req, res): void => {
   }
 
   if (username === expectedUsername && password === expectedPassword) {
+    if (!establishAdminSession(res)) {
+      req.log.error("Session secret not configured");
+      res.status(500).json({ error: "Server misconfiguration" });
+      return;
+    }
     res.json({ ok: true });
     return;
   }

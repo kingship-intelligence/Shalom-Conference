@@ -3,6 +3,7 @@
 import { ReplitConnectors } from "@replit/connectors-sdk";
 
 const FROM = "Shalom Conference <media@shalomconference.com>";
+const FINANCE_EMAIL = "finance@shalomconference.com";
 
 function getSiteUrl(): string {
   return process.env.SITE_URL ?? "https://shalomconference.com";
@@ -289,6 +290,55 @@ export async function sendMerchOrderReceived(opts: {
   const raw = buildRawMessage({
     to: opts.email,
     subject: `Shalom merch preorder received (#${opts.id})`,
+    html,
+  });
+  const response = await connectors.proxy("google-mail", "/gmail/v1/users/me/messages/send", {
+    method: "POST",
+    body: JSON.stringify({ raw }),
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Gmail API error ${response.status}: ${text}`);
+  }
+}
+
+export async function sendMerchOrderNotification(opts: {
+  id: number;
+  name: string;
+  email: string;
+  phone?: string | null;
+  paymentReference: string;
+  items: MerchOrderEmailItem[];
+  total: number;
+}): Promise<void> {
+  const itemLines = opts.items
+    .map((item) => `${item.quantity} × ${item.productName} (${item.size})`)
+    .join("<br />");
+  const html = `<!DOCTYPE html>
+<html lang="en"><body style="margin:0;padding:32px 16px;background:#0d0d0d;font-family:Arial,sans-serif;color:#fff;">
+  <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+    <table width="580" style="max-width:580px;width:100%;background:#141414;border-radius:16px;overflow:hidden;">
+      <tr><td style="padding:28px 32px;background:#1a0a00;border-bottom:2px solid #f97316;">
+        <p style="margin:0;color:#f97316;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;">Shalom Merch</p>
+        <h1 style="margin:8px 0 0;font-size:26px;color:#fff;">New preorder #${opts.id}</h1>
+      </td></tr>
+      <tr><td style="padding:32px;color:#c0c0c0;line-height:1.7;">
+        <p style="margin:0 0 12px;"><strong style="color:#fff;">Customer:</strong> ${escapeHtml(opts.name)}<br />
+        <strong style="color:#fff;">Email:</strong> ${escapeHtml(opts.email)}${opts.phone ? `<br /><strong style="color:#fff;">Phone:</strong> ${escapeHtml(opts.phone)}` : ""}</p>
+        <p style="margin:20px 0 8px;color:#f97316;font-weight:700;text-transform:uppercase;letter-spacing:1px;">Items</p>
+        <p style="margin:0;">${itemLines}</p>
+        <p style="margin:20px 0 0;"><strong style="color:#fff;">Total:</strong> $${opts.total.toFixed(2)}<br />
+        <strong style="color:#fff;">Cash App reference:</strong> ${escapeHtml(opts.paymentReference)}</p>
+        <p style="margin:20px 0 0;color:#a0a0a0;font-size:13px;">Review this payment in Cash App, then confirm the order with the customer.</p>
+      </td></tr>
+    </table>
+  </td></tr></table>
+</body></html>`;
+
+  const connectors = new ReplitConnectors();
+  const raw = buildRawMessage({
+    to: FINANCE_EMAIL,
+    subject: `New Shalom merch preorder (#${opts.id})`,
     html,
   });
   const response = await connectors.proxy("google-mail", "/gmail/v1/users/me/messages/send", {

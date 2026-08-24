@@ -1,8 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Minus, Plus, ShoppingBag, Trash2, X } from "lucide-react";
+import { useCreateMerchOrder } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import { useToast } from "@/hooks/use-toast";
 import logoTeeImage from "@assets/image_1787592025167.png";
 import comforterFrontImage from "@assets/image_1787592052575.png";
 import comforterBackImage from "@assets/image_1787592065294.png";
@@ -68,6 +71,15 @@ export default function Shop() {
     "comforter-tee": 0,
   });
   const [cartOpen, setCartOpen] = useState(false);
+  const [submittedOrderId, setSubmittedOrderId] = useState<number | null>(null);
+  const [orderDetails, setOrderDetails] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    paymentReference: "",
+  });
+  const { toast } = useToast();
+  const createMerchOrder = useCreateMerchOrder();
 
   useEffect(() => {
     setCart(readCart());
@@ -128,9 +140,41 @@ export default function Shop() {
     );
   };
 
-  const orderEmail = `mailto:${FINANCE_EMAIL}?subject=Shalom%20merch%20preorder&body=${encodeURIComponent(
-    `Hello Shalom team,\n\nI would like to preorder:\n${orderSummary}\n\nTotal: $${cartTotal.toFixed(2)}\n\nMy name and contact information:\n`,
-  )}`;
+  const submitOrder = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    createMerchOrder.mutate(
+      {
+        data: {
+          ...orderDetails,
+          phone: orderDetails.phone || undefined,
+          items: cart.map((item) => ({
+            productName: PRODUCTS.find((product) => product.id === item.productId)?.name ?? "Shalom tee",
+            size: item.size,
+            quantity: item.quantity,
+          })),
+          total: cartTotal,
+        },
+      },
+      {
+        onSuccess: (order) => {
+          setSubmittedOrderId(order.id);
+          setCart([]);
+          setOrderDetails({ name: "", email: "", phone: "", paymentReference: "" });
+          toast({
+            title: "Preorder received",
+            description: `Order #${order.id} is saved. A receipt is on its way to your email.`,
+          });
+        },
+        onError: () => {
+          toast({
+            title: "We could not save your preorder",
+            description: "Please try again or email finance@shalomconference.com.",
+            variant: "destructive",
+          });
+        },
+      },
+    );
+  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -267,7 +311,11 @@ export default function Shop() {
               {cart.length === 0 ? (
                 <div className="rounded-xl border border-dashed border-white/10 p-6 text-center">
                   <ShoppingBag className="mx-auto mb-3 h-8 w-8 text-white/30" />
-                  <p className="text-sm text-muted-foreground">Your cart is ready for something good.</p>
+                  <p className="text-sm text-muted-foreground">
+                    {submittedOrderId
+                      ? `Preorder #${submittedOrderId} was received. Check your email for the confirmation.`
+                      : "Your cart is ready for something good."}
+                  </p>
                 </div>
               ) : (
                 <div className="space-y-5">
@@ -327,7 +375,7 @@ export default function Shop() {
 
                   <div className="rounded-xl border border-primary/30 bg-primary/10 p-4">
                     <p className="text-sm leading-relaxed text-white/80">
-                      Pay through Cash App, then email your order details to finance so we can confirm your preorder.
+                      Pay through Cash App first, then submit this preorder form. We will email you that the order was received while finance verifies the payment.
                     </p>
                     <Button
                       asChild
@@ -337,15 +385,51 @@ export default function Shop() {
                         Pay ${cartTotal.toFixed(2)} via Cash App <ArrowRight className="h-4 w-4" />
                       </a>
                     </Button>
-                    <Button
-                      asChild
-                      variant="outline"
-                      className="mt-3 w-full rounded-none border-white/20 font-bold uppercase tracking-wider text-white"
-                    >
-                      <a href={orderEmail}>Email Order Details</a>
-                    </Button>
                     <p className="mt-3 text-center font-mono text-xs text-primary">$HGAReveille</p>
                   </div>
+
+                  <form onSubmit={submitOrder} className="space-y-3 border-t border-white/10 pt-5">
+                    <p className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">
+                      Submit your preorder
+                    </p>
+                    <Input
+                      required
+                      value={orderDetails.name}
+                      onChange={(event) => setOrderDetails((current) => ({ ...current, name: event.target.value }))}
+                      placeholder="Full name"
+                      className="border-white/15 bg-white/5 text-white placeholder:text-white/35"
+                    />
+                    <Input
+                      required
+                      type="email"
+                      value={orderDetails.email}
+                      onChange={(event) => setOrderDetails((current) => ({ ...current, email: event.target.value }))}
+                      placeholder="Email for confirmation"
+                      className="border-white/15 bg-white/5 text-white placeholder:text-white/35"
+                    />
+                    <Input
+                      value={orderDetails.phone}
+                      onChange={(event) => setOrderDetails((current) => ({ ...current, phone: event.target.value }))}
+                      placeholder="Phone (optional)"
+                      className="border-white/15 bg-white/5 text-white placeholder:text-white/35"
+                    />
+                    <Input
+                      required
+                      value={orderDetails.paymentReference}
+                      onChange={(event) =>
+                        setOrderDetails((current) => ({ ...current, paymentReference: event.target.value }))
+                      }
+                      placeholder="Cash App payment note or reference"
+                      className="border-white/15 bg-white/5 text-white placeholder:text-white/35"
+                    />
+                    <Button
+                      type="submit"
+                      disabled={createMerchOrder.isPending}
+                      className="w-full rounded-none bg-white font-bold uppercase tracking-wider text-black hover:bg-white/90"
+                    >
+                      {createMerchOrder.isPending ? "Saving preorder…" : "Submit preorder"}
+                    </Button>
+                  </form>
                 </div>
               )}
 
