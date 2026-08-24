@@ -11,6 +11,7 @@ import About from "@/pages/about";
 import Partner from "@/pages/partner";
 import Testimonies from "@/pages/testimonies";
 import Admin from "@/pages/admin";
+import Shop from "@/pages/shop";
 import { useEffect } from "react";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ function Router() {
       </Route>
       <Route path="/about" component={About} />
       <Route path="/partner" component={Partner} />
+      <Route path="/shop" component={Shop} />
       <Route path="/testimonies" component={Testimonies} />
       <Route path="/admin" component={Admin} />
       <Route path="/archive" component={Archive} />
