@@ -9,6 +9,7 @@ const NAV_LINKS = [
   { label: "2026", href: "/2026" },
   { label: "About", href: "/about" },
   { label: "Partner", href: "/partner" },
+  { label: "Shop", href: "/shop" },
   { label: "Testimonies", href: "/testimonies" },
   { label: "Archive", href: "/archive" },
 ];
