@@ -13,7 +13,7 @@ import comforterBackImage from "@assets/image_1787592065294.png";
 const CASH_APP_URL = "https://cash.app/$HGAReveille";
 const FINANCE_EMAIL = "finance@shalomconference.com";
 const CART_STORAGE_KEY = "shalom-merch-cart";
-const SIZES = ["S", "M", "L", "XL"] as const;
+const SIZES = ["S", "M", "L", "XL", "XXL"] as const;
 
 const PRODUCTS = [
   {
@@ -254,7 +254,7 @@ export default function Shop() {
                         <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-white/50">
                           Select Size
                         </p>
-                        <div className="grid grid-cols-4 gap-2">
+                        <div className="grid grid-cols-5 gap-2">
                           {SIZES.map((size) => (
                             <button
                               key={size}

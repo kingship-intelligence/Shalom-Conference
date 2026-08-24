@@ -118,6 +118,7 @@ export const MerchOrderItemSize = {
   M: "M",
   L: "L",
   XL: "XL",
+  XXL: "XXL",
 } as const;
 
 export interface MerchOrderItem {

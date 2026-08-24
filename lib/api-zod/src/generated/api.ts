@@ -179,7 +179,7 @@ export const CreateMerchOrderBody = zod.object({
     .array(
       zod.object({
         productName: zod.string().min(1),
-        size: zod.enum(["S", "M", "L", "XL"]),
+        size: zod.enum(["S", "M", "L", "XL", "XXL"]),
         quantity: zod.number().min(1),
       }),
     )
@@ -200,7 +200,7 @@ export const ListMerchOrdersResponseItem = zod.object({
   items: zod.array(
     zod.object({
       productName: zod.string().min(1),
-      size: zod.enum(["S", "M", "L", "XL"]),
+      size: zod.enum(["S", "M", "L", "XL", "XXL"]),
       quantity: zod.number().min(1),
     }),
   ),
