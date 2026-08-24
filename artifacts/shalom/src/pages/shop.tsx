@@ -17,18 +17,18 @@ const SIZES = ["S", "M", "L", "XL"] as const;
 
 const PRODUCTS = [
   {
-    id: "shalom-logo-tee",
-    name: "Shalom Logo Tee",
-    description: "A clean everyday tee with the Shalom mark front and center.",
-    price: 50,
-    images: [logoTeeImage],
-  },
-  {
     id: "comforter-tee",
     name: "The Comforter Tee",
-    description: "A bold statement tee inspired by John 14:26–27.",
+    description: "Shalom on the front, with a Comforter design on the back.",
     price: 50,
-    images: [comforterFrontImage, comforterBackImage],
+    images: [logoTeeImage, comforterFrontImage],
+  },
+  {
+    id: "comforter-tee-alt",
+    name: "The Comforter Tee — Shalom Edition",
+    description: "Shalom on the front, with a Comforter design on the back.",
+    price: 50,
+    images: [logoTeeImage, comforterBackImage],
   },
 ] as const;
 
@@ -63,12 +63,12 @@ export default function Shop() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [cartHydrated, setCartHydrated] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState<Record<ProductId, Size>>({
-    "shalom-logo-tee": "M",
     "comforter-tee": "M",
+    "comforter-tee-alt": "M",
   });
   const [activeImages, setActiveImages] = useState<Record<ProductId, number>>({
-    "shalom-logo-tee": 0,
     "comforter-tee": 0,
+    "comforter-tee-alt": 0,
   });
   const [cartOpen, setCartOpen] = useState(false);
   const [submittedOrderId, setSubmittedOrderId] = useState<number | null>(null);
