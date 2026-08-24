@@ -58,6 +58,7 @@ function readCart(): CartItem[] {
 
 export default function Shop() {
   const [cart, setCart] = useState<CartItem[]>([]);
+  const [cartHydrated, setCartHydrated] = useState(false);
   const [selectedSizes, setSelectedSizes] = useState<Record<ProductId, Size>>({
     "shalom-logo-tee": "M",
     "comforter-tee": "M",
@@ -70,11 +71,13 @@ export default function Shop() {
 
   useEffect(() => {
     setCart(readCart());
+    setCartHydrated(true);
   }, []);
 
   useEffect(() => {
+    if (!cartHydrated) return;
     localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(cart));
-  }, [cart]);
+  }, [cart, cartHydrated]);
 
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = cart.reduce((sum, item) => {
