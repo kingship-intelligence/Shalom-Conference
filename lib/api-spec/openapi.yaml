@@ -16,6 +16,8 @@ tags:
     description: Attendee badge upload and delivery operations
   - name: testimonies
     description: Testimony operations
+  - name: merch
+    description: Merch preorder operations
 paths:
   /healthz:
     get:
@@ -206,6 +208,43 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Testimony"
+  /merch-orders:
+    post:
+      operationId: createMerchOrder
+      tags: [merch]
+      summary: Submit a merch preorder after Cash App payment
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/MerchOrderInput"
+      responses:
+        "201":
+          description: Merch preorder received
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MerchOrder"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listMerchOrders
+      tags: [merch]
+      summary: List merch preorders for the admin area
+      responses:
+        "200":
+          description: Merch preorder list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/MerchOrder"
 components:
   schemas:
     HealthStatus:
@@ -295,6 +334,43 @@ components:
         email:          { type: string, format: email }
         conferenceYear: { type: integer }
         testimony:      { type: string, minLength: 10 }
+    MerchOrderItem:
+      type: object
+      required: [productName, size, quantity]
+      properties:
+        productName: { type: string, minLength: 1 }
+        size: { type: string, enum: [S, M, L, XL] }
+        quantity: { type: integer, minimum: 1 }
+    MerchOrder:
+      type: object
+      required: [id, name, email, paymentReference, items, total, status, createdAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string, format: email }
+        phone: { type: ["string", "null"] }
+        paymentReference: { type: string }
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/MerchOrderItem"
+        total: { type: integer }
+        status: { type: string, enum: [awaiting_verification, verified] }
+        createdAt: { type: string, format: date-time }
+    MerchOrderInput:
+      type: object
+      required: [name, email, paymentReference, items, total]
+      properties:
+        name: { type: string, minLength: 1, maxLength: 160 }
+        email: { type: string, format: email }
+        phone: { type: string, maxLength: 40 }
+        paymentReference: { type: string, minLength: 1, maxLength: 120 }
+        items:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/MerchOrderItem"
+        total: { type: integer, minimum: 1 }
     ErrorResponse:
       type: object
       required: [error]

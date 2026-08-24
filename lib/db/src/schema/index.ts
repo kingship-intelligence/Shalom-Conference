@@ -1,4 +1,4 @@
-import { pgTable, text, serial, timestamp, integer, boolean } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, timestamp, integer, boolean, jsonb } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod/v4";
 
@@ -34,3 +34,19 @@ export const testimoniesTable = pgTable("testimonies", {
 export const insertTestimonySchema = createInsertSchema(testimoniesTable).omit({ id: true, createdAt: true });
 export type InsertTestimony = z.infer<typeof insertTestimonySchema>;
 export type Testimony = typeof testimoniesTable.$inferSelect;
+
+export const merchOrdersTable = pgTable("merch_orders", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull(),
+  email: text("email").notNull(),
+  phone: text("phone"),
+  paymentReference: text("payment_reference").notNull(),
+  items: jsonb("items").notNull(),
+  total: integer("total").notNull(),
+  status: text("status").notNull().default("awaiting_verification"),
+  createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
+});
+
+export const insertMerchOrderSchema = createInsertSchema(merchOrdersTable).omit({ id: true, createdAt: true });
+export type InsertMerchOrder = z.infer<typeof insertMerchOrderSchema>;
+export type MerchOrder = typeof merchOrdersTable.$inferSelect;
