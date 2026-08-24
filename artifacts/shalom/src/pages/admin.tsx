@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useListRegistrations, useListTestimonies } from "@workspace/api-client-react";
+import { useListMerchOrders, useListRegistrations, useListTestimonies } from "@workspace/api-client-react";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { format } from "date-fns";
@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download } from "lucide-react";
+import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, ShoppingBag } from "lucide-react";
 
 const SESSION_KEY = "shalom_admin_auth";
 
@@ -32,6 +32,31 @@ function exportCSV(registrations: any[]) {
   a.href = url;
   a.download = `shalom-registrations-${new Date().toISOString().slice(0, 10)}.csv`;
   a.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportMerchOrdersCSV(orders: any[]) {
+  const headers = ["Order", "Name", "Email", "Phone", "Items", "Total", "Cash App Reference", "Status", "Submitted At"];
+  const rows = orders.map((order) => [
+    order.id,
+    order.name,
+    order.email,
+    order.phone ?? "",
+    order.items.map((item: any) => `${item.quantity} × ${item.productName} (${item.size})`).join("; "),
+    `$${Number(order.total).toFixed(2)}`,
+    order.paymentReference,
+    order.status,
+    new Date(order.createdAt).toLocaleString(),
+  ]);
+  const csv = [headers, ...rows]
+    .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `shalom-merch-preorders-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
   URL.revokeObjectURL(url);
 }
 
@@ -162,12 +187,18 @@ export default function Admin() {
 
   const registrationsQuery = useListRegistrations();
   const testimoniesQuery = useListTestimonies();
+  const merchOrdersQuery = useListMerchOrders({
+    query: { enabled: authed, queryKey: ["/api/merch-orders"] },
+  });
 
   const registrations = [...(registrationsQuery.data || [])].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
   const testimonies = [...(testimoniesQuery.data || [])].sort((a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  const merchOrders = [...(merchOrdersQuery.data || [])].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
 
@@ -331,6 +362,74 @@ export default function Admin() {
                       {format(new Date(test.createdAt), "MMM d, h:mm a")}
                     </p>
                   </motion.div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section data-testid="section-merch-orders" className="space-y-6 lg:col-span-2">
+            <div className="flex items-center justify-between border-t-2 border-primary pt-4">
+              <div className="flex items-center gap-3">
+                <ShoppingBag className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-bold text-white uppercase tracking-wider">Merch preorders</h2>
+              </div>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-primary text-white">
+                  {merchOrdersQuery.isLoading ? "..." : merchOrders.length}
+                </Badge>
+                {merchOrders.length > 0 && (
+                  <button
+                    onClick={() => exportMerchOrdersCSV(merchOrders)}
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
+                    title="Export merch orders"
+                  >
+                    <Download className="h-4 w-4" />
+                    Export
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {merchOrdersQuery.isLoading ? (
+              <div className="space-y-4">
+                {[1, 2].map((i) => <Skeleton key={i} className="h-36 w-full rounded-xl bg-white/5" />)}
+              </div>
+            ) : merchOrders.length === 0 ? (
+              <div className="text-center py-16 text-white/30 rounded-2xl border border-dashed border-white/10">
+                No merch preorders yet
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {merchOrders.map((order) => (
+                  <article key={order.id} className="rounded-xl border border-white/10 bg-white/5 p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-bold text-white">#{order.id} · {order.name}</p>
+                        <p className="mt-1 text-sm text-white/50">{order.email}</p>
+                        {order.phone && <p className="mt-1 text-sm text-white/50">{order.phone}</p>}
+                      </div>
+                      <Badge className="bg-amber-500/20 text-amber-300 border border-amber-300/20">
+                        Awaiting verification
+                      </Badge>
+                    </div>
+                    <div className="mt-4 space-y-1 border-y border-white/10 py-4 text-sm text-white/75">
+                      {order.items.map((item) => (
+                        <p key={`${item.productName}-${item.size}`}>{item.quantity} × {item.productName} · {item.size}</p>
+                      ))}
+                    </div>
+                    <div className="mt-4 flex items-end justify-between gap-4">
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-white/40">Cash App reference</p>
+                        <p className="mt-1 font-mono text-sm text-primary">{order.paymentReference}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xl font-black text-primary">${Number(order.total).toFixed(2)}</p>
+                        <p className="mt-1 text-[10px] uppercase tracking-wider text-white/30">
+                          {format(new Date(order.createdAt), "MMM d, h:mm a")}
+                        </p>
+                      </div>
+                    </div>
+                  </article>
                 ))}
               </div>
             )}
