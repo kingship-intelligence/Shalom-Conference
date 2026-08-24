@@ -157,3 +157,55 @@ export const ListTestimoniesResponseItem = zod.object({
   createdAt: zod.coerce.date(),
 });
 export const ListTestimoniesResponse = zod.array(ListTestimoniesResponseItem);
+
+/**
+ * @summary Submit a merch preorder after Cash App payment
+ */
+export const createMerchOrderBodyNameMax = 160;
+
+export const createMerchOrderBodyPhoneMax = 40;
+
+export const createMerchOrderBodyPaymentReferenceMax = 120;
+
+export const CreateMerchOrderBody = zod.object({
+  name: zod.string().min(1).max(createMerchOrderBodyNameMax),
+  email: zod.string().email(),
+  phone: zod.string().max(createMerchOrderBodyPhoneMax).optional(),
+  paymentReference: zod
+    .string()
+    .min(1)
+    .max(createMerchOrderBodyPaymentReferenceMax),
+  items: zod
+    .array(
+      zod.object({
+        productName: zod.string().min(1),
+        size: zod.enum(["S", "M", "L", "XL"]),
+        quantity: zod.number().min(1),
+      }),
+    )
+    .min(1),
+  total: zod.number().min(1),
+});
+
+/**
+ * @summary List merch preorders for the admin area
+ */
+
+export const ListMerchOrdersResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string().email(),
+  phone: zod.string().nullish(),
+  paymentReference: zod.string(),
+  items: zod.array(
+    zod.object({
+      productName: zod.string().min(1),
+      size: zod.enum(["S", "M", "L", "XL"]),
+      quantity: zod.number().min(1),
+    }),
+  ),
+  total: zod.number(),
+  status: zod.enum(["awaiting_verification", "verified"]),
+  createdAt: zod.coerce.date(),
+});
+export const ListMerchOrdersResponse = zod.array(ListMerchOrdersResponseItem);

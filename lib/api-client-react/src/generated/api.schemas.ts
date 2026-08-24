@@ -110,6 +110,65 @@ export interface TestimonyInput {
   testimony: string;
 }
 
+export type MerchOrderItemSize =
+  (typeof MerchOrderItemSize)[keyof typeof MerchOrderItemSize];
+
+export const MerchOrderItemSize = {
+  S: "S",
+  M: "M",
+  L: "L",
+  XL: "XL",
+} as const;
+
+export interface MerchOrderItem {
+  /** @minLength 1 */
+  productName: string;
+  size: MerchOrderItemSize;
+  /** @minimum 1 */
+  quantity: number;
+}
+
+export type MerchOrderStatus =
+  (typeof MerchOrderStatus)[keyof typeof MerchOrderStatus];
+
+export const MerchOrderStatus = {
+  awaiting_verification: "awaiting_verification",
+  verified: "verified",
+} as const;
+
+export interface MerchOrder {
+  id: number;
+  name: string;
+  email: string;
+  /** @nullable */
+  phone?: string | null;
+  paymentReference: string;
+  items: MerchOrderItem[];
+  total: number;
+  status: MerchOrderStatus;
+  createdAt: string;
+}
+
+export interface MerchOrderInput {
+  /**
+   * @minLength 1
+   * @maxLength 160
+   */
+  name: string;
+  email: string;
+  /** @maxLength 40 */
+  phone?: string;
+  /**
+   * @minLength 1
+   * @maxLength 120
+   */
+  paymentReference: string;
+  /** @minItems 1 */
+  items: MerchOrderItem[];
+  /** @minimum 1 */
+  total: number;
+}
+
 export interface ErrorResponse {
   error: string;
 }

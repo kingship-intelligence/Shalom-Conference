@@ -23,6 +23,8 @@ import type {
   BadgeUploadUrl,
   ErrorResponse,
   HealthStatus,
+  MerchOrder,
+  MerchOrderInput,
   Registration,
   RegistrationCreated,
   RegistrationInput,
@@ -710,6 +712,167 @@ export function useListTestimonies<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getListTestimoniesQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Submit a merch preorder after Cash App payment
+ */
+export const getCreateMerchOrderUrl = () => {
+  return `/api/merch-orders`;
+};
+
+export const createMerchOrder = async (
+  merchOrderInput: MerchOrderInput,
+  options?: RequestInit,
+): Promise<MerchOrder> => {
+  return customFetch<MerchOrder>(getCreateMerchOrderUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(merchOrderInput),
+  });
+};
+
+export const getCreateMerchOrderMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createMerchOrder>>,
+    TError,
+    { data: BodyType<MerchOrderInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createMerchOrder>>,
+  TError,
+  { data: BodyType<MerchOrderInput> },
+  TContext
+> => {
+  const mutationKey = ["createMerchOrder"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createMerchOrder>>,
+    { data: BodyType<MerchOrderInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createMerchOrder(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateMerchOrderMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createMerchOrder>>
+>;
+export type CreateMerchOrderMutationBody = BodyType<MerchOrderInput>;
+export type CreateMerchOrderMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Submit a merch preorder after Cash App payment
+ */
+export const useCreateMerchOrder = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createMerchOrder>>,
+    TError,
+    { data: BodyType<MerchOrderInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createMerchOrder>>,
+  TError,
+  { data: BodyType<MerchOrderInput> },
+  TContext
+> => {
+  return useMutation(getCreateMerchOrderMutationOptions(options));
+};
+
+/**
+ * @summary List merch preorders for the admin area
+ */
+export const getListMerchOrdersUrl = () => {
+  return `/api/merch-orders`;
+};
+
+export const listMerchOrders = async (
+  options?: RequestInit,
+): Promise<MerchOrder[]> => {
+  return customFetch<MerchOrder[]>(getListMerchOrdersUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListMerchOrdersQueryKey = () => {
+  return [`/api/merch-orders`] as const;
+};
+
+export const getListMerchOrdersQueryOptions = <
+  TData = Awaited<ReturnType<typeof listMerchOrders>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listMerchOrders>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListMerchOrdersQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listMerchOrders>>> = ({
+    signal,
+  }) => listMerchOrders({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listMerchOrders>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListMerchOrdersQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listMerchOrders>>
+>;
+export type ListMerchOrdersQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List merch preorders for the admin area
+ */
+
+export function useListMerchOrders<
+  TData = Awaited<ReturnType<typeof listMerchOrders>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listMerchOrders>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListMerchOrdersQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;
