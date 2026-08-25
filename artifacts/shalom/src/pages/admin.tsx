@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { useListMerchOrders, useListRegistrations, useListTestimonies } from "@workspace/api-client-react";
+import {
+  getListMerchOrdersQueryKey,
+  useConfirmMerchOrderPayment,
+  useListMerchOrders,
+  useListRegistrations,
+  useListTestimonies,
+} from "@workspace/api-client-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { format } from "date-fns";
@@ -184,11 +191,19 @@ function LoginScreen({ onLogin, loading, error }: { onLogin: (u: string, p: stri
 
 export default function Admin() {
   const { authed, login, logout, loading, error } = useAdminAuth();
+  const queryClient = useQueryClient();
 
   const registrationsQuery = useListRegistrations();
   const testimoniesQuery = useListTestimonies();
   const merchOrdersQuery = useListMerchOrders({
     query: { enabled: authed, queryKey: ["/api/merch-orders"] },
+  });
+  const verifyPaymentMutation = useConfirmMerchOrderPayment({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListMerchOrdersQueryKey() });
+      },
+    },
   });
 
   const registrations = [...(registrationsQuery.data || [])].sort((a, b) =>
@@ -201,6 +216,8 @@ export default function Admin() {
   const merchOrders = [...(merchOrdersQuery.data || [])].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
+  const awaitingVerificationCount = merchOrders.filter((order) => order.status === "awaiting_verification").length;
+  const verifiedCount = merchOrders.filter((order) => order.status === "verified").length;
 
   if (!authed) {
     return <LoginScreen onLogin={login} loading={loading} error={error} />;
@@ -377,6 +394,12 @@ export default function Admin() {
                 <Badge className="bg-primary text-white">
                   {merchOrdersQuery.isLoading ? "..." : merchOrders.length}
                 </Badge>
+                <span className="hidden text-xs uppercase tracking-wider text-amber-300/80 sm:inline">
+                  {awaitingVerificationCount} to review
+                </span>
+                <span className="hidden text-xs uppercase tracking-wider text-emerald-300/80 sm:inline">
+                  {verifiedCount} confirmed
+                </span>
                 {merchOrders.length > 0 && (
                   <button
                     onClick={() => exportMerchOrdersCSV(merchOrders)}
@@ -408,9 +431,15 @@ export default function Admin() {
                         <p className="mt-1 text-sm text-white/50">{order.email}</p>
                         {order.phone && <p className="mt-1 text-sm text-white/50">{order.phone}</p>}
                       </div>
-                      <Badge className="bg-amber-500/20 text-amber-300 border border-amber-300/20">
-                        Awaiting verification
-                      </Badge>
+                      {order.status === "awaiting_verification" ? (
+                        <Badge className="bg-amber-500/20 text-amber-300 border border-amber-300/20">
+                          Awaiting verification
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-emerald-500/20 text-emerald-300 border border-emerald-300/20">
+                          Payment confirmed
+                        </Badge>
+                      )}
                     </div>
                     <div className="mt-4 space-y-1 border-y border-white/10 py-4 text-sm text-white/75">
                       {order.items.map((item) => (
@@ -429,6 +458,27 @@ export default function Admin() {
                         </p>
                       </div>
                     </div>
+                    {order.status === "awaiting_verification" && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="mt-4 w-full rounded-full bg-emerald-600 text-white hover:bg-emerald-500"
+                        disabled={verifyPaymentMutation.isPending}
+                        onClick={() => {
+                          if (window.confirm(`Confirm the Cash App payment for order #${order.id}?`)) {
+                            verifyPaymentMutation.mutate({ id: order.id });
+                          }
+                        }}
+                      >
+                        <Check className="h-4 w-4" />
+                        {verifyPaymentMutation.isPending ? "Confirming…" : "Confirm payment"}
+                      </Button>
+                    )}
+                    {verifyPaymentMutation.isError && verifyPaymentMutation.variables?.id === order.id && (
+                      <p className="mt-3 text-sm text-red-300">
+                        Payment confirmation could not be completed. Please try again.
+                      </p>
+                    )}
                   </article>
                 ))}
               </div>

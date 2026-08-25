@@ -14,6 +14,7 @@ export * from "./badgeUploadUrl";
 export * from "./errorResponse";
 export * from "./healthStatus";
 export * from "./merchOrder";
+export * from "./merchOrderEmailError";
 export * from "./merchOrderInput";
 export * from "./merchOrderItem";
 export * from "./merchOrderItemSize";

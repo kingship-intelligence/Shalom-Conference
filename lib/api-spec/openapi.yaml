@@ -245,6 +245,36 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/MerchOrder"
+  /merch-orders/{id}/verify:
+    patch:
+      operationId: confirmMerchOrderPayment
+      tags: [merch]
+      summary: Confirm a merch preorder payment after Cash App review
+      parameters:
+        - $ref: "#/components/parameters/MerchOrderId"
+      responses:
+        "200":
+          description: Payment confirmed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MerchOrder"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Merch preorder not found
+        "409":
+          description: Preorder is already verified
+        "502":
+          description: Payment verified but email delivery failed
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/MerchOrderEmailError"
 components:
   schemas:
     HealthStatus:
@@ -371,12 +401,24 @@ components:
           items:
             $ref: "#/components/schemas/MerchOrderItem"
         total: { type: integer, minimum: 1 }
+    MerchOrderEmailError:
+      type: object
+      required: [error, order]
+      properties:
+        error: { type: string }
+        order:
+          $ref: "#/components/schemas/MerchOrder"
     ErrorResponse:
       type: object
       required: [error]
       properties:
         error: { type: string }
   parameters:
+    MerchOrderId:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
     RegistrationId:
       name: registrationId
       in: path
