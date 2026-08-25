@@ -24,6 +24,7 @@ const partnerPaths = [
 ];
 
 const CASH_APP_URL = "https://cash.app/$HGAReveille";
+const ZEFFY_URL = "https://www.zeffy.com/en-US/donation-form/donate-towards-shalom-conference";
 const FINANCE_EMAIL = "finance@shalomconference.com";
 
 export default function Partner() {
@@ -115,20 +116,37 @@ export default function Partner() {
                       $HGAReveille
                     </p>
                   </div>
-                  <Button
-                    asChild
-                    size="lg"
-                    className="mt-6 w-full rounded-none bg-primary uppercase tracking-wider text-primary-foreground hover:bg-primary/90 sm:w-auto"
-                  >
-                    <a
-                      href={CASH_APP_URL}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Give via Cash App to HGA Reveille"
+                  <div className="mt-6 flex flex-col gap-3 sm:flex-row">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="w-full rounded-none bg-primary uppercase tracking-wider text-primary-foreground hover:bg-primary/90 sm:w-auto"
                     >
-                      Give via Cash App <ArrowUpRight className="h-5 w-5" />
-                    </a>
-                  </Button>
+                      <a
+                        href={CASH_APP_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Give via Cash App to HGA Reveille"
+                      >
+                        Give via Cash App <ArrowUpRight className="h-5 w-5" />
+                      </a>
+                    </Button>
+                    <Button
+                      asChild
+                      size="lg"
+                      variant="outline"
+                      className="w-full rounded-none border-primary/40 uppercase tracking-wider text-white hover:bg-primary/10 hover:text-white sm:w-auto"
+                    >
+                      <a
+                        href={ZEFFY_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="Donate through Zeffy"
+                      >
+                        Give via Zeffy <ArrowUpRight className="h-5 w-5" />
+                      </a>
+                    </Button>
+                  </div>
                   <div className="mt-8 border-t border-primary/20 pt-6">
                     <div className="flex items-start gap-3 text-left">
                       <Mail className="mt-1 h-5 w-5 shrink-0 text-primary" />
