@@ -24,6 +24,7 @@ import type {
   ErrorResponse,
   HealthStatus,
   MerchOrder,
+  MerchOrderEmailError,
   MerchOrderInput,
   Registration,
   RegistrationCreated,
@@ -880,3 +881,89 @@ export function useListMerchOrders<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Confirm a merch preorder payment after Cash App review
+ */
+export const getConfirmMerchOrderPaymentUrl = (id: number) => {
+  return `/api/merch-orders/${id}/verify`;
+};
+
+export const confirmMerchOrderPayment = async (
+  id: number,
+  options?: RequestInit,
+): Promise<MerchOrder> => {
+  return customFetch<MerchOrder>(getConfirmMerchOrderPaymentUrl(id), {
+    ...options,
+    method: "PATCH",
+  });
+};
+
+export const getConfirmMerchOrderPaymentMutationOptions = <
+  TError = ErrorType<ErrorResponse | void | MerchOrderEmailError>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof confirmMerchOrderPayment>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof confirmMerchOrderPayment>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  const mutationKey = ["confirmMerchOrderPayment"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof confirmMerchOrderPayment>>,
+    { id: number }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return confirmMerchOrderPayment(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type ConfirmMerchOrderPaymentMutationResult = NonNullable<
+  Awaited<ReturnType<typeof confirmMerchOrderPayment>>
+>;
+
+export type ConfirmMerchOrderPaymentMutationError = ErrorType<
+  ErrorResponse | void | MerchOrderEmailError
+>;
+
+/**
+ * @summary Confirm a merch preorder payment after Cash App review
+ */
+export const useConfirmMerchOrderPayment = <
+  TError = ErrorType<ErrorResponse | void | MerchOrderEmailError>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof confirmMerchOrderPayment>>,
+    TError,
+    { id: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof confirmMerchOrderPayment>>,
+  TError,
+  { id: number },
+  TContext
+> => {
+  return useMutation(getConfirmMerchOrderPaymentMutationOptions(options));
+};

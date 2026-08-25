@@ -209,3 +209,29 @@ export const ListMerchOrdersResponseItem = zod.object({
   createdAt: zod.coerce.date(),
 });
 export const ListMerchOrdersResponse = zod.array(ListMerchOrdersResponseItem);
+
+/**
+ * @summary Confirm a merch preorder payment after Cash App review
+ */
+
+export const ConfirmMerchOrderPaymentParams = zod.object({
+  id: zod.coerce.number().min(1),
+});
+
+export const ConfirmMerchOrderPaymentResponse = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string().email(),
+  phone: zod.string().nullish(),
+  paymentReference: zod.string(),
+  items: zod.array(
+    zod.object({
+      productName: zod.string().min(1),
+      size: zod.enum(["S", "M", "L", "XL", "XXL"]),
+      quantity: zod.number().min(1),
+    }),
+  ),
+  total: zod.number(),
+  status: zod.enum(["awaiting_verification", "verified"]),
+  createdAt: zod.coerce.date(),
+});

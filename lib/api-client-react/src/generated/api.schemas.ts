@@ -170,6 +170,11 @@ export interface MerchOrderInput {
   total: number;
 }
 
+export interface MerchOrderEmailError {
+  error: string;
+  order: MerchOrder;
+}
+
 export interface ErrorResponse {
   error: string;
 }

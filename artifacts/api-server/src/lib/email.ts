@@ -302,6 +302,56 @@ export async function sendMerchOrderReceived(opts: {
   }
 }
 
+export async function sendMerchOrderPaymentConfirmed(opts: {
+  id: number;
+  name: string;
+  email: string;
+  items: MerchOrderEmailItem[];
+  total: number;
+}): Promise<void> {
+  const itemRows = opts.items
+    .map(
+      (item) =>
+        `<tr><td style="padding:8px 0;color:#ffffff;">${escapeHtml(item.productName)}</td><td style="padding:8px 0;color:#c0c0c0;text-align:center;">${escapeHtml(item.size)} × ${item.quantity}</td></tr>`,
+    )
+    .join("");
+  const html = `<!DOCTYPE html>
+<html lang="en"><body style="margin:0;padding:32px 16px;background:#0d0d0d;font-family:Arial,sans-serif;color:#fff;">
+  <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+    <table width="580" style="max-width:580px;width:100%;background:#141414;border-radius:16px;overflow:hidden;">
+      <tr><td style="padding:32px;text-align:center;background:linear-gradient(160deg,#071a0a,#0d0d0d);border-bottom:2px solid #22c55e;">
+        <p style="margin:0;color:#22c55e;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;">Shalom Merch</p>
+        <h1 style="margin:10px 0 0;font-size:30px;color:#fff;">Payment Confirmed</h1>
+      </td></tr>
+      <tr><td style="padding:32px;">
+        <p style="font-size:18px;font-weight:700;">Hey ${escapeHtml(opts.name)},</p>
+        <p style="color:#c0c0c0;line-height:1.7;">Your Cash App payment has been verified. Your Shalom merch preorder is confirmed and has been recorded for fulfillment.</p>
+        <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0;border-top:1px solid #333;border-bottom:1px solid #333;">${itemRows}
+          <tr><td style="padding:14px 0;color:#22c55e;font-weight:800;">Total paid</td><td style="padding:14px 0;color:#22c55e;font-weight:800;text-align:right;">$${opts.total.toFixed(2)}</td></tr>
+        </table>
+        <p style="color:#a0a0a0;font-size:13px;line-height:1.6;">Order #${opts.id}</p>
+        <p style="color:#a0a0a0;font-size:13px;line-height:1.6;">Questions? Email <a href="mailto:${FINANCE_EMAIL}" style="color:#22c55e;">${FINANCE_EMAIL}</a>.</p>
+      </td></tr>
+    </table>
+  </td></tr></table>
+</body></html>`;
+
+  const connectors = new ReplitConnectors();
+  const raw = buildRawMessage({
+    to: opts.email,
+    subject: `Payment confirmed for Shalom merch order (#${opts.id})`,
+    html,
+  });
+  const response = await connectors.proxy("google-mail", "/gmail/v1/users/me/messages/send", {
+    method: "POST",
+    body: JSON.stringify({ raw }),
+  });
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Gmail API error ${response.status}: ${text}`);
+  }
+}
+
 export async function sendMerchOrderNotification(opts: {
   id: number;
   name: string;
