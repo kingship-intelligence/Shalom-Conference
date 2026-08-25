@@ -15,8 +15,54 @@ import { hasAdminSession } from "../lib/admin-session";
 
 const router: IRouter = Router();
 
+const MERCH_PRICES: Record<string, number> = {
+  "The Comforter Tee": 50,
+  "The Comforter Tee — Shalom Edition": 50,
+};
+
+const MerchOrderSubmission = CreateMerchOrderBody.superRefine((order, ctx) => {
+  if (!order.name.trim()) {
+    ctx.addIssue({ code: "custom", path: ["name"], message: "Name is required." });
+  }
+  if (!order.paymentReference.trim()) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["paymentReference"],
+      message: "Cash App reference is required.",
+    });
+  }
+
+  let expectedTotal = 0;
+  order.items.forEach((item, index) => {
+    if (!item.productName.trim() || !(item.productName in MERCH_PRICES)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["items", index, "productName"],
+        message: "Unknown merch product.",
+      });
+    } else {
+      expectedTotal += MERCH_PRICES[item.productName] * item.quantity;
+    }
+    if (!Number.isInteger(item.quantity)) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["items", index, "quantity"],
+        message: "Quantity must be a whole number.",
+      });
+    }
+  });
+
+  if (!Number.isInteger(order.total) || order.total !== expectedTotal) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["total"],
+      message: "Total does not match the selected merch.",
+    });
+  }
+});
+
 router.post("/merch-orders", async (req, res): Promise<void> => {
-  const parsed = CreateMerchOrderBody.safeParse(req.body);
+  const parsed = MerchOrderSubmission.safeParse(req.body);
   if (!parsed.success) {
     res.status(400).json({ error: parsed.error.message });
     return;
