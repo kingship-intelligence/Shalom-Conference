@@ -1,3 +1,10 @@
+import oreOlajuyigbeImage from "@assets/IMG_1085_1787621731433.JPG";
+import bPraizImage from "@assets/IMG_5100_1787621750084.JPG";
+import gbemiJImage from "@assets/IMG_1081_1787621760140.JPG";
+import ejHaroldImage from "@assets/IMG_1084_1787621774400.JPG";
+import robertBannermanImage from "@assets/Robert_Bannerman_Headshot_1787621782938.jpg";
+import tobiSamagbeyiImage from "@assets/IMG_1082_1787621799133.JPG";
+
 export type Conference = {
   year: string;
   theme: string;
@@ -20,6 +27,7 @@ export type Conference = {
   speakers: Array<{
     name: string;
     role: string;
+    image?: string;
   }>;
 };
 
@@ -55,12 +63,12 @@ export const conferences: Conference[] = [
       { time: "Saturday 6:30 PM", title: "Ministration with Prophet Shamar Bennett" },
     ],
     speakers: [
-      { name: "Ore Olajuyigbe", role: "Friday Worship Night" },
-      { name: "B-Praiz", role: "Friday Worship Night" },
-      { name: "Gbemi-J", role: "Friday Worship Night" },
-      { name: "Robert Bannerman", role: "Friday Worship Night" },
-      { name: "EJ Harold", role: "Friday Worship Night" },
-      { name: "Tobi Samagbeyi", role: "Friday Worship Night" },
+      { name: "Ore Olajuyigbe", role: "Friday Worship Night", image: oreOlajuyigbeImage },
+      { name: "B-Praiz", role: "Friday Worship Night", image: bPraizImage },
+      { name: "Gbemi-J", role: "Friday Worship Night", image: gbemiJImage },
+      { name: "Robert Bannerman", role: "Friday Worship Night", image: robertBannermanImage },
+      { name: "EJ Harold", role: "Friday Worship Night", image: ejHaroldImage },
+      { name: "Tobi Samagbeyi", role: "Friday Worship Night", image: tobiSamagbeyiImage },
       { name: "Prophet Shamar Bennett", role: "Saturday Ministration" },
     ],
   },

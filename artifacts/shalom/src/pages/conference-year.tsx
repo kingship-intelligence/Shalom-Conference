@@ -177,10 +177,22 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               </h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 {conference.speakers.map((speaker) => (
-                  <div key={speaker.name} className="border border-white/10 bg-background/60 p-6 text-center sm:text-left">
-                    <Users className="mx-auto mb-6 h-8 w-8 text-primary sm:mx-0" />
+                  <div key={speaker.name} className="overflow-hidden border border-white/10 bg-background/60 text-center sm:text-left">
+                    {speaker.image ? (
+                      <img
+                        src={speaker.image}
+                        alt={speaker.name}
+                        className="h-64 w-full object-cover object-top"
+                      />
+                    ) : (
+                      <div className="flex h-64 items-center justify-center bg-primary/5">
+                        <Users className="h-10 w-10 text-primary" />
+                      </div>
+                    )}
+                    <div className="p-6">
                     <h3 className="text-2xl font-bold text-white">{speaker.name}</h3>
                     <p className="text-muted-foreground">{speaker.role}</p>
+                    </div>
                   </div>
                 ))}
               </div>
