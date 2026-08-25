@@ -12,6 +12,19 @@ function sign(value: string, secret: string): string {
   return createHmac("sha256", secret).update(value).digest("hex");
 }
 
+function encodeIdentity(username: string): string {
+  return Buffer.from(username, "utf8").toString("base64url");
+}
+
+function decodeIdentity(value: string): string | null {
+  try {
+    const username = Buffer.from(value, "base64url").toString("utf8");
+    return username || null;
+  } catch {
+    return null;
+  }
+}
+
 function readCookie(req: Request): string | null {
   const rawCookies = req.headers.cookie;
   if (!rawCookies) return null;
@@ -23,11 +36,13 @@ function readCookie(req: Request): string | null {
   return value ? decodeURIComponent(value.slice(prefix.length)) : null;
 }
 
-export function establishAdminSession(res: Response): boolean {
+export function establishAdminSession(res: Response, username: string): boolean {
   const secret = getSessionSecret();
   if (!secret) return false;
   const issuedAt = Math.floor(Date.now() / 1000);
-  const token = `${issuedAt}.${sign(String(issuedAt), secret)}`;
+  const encodedUsername = encodeIdentity(username);
+  const tokenData = `${issuedAt}.${encodedUsername}`;
+  const token = `${tokenData}.${sign(tokenData, secret)}`;
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "strict",
@@ -39,17 +54,25 @@ export function establishAdminSession(res: Response): boolean {
 }
 
 export function hasAdminSession(req: Request): boolean {
+  return getAdminIdentity(req) !== null;
+}
+
+export function getAdminIdentity(req: Request): string | null {
   const secret = getSessionSecret();
   const token = readCookie(req);
-  if (!secret || !token) return false;
-  const [issuedAtText, signature] = token.split(".");
+  if (!secret || !token) return null;
+  const [issuedAtText, encodedUsername, signature] = token.split(".");
   const issuedAt = Number(issuedAtText);
-  if (!Number.isInteger(issuedAt) || !signature || Date.now() / 1000 - issuedAt > MAX_AGE_SECONDS) {
-    return false;
+  if (!Number.isInteger(issuedAt) || !encodedUsername || !signature || Date.now() / 1000 - issuedAt > MAX_AGE_SECONDS) {
+    return null;
   }
 
-  const expected = sign(issuedAtText, secret);
+  const tokenData = `${issuedAtText}.${encodedUsername}`;
+  const expected = sign(tokenData, secret);
   const actualBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expected);
-  return actualBuffer.length === expectedBuffer.length && timingSafeEqual(actualBuffer, expectedBuffer);
+  if (actualBuffer.length !== expectedBuffer.length || !timingSafeEqual(actualBuffer, expectedBuffer)) {
+    return null;
+  }
+  return decodeIdentity(encodedUsername);
 }

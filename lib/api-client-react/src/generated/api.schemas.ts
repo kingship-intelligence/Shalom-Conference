@@ -147,6 +147,10 @@ export interface MerchOrder {
   items: MerchOrderItem[];
   total: number;
   status: MerchOrderStatus;
+  /** @nullable */
+  paymentConfirmedAt?: string | null;
+  /** @nullable */
+  paymentConfirmedBy?: string | null;
   createdAt: string;
 }
 

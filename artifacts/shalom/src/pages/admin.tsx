@@ -43,7 +43,7 @@ function exportCSV(registrations: any[]) {
 }
 
 function exportMerchOrdersCSV(orders: any[]) {
-  const headers = ["Order", "Name", "Email", "Phone", "Items", "Total", "Cash App Reference", "Status", "Submitted At"];
+  const headers = ["Order", "Name", "Email", "Phone", "Items", "Total", "Cash App Reference", "Status", "Submitted At", "Payment Confirmed At", "Payment Confirmed By"];
   const rows = orders.map((order) => [
     order.id,
     order.name,
@@ -54,6 +54,8 @@ function exportMerchOrdersCSV(orders: any[]) {
     order.paymentReference,
     order.status,
     new Date(order.createdAt).toLocaleString(),
+    order.paymentConfirmedAt ? new Date(order.paymentConfirmedAt).toLocaleString() : "",
+    order.paymentConfirmedBy ?? "",
   ]);
   const csv = [headers, ...rows]
     .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(","))
@@ -458,6 +460,15 @@ export default function Admin() {
                         </p>
                       </div>
                     </div>
+                    {order.paymentConfirmedAt && order.paymentConfirmedBy && (
+                      <div className="mt-4 rounded-lg border border-emerald-300/15 bg-emerald-300/5 px-3 py-2 text-xs text-emerald-200/80">
+                        <p className="font-semibold uppercase tracking-wider text-emerald-300/60">Confirmation history</p>
+                        <p className="mt-1">
+                          Payment confirmed by <span className="font-semibold text-emerald-200">{order.paymentConfirmedBy}</span>
+                          {" "}on {format(new Date(order.paymentConfirmedAt), "MMM d, yyyy 'at' h:mm a")}
+                        </p>
+                      </div>
+                    )}
                     {order.status === "awaiting_verification" && (
                       <Button
                         type="button"

@@ -16,7 +16,7 @@ router.post("/admin/login", (req, res): void => {
   }
 
   if (username === expectedUsername && password === expectedPassword) {
-    if (!establishAdminSession(res)) {
+    if (!establishAdminSession(res, username)) {
       req.log.error("Session secret not configured");
       res.status(500).json({ error: "Server misconfiguration" });
       return;

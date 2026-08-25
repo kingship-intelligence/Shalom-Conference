@@ -18,5 +18,9 @@ export interface MerchOrder {
   items: MerchOrderItem[];
   total: number;
   status: MerchOrderStatus;
+  /** @nullable */
+  paymentConfirmedAt?: Date | null;
+  /** @nullable */
+  paymentConfirmedBy?: string | null;
   createdAt: Date;
 }

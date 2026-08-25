@@ -11,7 +11,7 @@ import {
   sendMerchOrderPaymentConfirmed,
   sendMerchOrderReceived,
 } from "../lib/email";
-import { hasAdminSession } from "../lib/admin-session";
+import { getAdminIdentity, hasAdminSession } from "../lib/admin-session";
 
 const router: IRouter = Router();
 
@@ -118,6 +118,11 @@ router.patch("/merch-orders/:id/verify", async (req, res): Promise<void> => {
     res.status(401).json({ error: "Admin sign-in is required." });
     return;
   }
+  const adminIdentity = getAdminIdentity(req);
+  if (!adminIdentity) {
+    res.status(401).json({ error: "Admin sign-in is required." });
+    return;
+  }
 
   const parsed = ConfirmMerchOrderPaymentParams.safeParse(req.params);
   if (!parsed.success) {
@@ -127,7 +132,11 @@ router.patch("/merch-orders/:id/verify", async (req, res): Promise<void> => {
 
   const [order] = await db
     .update(merchOrdersTable)
-    .set({ status: "verified" })
+    .set({
+      status: "verified",
+      paymentConfirmedAt: new Date(),
+      paymentConfirmedBy: adminIdentity,
+    })
     .where(
       and(
         eq(merchOrdersTable.id, parsed.data.id),

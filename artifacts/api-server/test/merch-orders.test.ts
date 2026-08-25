@@ -5,11 +5,14 @@ import express from "express";
 import { mock } from "node:test";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { createHmac } from "node:crypto";
 
 const table = {
   id: { name: "id" },
   createdAt: { name: "created_at" },
   status: { name: "status" },
+  paymentConfirmedAt: { name: "payment_confirmed_at" },
+  paymentConfirmedBy: { name: "payment_confirmed_by" },
 };
 const state = { rows: [], nextId: 1 };
 
@@ -47,6 +50,24 @@ function fakeDb() {
         },
       };
     },
+    update() {
+      return {
+        set(values) {
+          return {
+            where() {
+              return {
+                returning: async () => {
+                  const row = state.rows.find((candidate) => candidate.status === "awaiting_verification");
+                  if (!row) return [];
+                  Object.assign(row, values);
+                  return [row];
+                },
+              };
+            },
+          };
+        },
+      };
+    },
   };
 }
 
@@ -80,14 +101,14 @@ function makeApp() {
   return app;
 }
 
-async function request(method, path, body) {
+async function request(method, path, body, headers = {}) {
   const server = makeApp().listen(0);
   await new Promise((resolve) => server.once("listening", resolve));
   const port = server.address().port;
   try {
     return await fetch(`http://127.0.0.1:${port}${path}`, {
       method,
-      headers: body === undefined ? {} : { "content-type": "application/json" },
+      headers: { ...(body === undefined ? {} : { "content-type": "application/json" }), ...headers },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } finally {
@@ -100,6 +121,7 @@ describe("merch preorder persistence and validation", () => {
     state.rows.length = 0;
     state.nextId = 1;
     delete process.env.SESSION_SECRET;
+    delete process.env.ADMIN_USERNAME;
   });
 
   it("saves every fulfillment field from a valid preorder", async () => {
@@ -153,5 +175,26 @@ describe("merch preorder persistence and validation", () => {
 
     assert.equal(response.status, 401);
     assert.deepEqual(await response.json(), { error: "Admin sign-in is required." });
+  });
+
+  it("records the confirming admin and timestamp", async () => {
+    process.env.SESSION_SECRET = "test-session-secret";
+    const username = "finance.admin@example.com";
+    const issuedAt = Math.floor(Date.now() / 1000);
+    const encodedUsername = Buffer.from(username, "utf8").toString("base64url");
+    const tokenData = `${issuedAt}.${encodedUsername}`;
+    const signature = createHmac("sha256", process.env.SESSION_SECRET).update(tokenData).digest("hex");
+    const cookie = `shalom_admin_session=${tokenData}.${signature}`;
+
+    await request("POST", "/merch-orders", validOrder);
+    const response = await request("PATCH", "/merch-orders/1/verify", undefined, { cookie });
+    const body = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(body.status, "verified");
+    assert.equal(body.paymentConfirmedBy, username);
+    assert.ok(body.paymentConfirmedAt);
+    assert.equal(state.rows[0].paymentConfirmedBy, username);
+    assert.ok(state.rows[0].paymentConfirmedAt instanceof Date);
   });
 });
