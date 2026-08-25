@@ -386,6 +386,8 @@ components:
             $ref: "#/components/schemas/MerchOrderItem"
         total: { type: integer }
         status: { type: string, enum: [awaiting_verification, verified] }
+        paymentConfirmedAt: { type: ["string", "null"], format: date-time }
+        paymentConfirmedBy: { type: ["string", "null"] }
         createdAt: { type: string, format: date-time }
     MerchOrderInput:
       type: object

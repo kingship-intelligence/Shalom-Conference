@@ -44,6 +44,8 @@ export const merchOrdersTable = pgTable("merch_orders", {
   items: jsonb("items").notNull(),
   total: integer("total").notNull(),
   status: text("status").notNull().default("awaiting_verification"),
+  paymentConfirmedAt: timestamp("payment_confirmed_at", { withTimezone: true }),
+  paymentConfirmedBy: text("payment_confirmed_by"),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
 

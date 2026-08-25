@@ -206,6 +206,8 @@ export const ListMerchOrdersResponseItem = zod.object({
   ),
   total: zod.number(),
   status: zod.enum(["awaiting_verification", "verified"]),
+  paymentConfirmedAt: zod.coerce.date().nullish(),
+  paymentConfirmedBy: zod.string().nullish(),
   createdAt: zod.coerce.date(),
 });
 export const ListMerchOrdersResponse = zod.array(ListMerchOrdersResponseItem);
@@ -233,5 +235,7 @@ export const ConfirmMerchOrderPaymentResponse = zod.object({
   ),
   total: zod.number(),
   status: zod.enum(["awaiting_verification", "verified"]),
+  paymentConfirmedAt: zod.coerce.date().nullish(),
+  paymentConfirmedBy: zod.string().nullish(),
   createdAt: zod.coerce.date(),
 });
