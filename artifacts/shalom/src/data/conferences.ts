@@ -4,6 +4,8 @@ import gbemiJImage from "@assets/IMG_1081_1787621760140.JPG";
 import ejHaroldImage from "@assets/IMG_1084_1787621774400.JPG";
 import robertBannermanImage from "@assets/Robert_Bannerman_Headshot_1787621782938.jpg";
 import tobiSamagbeyiImage from "@assets/IMG_1082_1787621799133.JPG";
+import reveileMusicImageOne from "@assets/IMG_9826_1787837392601.jpeg";
+import reveileMusicImageTwo from "@assets/IMG_9825_1787837402882.jpeg";
 
 export type Conference = {
   year: string;
@@ -29,6 +31,7 @@ export type Conference = {
     name: string;
     role: string;
     image?: string;
+    images?: string[];
   }>;
 };
 
@@ -75,6 +78,11 @@ export const conferences: Conference[] = [
       { name: "Robert Bannerman", role: "Friday Worship Night", image: robertBannermanImage },
       { name: "EJ Harold", role: "Friday Worship Night", image: ejHaroldImage },
       { name: "Tobi Samagbeyi", role: "Friday Worship Night", image: tobiSamagbeyiImage },
+      {
+        name: "Reveile Music",
+        role: "Friday Worship Night",
+        images: [reveileMusicImageOne, reveileMusicImageTwo],
+      },
       { name: "Prophet Shamar Bennett", role: "Saturday Ministration" },
     ],
   },

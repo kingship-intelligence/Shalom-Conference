@@ -185,7 +185,18 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               <div className="grid gap-4 sm:grid-cols-2">
                 {conference.speakers.map((speaker) => (
                   <div key={speaker.name} className="overflow-hidden border border-white/10 bg-background/60 text-center sm:text-left">
-                    {speaker.image ? (
+                    {speaker.images?.length ? (
+                      <div className="grid grid-cols-1 bg-background sm:grid-cols-2">
+                        {speaker.images.map((image) => (
+                          <img
+                            key={image}
+                            src={image}
+                            alt={speaker.name}
+                            className="h-auto w-full object-contain"
+                          />
+                        ))}
+                      </div>
+                    ) : speaker.image ? (
                       <img
                         src={speaker.image}
                         alt={speaker.name}
