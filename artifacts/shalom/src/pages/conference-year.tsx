@@ -151,27 +151,33 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
         </section>
 
         <section className="bg-card px-4 py-20 sm:px-6 sm:py-24">
-          <div className="container mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
-            <div className="text-center lg:text-left">
-              <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
-                Schedule
-              </h2>
-              <div className="space-y-6">
-                {conference.schedule.map((event) => (
-                  <div
-                    key={`${event.time}-${event.title}`}
-                    className="border-b border-white/10 pb-6 last:border-0"
-                  >
-                    <p className="mb-2 font-mono text-sm uppercase tracking-widest text-primary">
-                      {event.time}
-                    </p>
-                    <h3 className="text-xl font-bold text-white sm:text-2xl">{event.title}</h3>
-                  </div>
-                ))}
+          <div
+            className={`container mx-auto gap-12 ${
+              isCurrent ? "max-w-5xl" : "grid max-w-7xl lg:grid-cols-2"
+            }`}
+          >
+            {!isCurrent && (
+              <div className="text-center lg:text-left">
+                <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
+                  Schedule
+                </h2>
+                <div className="space-y-6">
+                  {conference.schedule.map((event) => (
+                    <div
+                      key={`${event.time}-${event.title}`}
+                      className="border-b border-white/10 pb-6 last:border-0"
+                    >
+                      <p className="mb-2 font-mono text-sm uppercase tracking-widest text-primary">
+                        {event.time}
+                      </p>
+                      <h3 className="text-xl font-bold text-white sm:text-2xl">{event.title}</h3>
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
+            )}
 
-            <div className="text-center lg:text-left">
+            <div className={isCurrent ? "text-center" : "text-center lg:text-left"}>
               <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
                 Lineup
               </h2>
