@@ -13,14 +13,14 @@ const PRODUCTS = [
     id: "comforter-tee",
     name: "The Comforter Tee",
     description: "Shalom on the front, with a Comforter design on the back.",
-    price: 50,
+    price: 35,
     images: [comforterFrontImage, logoTeeImage],
   },
   {
     id: "comforter-tee-alt",
     name: "The Comforter Tee — Shalom Edition",
     description: "Shalom on the front, with a Comforter design on the back.",
-    price: 50,
+    price: 35,
     images: [comforterBackImage, logoTeeImage],
   },
 ] as const;
