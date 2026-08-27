@@ -182,10 +182,10 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                       <img
                         src={speaker.image}
                         alt={speaker.name}
-                        className="h-64 w-full object-cover object-top"
+                        className="aspect-[4/5] h-auto w-full bg-background/60 object-contain"
                       />
                     ) : (
-                      <div className="flex h-64 items-center justify-center bg-primary/5">
+                      <div className="flex aspect-[4/5] items-center justify-center bg-primary/5">
                         <Users className="h-10 w-10 text-primary" />
                       </div>
                     )}
