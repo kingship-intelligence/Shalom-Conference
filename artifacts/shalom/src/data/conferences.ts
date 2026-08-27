@@ -22,6 +22,7 @@ export type Conference = {
   highlights: string[];
   schedule: Array<{
     time: string;
+    label?: string;
     title: string;
   }>;
   speakers: Array<{
@@ -56,11 +57,16 @@ export const conferences: Conference[] = [
       "Spiritual renewal for students and young adults",
     ],
     schedule: [
-      { time: "Friday 7:00 PM", title: "Friday Worship Night" },
-      { time: "Sat 10:00 AM", title: "Doors Open & Community" },
-      { time: "Sat 11:00 AM", title: "Session 1: The Promise" },
-      { time: "Sat 3:00 PM", title: "Session 2: The Comforter" },
-      { time: "Saturday 6:30 PM", title: "Ministration with Prophet Shamar Bennett" },
+      {
+        time: "Friday | 7:00 PM",
+        label: "Session One",
+        title: "The Comforter: An Evening of Worship and Prophetic Encounter",
+      },
+      {
+        time: "Saturday | 6:00 PM",
+        label: "Session Two",
+        title: "The Comforter: The Heart of Worship",
+      },
     ],
     speakers: [
       { name: "Ore Olajuyigbe", role: "Friday Worship Night", image: oreOlajuyigbeImage },
