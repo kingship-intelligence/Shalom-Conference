@@ -1,8 +1,9 @@
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, Calendar, Mail, MapPin, MessageSquare, Sparkles, Users, Zap } from "lucide-react";
 import { SiInstagram } from "react-icons/si";
 import { Button } from "@/components/ui/button";
-import { currentConference, getConferenceByYear } from "@/data/conferences";
+import { currentConference, getConferenceByYear, type Conference } from "@/data/conferences";
 import NotFound from "@/pages/not-found";
 import SiteHeader from "@/components/SiteHeader";
 import shalomLogo from "@assets/logo_1778697155106.png";
@@ -10,6 +11,102 @@ import shalomLogo from "@assets/logo_1778697155106.png";
 type ConferenceYearProps = {
   year?: string;
 };
+
+function SpeakerCard({ speaker }: { speaker: Conference["speakers"][number] }) {
+  const [flipped, setFlipped] = useState(false);
+  const cardRef = useRef<HTMLDivElement>(null);
+  const isLandscape = speaker.imageLayout === "landscape";
+
+  useEffect(() => {
+    if (!speaker.bio || !cardRef.current || typeof IntersectionObserver === "undefined") {
+      return;
+    }
+
+    const card = cardRef.current;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const timeout = window.setTimeout(() => setFlipped(true), 700);
+          observer.unobserve(card);
+          window.clearTimeout(timeout);
+          setFlipped(true);
+        }
+      },
+      { threshold: 0.3 },
+    );
+
+    observer.observe(card);
+    return () => observer.disconnect();
+  }, [speaker.bio]);
+
+  const aspectClass = isLandscape ? "aspect-[3/2]" : "aspect-[4/5]";
+  const imageClass = isLandscape
+    ? "h-full w-full object-contain"
+    : "h-full w-full object-contain";
+
+  if (!speaker.bio) {
+    return (
+      <div className="overflow-hidden border border-white/10 bg-background/60 text-center sm:text-left">
+        {speaker.image ? (
+          <img
+            src={speaker.image}
+            alt={speaker.name}
+            className={`${aspectClass} h-auto w-full bg-background/60 object-contain`}
+          />
+        ) : (
+          <div className={`${aspectClass} flex items-center justify-center bg-primary/5`}>
+            <Users className="h-10 w-10 text-primary" />
+          </div>
+        )}
+        <div className="p-6">
+          <h3 className="text-2xl font-bold text-white">{speaker.name}</h3>
+          <p className="text-muted-foreground">{speaker.role}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div ref={cardRef} className="group">
+      <button
+        type="button"
+        onClick={() => setFlipped((current) => !current)}
+        className={`relative block w-full ${aspectClass} [perspective:1200px]`}
+        aria-label={`${flipped ? "Show photo" : "Read bio"} for ${speaker.name}`}
+        aria-pressed={flipped}
+      >
+        <div
+          className="absolute inset-0 overflow-hidden border border-white/10 bg-background/60 text-left transition-transform duration-700 [backface-visibility:hidden] [transform-style:preserve-3d] motion-reduce:transition-none"
+          style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
+        >
+          {speaker.image ? (
+            <img src={speaker.image} alt={speaker.name} className={imageClass} />
+          ) : (
+            <div className="flex h-full items-center justify-center bg-primary/5">
+              <Users className="h-10 w-10 text-primary" />
+            </div>
+          )}
+          <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/65 to-transparent px-5 pb-5 pt-16">
+            <h3 className="text-2xl font-bold text-white">{speaker.name}</h3>
+            <p className="text-sm text-white/75">{speaker.role}</p>
+          </div>
+        </div>
+
+        <div
+          className="absolute inset-0 flex flex-col overflow-y-auto border border-primary/30 bg-background p-5 text-left transition-transform duration-700 [backface-visibility:hidden] [transform:rotateY(180deg)] [transform-style:preserve-3d] motion-reduce:transition-none sm:p-6"
+          style={{ transform: flipped ? "rotateY(0deg)" : "rotateY(-180deg)" }}
+        >
+          <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">{speaker.role}</p>
+          <h3 className="mt-3 text-2xl font-bold text-white">{speaker.name}</h3>
+          <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{speaker.bio}</p>
+        </div>
+      </button>
+      <p className="mt-3 text-center text-xs uppercase tracking-[0.18em] text-white/45">
+        Tap to {flipped ? "view photo" : "read bio"}
+      </p>
+    </div>
+  );
+}
 
 export default function ConferenceYear({ year = currentConference.year }: ConferenceYearProps) {
   const conference = getConferenceByYear(year);
@@ -184,38 +281,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               </h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 {conference.speakers.map((speaker) => (
-                  <div key={speaker.name} className="overflow-hidden border border-white/10 bg-background/60 text-center sm:text-left">
-                    {speaker.images?.length ? (
-                      <div className="grid grid-cols-1 bg-background sm:grid-cols-2">
-                        {speaker.images.map((image) => (
-                          <img
-                            key={image}
-                            src={image}
-                            alt={speaker.name}
-                            className="h-auto w-full object-contain"
-                          />
-                        ))}
-                      </div>
-                    ) : speaker.image ? (
-                      <img
-                        src={speaker.image}
-                        alt={speaker.name}
-                        className={
-                          speaker.imageLayout === "landscape"
-                            ? "h-auto w-full bg-background/60 object-contain"
-                            : "aspect-[4/5] h-auto w-full bg-background/60 object-contain"
-                        }
-                      />
-                    ) : (
-                      <div className="flex aspect-[4/5] items-center justify-center bg-primary/5">
-                        <Users className="h-10 w-10 text-primary" />
-                      </div>
-                    )}
-                    <div className="p-6">
-                    <h3 className="text-2xl font-bold text-white">{speaker.name}</h3>
-                    <p className="text-muted-foreground">{speaker.role}</p>
-                    </div>
-                  </div>
+                  <SpeakerCard key={speaker.name} speaker={speaker} />
                 ))}
               </div>
             </div>
