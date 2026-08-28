@@ -82,7 +82,16 @@ Her musical journey began at a young age, developing her gift through vocal perf
 
 Whether leading worship or serving alongside other ministers, Ore’s heart is to see people move beyond simply singing songs into experiencing genuine moments of worship, surrender, and intimacy with God.`,
       },
-      { name: "B-Praiz", role: "Friday Worship Night", image: bPraizImage },
+      {
+        name: "B-Praiz",
+        role: "Friday Worship Night",
+        image: bPraizImage,
+        bio: `Boluwatife Olukoya, known as B-Praiz, is a gospel minister and songwriter with a divine mandate to release a sound that brings liberty to God’s people. Based in Baltimore, Maryland, USA, he was born and raised in Lagos, Nigeria, where his passion for music and ministry began.
+
+B-Praiz is renowned for blending contemporary gospel with Afrobeats, crafting powerful, spirit-filled songs that inspire worship, restore hope, and uplift souls. His anointed ministrations and heartfelt melodies shift atmospheres, touching lives and transforming destinies.
+
+Beyond music, he is deeply committed to spreading the gospel and using his sound as a tool for deliverance and breakthrough. Happily married and blessed with a beautiful daughter, B-Praiz continues to serve God passionately, bringing a message of freedom and victory through every song he releases.`,
+      },
       {
         name: "Gbemi J",
         role: "Friday Worship Night",
