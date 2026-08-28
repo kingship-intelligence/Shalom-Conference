@@ -95,7 +95,16 @@ More recently, Gbemi J was featured by B-Praiz on Dance of Praise, showcasing he
 
 Whether through live ministration or recorded music, Gbemi’s heart remains centered on glorifying Jesus, serving His people, and using her gift to inspire others into deeper worship and joyful praise.`,
       },
-      { name: "Robert Bannerman", role: "Friday Worship Night", image: robertBannermanImage },
+      {
+        name: "Robert Bannerman",
+        role: "Friday Worship Night",
+        image: robertBannermanImage,
+        bio: `Robert Bannerman is a passionate worship leader and music minister with a heart for leading people into genuine encounters with God through worship.
+
+His ministry is rooted in a love for Jesus and a desire to see people drawn into deeper intimacy with God. Through heartfelt, Spirit-led worship, Robert seeks to create moments that move beyond music—moments where hearts are surrendered, faith is strengthened, and Jesus is exalted.
+
+With humility and a commitment to serving the body of Christ, Robert continues to use his gift to point people toward the presence of God and make Jesus known through worship.`,
+      },
       {
         name: "Ejay Harold",
         role: "Friday Worship Night",
