@@ -5,6 +5,7 @@ import ejHaroldImage from "@assets/IMG_1084_1787621774400.JPG";
 import robertBannermanImage from "@assets/Robert_Bannerman_Headshot_1787621782938.jpg";
 import tobiSamagbeyiImage from "@assets/IMG_1082_1787621799133.JPG";
 import reveileMusicImageOne from "@assets/IMG_9826_1787837392601.jpeg";
+import shalom2026FlyerImage from "@assets/image_1787961443681.jpeg";
 
 export type Conference = {
   year: string;
@@ -51,8 +52,8 @@ export const conferences: Conference[] = [
     scriptureText:
       "But the Comforter, which is the Holy Ghost, whom the Father will send in my name, he shall teach you all things, and bring all things to your remembrance. Peace I leave with you, my peace I give unto you.",
     registrationUrl: "https://example.com/register",
-    image: "/images/worship.png",
-    flyer: "/images/2026/the-comforter-flyer.png",
+    image: shalom2026FlyerImage,
+    flyer: shalom2026FlyerImage,
     highlights: [
       "Pure worship",
       "Teaching on the Comforter",
