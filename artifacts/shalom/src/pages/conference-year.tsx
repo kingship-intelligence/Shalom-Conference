@@ -23,26 +23,28 @@ function SpeakerCard({ speaker }: { speaker: Conference["speakers"][number] }) {
     }
 
     const card = cardRef.current;
+    let timeout: number | undefined;
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
-          const timeout = window.setTimeout(() => setFlipped(true), 700);
           observer.unobserve(card);
-          window.clearTimeout(timeout);
-          setFlipped(true);
+          timeout = window.setTimeout(() => setFlipped(true), 700);
         }
       },
       { threshold: 0.3 },
     );
 
     observer.observe(card);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+      if (timeout !== undefined) {
+        window.clearTimeout(timeout);
+      }
+    };
   }, [speaker.bio]);
 
   const aspectClass = isLandscape ? "aspect-[3/2]" : "aspect-[4/5]";
-  const imageClass = isLandscape
-    ? "h-full w-full object-contain"
-    : "h-full w-full object-contain";
+  const imageClass = "h-full w-full object-contain";
 
   if (!speaker.bio) {
     return (
@@ -251,7 +253,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
           <div
             className="container mx-auto grid max-w-7xl gap-12 lg:grid-cols-2"
           >
-            <div className="text-center lg:text-left">
+            <div id="lineup" className="scroll-mt-24 text-center lg:text-left">
                 <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
                   Event Schedule
                 </h2>

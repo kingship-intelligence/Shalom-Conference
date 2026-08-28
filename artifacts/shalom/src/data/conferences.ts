@@ -30,8 +30,8 @@ export type Conference = {
     name: string;
     role: string;
     image?: string;
-    images?: string[];
     imageLayout?: "portrait" | "landscape";
+    bio?: string;
   }>;
 };
 
@@ -72,17 +72,60 @@ export const conferences: Conference[] = [
       },
     ],
     speakers: [
-      { name: "Ore Olajuyigbe", role: "Friday Worship Night", image: oreOlajuyigbeImage },
+      {
+        name: "Ore Olajuyigbe",
+        role: "Friday Worship Night",
+        image: oreOlajuyigbeImage,
+        bio: `Ore Olajuyigbe is a gifted worship leader and vocalist with a heart for creating an atmosphere where people can encounter God through sincere and heartfelt worship.
+
+Her musical journey began at a young age, developing her gift through vocal performance and ensemble music before growing into her calling as a worship minister. Today, Ore uses her voice as an instrument of ministry, carrying a passion for God’s presence and a desire to point people toward Jesus.
+
+Whether leading worship or serving alongside other ministers, Ore’s heart is to see people move beyond simply singing songs into experiencing genuine moments of worship, surrender, and intimacy with God.`,
+      },
       { name: "B-Praiz", role: "Friday Worship Night", image: bPraizImage },
-      { name: "Gbemi-J", role: "Friday Worship Night", image: gbemiJImage },
+      {
+        name: "Gbemi J",
+        role: "Friday Worship Night",
+        image: gbemiJImage,
+        bio: `Gbemi J is a passionate gospel artist, worship leader, and music minister with a heart for leading people into genuine encounters with God through worship and praise.
+
+Her ministry is marked by heartfelt worship, joyful praise, and a sincere desire to see lives transformed in the presence of God. Over the years, she has lent her voice to various gospel projects and collaborations, including Seun Laoye’s The Name of the Lord, a live gospel album recorded in College Park, Maryland.
+
+More recently, Gbemi J was featured by B-Praiz on Dance of Praise, showcasing her vibrant and expressive approach to praise music.
+
+Whether through live ministration or recorded music, Gbemi’s heart remains centered on glorifying Jesus, serving His people, and using her gift to inspire others into deeper worship and joyful praise.`,
+      },
       { name: "Robert Bannerman", role: "Friday Worship Night", image: robertBannermanImage },
-      { name: "EJ Harold", role: "Friday Worship Night", image: ejHaroldImage },
-      { name: "Tobi Samagbeyi", role: "Friday Worship Night", image: tobiSamagbeyiImage },
+      {
+        name: "Ejay Harold",
+        role: "Friday Worship Night",
+        image: ejHaroldImage,
+        bio: `Ejay Harold is a Christian recording artist, worship leader, and music minister whose ministry is centered on creating authentic encounters with God through worship.
+
+Since the release of In Worship in 2020, Ejay has continued to build a growing body of music, including I AM GOD, EL SHADDAI, IN WORSHIP (Live), WHAT A MIGHTY GOD, No Weapon, and Joy To The World. His music reflects a heart for reverence, passionate worship, and pointing people back to the greatness and faithfulness of God.
+
+Beyond his recorded music, Ejay ministers across various worship gatherings and Christian events, using his gift to lead people into moments of heartfelt praise and worship. At the core of his ministry is a desire to exalt Jesus and see lives transformed in the presence of God.`,
+      },
+      {
+        name: "Tobi Samagbeyi",
+        role: "Friday Worship Night",
+        image: tobiSamagbeyiImage,
+        bio: `Minister Tobi Samagbeyi is a passionate worship minister based in the DMV area, devoted to serving God through music and ministry. A member of CCI DMV, her life reflects a deep commitment to Christ, evident both in her lifestyle and her sound.
+
+With releases such as Abba, Forever, and Son of Suffering, Tobi's music carries a heartfelt expression of worship, drawing listeners into deeper intimacy with God. Her style blends grace, authenticity, and spiritual depth, creating an atmosphere in which lives are transformed by the presence of the Holy Spirit.
+
+She has ministered alongside notable gospel artists, including CalledOut Music, and continues to impact audiences through her dynamic and spirit-led worship. Her mission is to raise a generation of true worshippers and to see hearts aligned with the will of God through music.`,
+      },
       {
         name: "Reveille Music",
         role: "Friday Worship Night",
         image: reveileMusicImageOne,
         imageLayout: "landscape",
+        bio: `Reveille Music is one of the worship expressions of RCCG Higher Ground Assembly, a collective of worship leaders, vocalists, and musicians united by a passion for God’s presence and a desire to see lives transformed through worship.
+
+The name “Reveille,” meaning to awaken, reflects the heart of the ministry: to awaken hearts to Jesus and stir a generation toward deeper intimacy with God. Through passionate praise, heartfelt worship, and Spirit-led ministry, Reveille Music seeks to create an atmosphere where people can genuinely encounter God.
+
+With a sound that blends contemporary worship with vibrant African praise, Reveille Music is committed to spiritual growth, excellence, unity, and service. Whether ministering within the local church or beyond its walls, their mission is to exalt Jesus and awaken a generation to a life of worship.`,
       },
       { name: "Prophet Shamar Bennett", role: "Saturday Ministration" },
     ],
