@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -20,27 +21,65 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 );
 
 export default function Home() {
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const syncPlayback = () => {
+      if (motionPreference.matches) {
+        heroVideoRef.current?.pause();
+      } else {
+        heroVideoRef.current?.play().catch(() => undefined);
+      }
+    };
+
+    syncPlayback();
+    motionPreference.addEventListener?.("change", syncPlayback);
+    return () => motionPreference.removeEventListener?.("change", syncPlayback);
+  }, []);
+
   return (
     <div className="min-h-screen text-gray-900 bg-white">
       <SiteHeader />
 
-      {/* HERO — centered text + image pair */}
-      <section className="bg-white px-6 py-16 sm:px-6 lg:py-24">
-        <div className="container mx-auto flex max-w-5xl flex-col items-center justify-center gap-12 lg:flex-row lg:gap-16">
-          {/* Text */}
+      {/* HERO — full-bleed video */}
+      <section
+        className="relative isolate flex min-h-[min(760px,calc(100svh-76px))] items-center overflow-hidden bg-gray-950 px-6 py-20 text-white sm:px-10 lg:px-16"
+        style={{ backgroundImage: "url('/images/home/shalom-hero-video-poster.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
+      >
+        <video
+          ref={heroVideoRef}
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/images/home/shalom-hero-video-poster.jpg"
+          className="absolute inset-0 -z-20 h-full w-full object-cover"
+          aria-hidden="true"
+        >
+          <source src="/videos/shalom-hero-2024.mp4" type="video/mp4" />
+        </video>
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(7,3,15,0.9)_0%,rgba(20,5,28,0.7)_42%,rgba(20,5,28,0.28)_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
+
+        <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="flex max-w-lg flex-col items-center text-center"
+            className="flex max-w-2xl flex-col items-center text-center sm:items-start sm:text-left"
           >
+            <p className="mb-5 text-xs font-bold uppercase tracking-[0.35em] text-primary sm:text-sm">
+              October 9–10, 2026 · Windsor Mill, Maryland
+            </p>
             <h1
-              className="mb-6 text-[3.25rem] font-bold uppercase leading-[0.88] tracking-wide text-gray-900 sm:text-6xl lg:text-[4.5rem] xl:text-[5.5rem] italic"
+              className="mb-6 text-[3.25rem] font-bold uppercase leading-[0.88] tracking-wide text-white sm:text-6xl lg:text-[4.5rem] xl:text-[5.5rem] italic"
               style={{ fontFamily: "var(--font-display)" }}
             >
               {currentConference.year}: {currentConference.theme}
             </h1>
-            <p className="mb-8 text-lg font-medium leading-relaxed text-gray-500 max-w-md">
+            <p className="mb-8 max-w-xl text-lg font-medium leading-relaxed text-white/80">
               A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
@@ -63,20 +102,6 @@ export default function Home() {
                 <Link href="/2026">Learn More</Link>
               </Button>
             </div>
-          </motion.div>
-
-          {/* Floating image card */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.96 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, delay: 0.15 }}
-            className="relative w-full max-w-sm shrink-0 overflow-hidden rounded-3xl shadow-2xl ring-1 ring-black/5"
-          >
-            <img
-              src="/images/home/shalom-hero-new.jpg"
-              alt="Shalom worship gathering"
-              className="aspect-[4/5] h-full w-full object-cover"
-            />
           </motion.div>
         </div>
       </section>
