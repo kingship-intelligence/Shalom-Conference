@@ -149,7 +149,7 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
       },
       {
         name: "Prophet Shamar Bennett",
-        role: "Saturday Ministration",
+        role: "Minister",
         image: prophetShamarBennettImage,
       },
     ],
