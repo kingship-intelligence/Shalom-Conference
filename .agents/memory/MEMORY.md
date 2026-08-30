@@ -1,2 +1,3 @@
 - [API test runner](api-test-runner.md) — API package tests use the workspace catalog TypeScript runner as a package-local dev dependency.
+- [Attendee badge template validation](attendee-badge-template-validation.md) — render a real portrait sample after template swaps; visual frame estimates and indexed PNG output can mislead.
 - [Merch payment confirmation](merch-payment-confirmation.md) — Cash App orders are received first, then manually verified; never claim payment is confirmed on submission.

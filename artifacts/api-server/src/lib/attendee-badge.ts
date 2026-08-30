@@ -14,11 +14,11 @@ if (!templateUrl) {
 const ATTENDEE_TEMPLATE = readFileSync(templateUrl);
 
 const PHOTO_AREA = {
-  left: 164,
-  top: 704,
-  width: 794,
-  height: 378,
-  radius: 54,
+  left: 205,
+  top: 702,
+  width: 712,
+  height: 486,
+  radius: 52,
 } as const;
 
 export async function createAttendeeBadge(input: {
@@ -29,7 +29,7 @@ export async function createAttendeeBadge(input: {
 }): Promise<Buffer> {
   const portrait = await sharp(input.portrait, { limitInputPixels: 20_000_000 })
     .rotate()
-    .resize(PHOTO_AREA.width, PHOTO_AREA.height, { fit: "cover", position: "attention" })
+    .resize(PHOTO_AREA.width, PHOTO_AREA.height, { fit: "cover", position: "center" })
     .composite([
       {
         input: Buffer.from(
@@ -43,6 +43,6 @@ export async function createAttendeeBadge(input: {
 
   return sharp(ATTENDEE_TEMPLATE)
     .composite([{ input: portrait, top: PHOTO_AREA.top, left: PHOTO_AREA.left }])
-    .png({ compressionLevel: 9, palette: true })
+    .png({ compressionLevel: 9 })
     .toBuffer();
 }
