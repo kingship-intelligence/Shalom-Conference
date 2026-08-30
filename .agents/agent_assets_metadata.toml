@@ -1,5 +1,4 @@
 uploads = []
-outputs = []
 
 [[generated]]
 id = "6pj7x5eQ51vjNh23Pkbrg"
@@ -12,3 +11,10 @@ id = "nFEnjfMr_HpPvhgLUB8N2"
 uri = "file://artifacts/shalom/public/images/community.png"
 type = "image"
 title = "vibrant youth community"
+
+[[outputs]]
+id = "Yi3QnWh26ag8ETMsJ64dX"
+uri = "file://artifacts/api-server/preview/shalom-attendee-badge-sample.png"
+type = "image"
+title = "Sample I’m Attending Badge"
+description = "A sample badge rendered with the new Shalom template and a representative portrait."
