@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -20,8 +20,11 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
   </motion.div>
 );
 
+const HERO_SEGMENT_COUNT = 15;
+
 export default function Home() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
+  const [heroSegment, setHeroSegment] = useState(0);
 
   useEffect(() => {
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -36,7 +39,7 @@ export default function Home() {
     syncPlayback();
     motionPreference.addEventListener?.("change", syncPlayback);
     return () => motionPreference.removeEventListener?.("change", syncPlayback);
-  }, []);
+  }, [heroSegment]);
 
   return (
     <div className="min-h-screen text-gray-900 bg-white">
@@ -48,17 +51,21 @@ export default function Home() {
         style={{ backgroundImage: "url('/images/home/shalom-hero-video-poster.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         <video
+          key={heroSegment}
           ref={heroVideoRef}
           autoPlay
           muted
-          loop
           playsInline
-          preload="metadata"
+          preload="auto"
           poster="/images/home/shalom-hero-video-poster.jpg"
           className="absolute inset-0 -z-20 h-full w-full object-cover"
+          onEnded={() => setHeroSegment((segment) => (segment + 1) % HERO_SEGMENT_COUNT)}
           aria-hidden="true"
         >
-          <source src="/videos/shalom-hero-2024.mp4" type="video/mp4" />
+          <source
+            src={`/videos/shalom-hero-segments/segment-${String(heroSegment + 1).padStart(2, "0")}.mp4`}
+            type="video/mp4"
+          />
         </video>
         <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(7,3,15,0.9)_0%,rgba(20,5,28,0.7)_42%,rgba(20,5,28,0.28)_100%)]" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
@@ -94,7 +101,7 @@ export default function Home() {
                 asChild
                 variant="outline"
                 size="lg"
-                className="rounded-full border-gray-200 text-gray-700 hover:bg-gray-50 font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
+                className="rounded-full border-white/70 text-white hover:bg-white/10 hover:text-white font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
               >
                 <Link href="/2026">Learn More</Link>
               </Button>
