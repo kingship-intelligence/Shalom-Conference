@@ -6,6 +6,7 @@ import robertBannermanImage from "@assets/Robert_Bannerman_Headshot_178762178293
 import tobiSamagbeyiImage from "@assets/IMG_1082_1787621799133.JPG";
 import reveileMusicImageOne from "@assets/IMG_9826_1787837392601.jpeg";
 import shalom2026FlyerImage from "@assets/image_1787961443681.jpeg";
+import prophetShamarBennettImage from "@assets/image_1788129880525.png";
 
 export type Conference = {
   year: string;
@@ -146,7 +147,11 @@ The name “Reveille,” meaning to awaken, reflects the heart of the ministry: 
 
 With a sound that blends contemporary worship with vibrant African praise, Reveille Music is committed to spiritual growth, excellence, unity, and service. Whether ministering within the local church or beyond its walls, their mission is to exalt Jesus and awaken a generation to a life of worship.`,
       },
-      { name: "Prophet Shamar Bennett", role: "Saturday Ministration" },
+      {
+        name: "Prophet Shamar Bennett",
+        role: "Saturday Ministration",
+        image: prophetShamarBennettImage,
+      },
     ],
   },
   {
