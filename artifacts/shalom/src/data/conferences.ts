@@ -75,7 +75,7 @@ export const conferences: Conference[] = [
     speakers: [
       {
         name: "Ore Olajuyigbe",
-        role: "Friday Worship Night",
+        role: "Minister",
         image: oreOlajuyigbeImage,
         bio: `Ore Olajuyigbe is a gifted worship leader and vocalist with a heart for creating an atmosphere where people can encounter God through sincere and heartfelt worship.
 
@@ -85,7 +85,7 @@ Whether leading worship or serving alongside other ministers, Ore’s heart is t
       },
       {
         name: "B-Praiz",
-        role: "Friday Worship Night",
+        role: "Minister",
         image: bPraizImage,
         bio: `Boluwatife Olukoya, known as B-Praiz, is a gospel minister and songwriter with a divine mandate to release a sound that brings liberty to God’s people. Based in Baltimore, Maryland, USA, he was born and raised in Lagos, Nigeria, where his passion for music and ministry began.
 
@@ -95,7 +95,7 @@ Beyond music, he is deeply committed to spreading the gospel and using his sound
       },
       {
         name: "Gbemi J",
-        role: "Friday Worship Night",
+        role: "Minister",
         image: gbemiJImage,
         bio: `Gbemi J is a passionate gospel artist, worship leader, and music minister with a heart for leading people into genuine encounters with God through worship and praise.
 
@@ -107,7 +107,7 @@ Whether through live ministration or recorded music, Gbemi’s heart remains cen
       },
       {
         name: "Robert Bannerman",
-        role: "Friday Worship Night",
+        role: "Minister",
         image: robertBannermanImage,
         bio: `Robert Bannerman is a passionate worship leader and music minister with a heart for leading people into genuine encounters with God through worship.
 
@@ -117,7 +117,7 @@ With humility and a commitment to serving the body of Christ, Robert continues t
       },
       {
         name: "Ejay Harold",
-        role: "Friday Worship Night",
+        role: "Minister",
         image: ejHaroldImage,
         bio: `Ejay Harold is a Christian recording artist, worship leader, and music minister whose ministry is centered on creating authentic encounters with God through worship.
 
@@ -127,7 +127,7 @@ Beyond his recorded music, Ejay ministers across various worship gatherings and 
       },
       {
         name: "Tobi Samagbeyi",
-        role: "Friday Worship Night",
+        role: "Minister",
         image: tobiSamagbeyiImage,
         bio: `Minister Tobi Samagbeyi is a passionate worship minister based in the DMV area, devoted to serving God through music and ministry. A member of CCI DMV, her life reflects a deep commitment to Christ, evident both in her lifestyle and her sound.
 
@@ -137,7 +137,7 @@ She has ministered alongside notable gospel artists, including CalledOut Music, 
       },
       {
         name: "Reveille Music",
-        role: "Friday Worship Night",
+        role: "Minister",
         image: reveileMusicImageOne,
         imageLayout: "landscape",
         bio: `Reveille Music is one of the worship expressions of RCCG Higher Ground Assembly, a collective of worship leaders, vocalists, and musicians united by a passion for God’s presence and a desire to see lives transformed through worship.
