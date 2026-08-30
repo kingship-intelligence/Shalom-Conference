@@ -70,9 +70,6 @@ export default function Home() {
             transition={{ duration: 0.7 }}
             className="flex max-w-2xl flex-col items-center text-center sm:items-start sm:text-left"
           >
-            <p className="mb-5 text-xs font-bold uppercase tracking-[0.35em] text-primary sm:text-sm">
-              October 9–10, 2026 · Windsor Mill, Maryland
-            </p>
             <h1
               className="mb-6 text-[3.25rem] font-bold uppercase leading-[0.88] tracking-wide text-white sm:text-6xl lg:text-[4.5rem] xl:text-[5.5rem] italic"
               style={{ fontFamily: "var(--font-display)" }}
