@@ -353,7 +353,7 @@ function ExistingRegistrationBadge() {
               Your personalized “I’m Attending” badge has been created and sent to your registration email.
             </p>
           </div>
-          <Button asChild className="w-full h-14 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-bold uppercase tracking-widest border-none">
+          <Button asChild className="w-full h-14 whitespace-normal rounded-full bg-gradient-to-r from-primary to-secondary text-center text-white font-bold uppercase leading-tight tracking-widest border-none">
             <Link href="/2026">Back to Shalom 2026</Link>
           </Button>
         </motion.div>
@@ -472,7 +472,7 @@ function ExistingRegistrationBadge() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-16 rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4 relative overflow-hidden"
+                className="w-full h-16 whitespace-normal rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase leading-tight tracking-widest text-center text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4 relative overflow-hidden"
                 data-testid="button-create-badge"
               >
                 <AnimatePresence mode="wait">
@@ -502,7 +502,7 @@ function ExistingRegistrationBadge() {
                 <div className="opacity-0 flex items-center gap-2">Create My Badge <ArrowRight className="h-6 w-6" /></div>
               </Button>
 
-              <Button asChild type="button" variant="ghost" className="w-full text-white/60 hover:bg-white/5 hover:text-white">
+              <Button asChild type="button" variant="ghost" className="w-full whitespace-normal text-center leading-tight text-white/60 hover:bg-white/5 hover:text-white">
                 <Link href="/2026">Back to 2026 Conference Details</Link>
               </Button>
             </form>
@@ -948,7 +948,7 @@ function RegistrationForm() {
               <Button
                 type="submit"
                 disabled={isLoading}
-                className="w-full h-16 rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4 relative overflow-hidden"
+                className="w-full h-16 whitespace-normal rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase leading-tight tracking-widest text-center text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4 relative overflow-hidden"
                 data-testid="button-submit"
               >
                 <AnimatePresence mode="wait">
