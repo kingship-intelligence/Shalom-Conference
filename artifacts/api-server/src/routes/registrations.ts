@@ -6,6 +6,7 @@ import {
   CompleteRegistrationBadgeBody,
   CompleteRegistrationBadgeParams,
   CreateRegistrationBody,
+  RequestExistingRegistrationBadgeBody,
   ListRegistrationsResponse,
   ListRegistrationsResponseItem,
   RequestRegistrationBadgeUploadUrlBody,
@@ -28,6 +29,10 @@ function hashUploadToken(token: string): string {
 
 function createUploadToken(): string {
   return randomBytes(32).toString("hex");
+}
+
+function getBadgeUploadExpiry(): Date {
+  return new Date(Date.now() + 15 * 60 * 1000);
 }
 
 function toRegistrationResponse(registration: typeof registrationsTable.$inferSelect) {
@@ -95,9 +100,7 @@ router.post("/registrations", async (req, res): Promise<void> => {
   }
 
   const badgeUploadToken = wantsAttendeeBadge ? createUploadToken() : undefined;
-  const badgeUploadExpiresAt = badgeUploadToken
-    ? new Date(Date.now() + 15 * 60 * 1000)
-    : null;
+  const badgeUploadExpiresAt = badgeUploadToken ? getBadgeUploadExpiry() : null;
 
   const [registration] = await db
     .insert(registrationsTable)
@@ -115,6 +118,47 @@ router.post("/registrations", async (req, res): Promise<void> => {
   res.status(201).json({
     ...toRegistrationResponse(registration),
     ...(badgeUploadToken ? { badgeUploadToken } : {}),
+  });
+});
+
+router.post("/registrations/badge-request", async (req, res): Promise<void> => {
+  const parsed = RequestExistingRegistrationBadgeBody.safeParse(req.body);
+  if (!parsed.success) {
+    req.log.warn({ errors: parsed.error.message }, "Invalid existing registration badge request");
+    res.status(400).json({ error: parsed.error.message });
+    return;
+  }
+
+  const [registration] = await db
+    .select()
+    .from(registrationsTable)
+    .where(
+      and(
+        eq(registrationsTable.firstName, parsed.data.firstName),
+        eq(registrationsTable.lastName, parsed.data.lastName),
+        eq(registrationsTable.email, parsed.data.email),
+        eq(registrationsTable.conferenceYear, parsed.data.conferenceYear),
+      ),
+    );
+
+  if (!registration || registration.badgeSentAt) {
+    res.status(404).json({ error: "We couldn't find an eligible registration for those details." });
+    return;
+  }
+
+  const badgeUploadToken = createUploadToken();
+  await db
+    .update(registrationsTable)
+    .set({
+      badgeUploadTokenHash: hashUploadToken(badgeUploadToken),
+      badgeUploadExpiresAt: getBadgeUploadExpiry(),
+      badgePhotoObjectPath: null,
+    })
+    .where(eq(registrationsTable.id, registration.id));
+
+  res.json({
+    registrationId: registration.id,
+    badgeUploadToken,
   });
 });
 

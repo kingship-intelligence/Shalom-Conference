@@ -160,16 +160,28 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                 </p>
 
                 {isCurrent ? (
-                  <Button
-                    asChild
-                    size="lg"
-                    className="mt-10 h-14 w-full max-w-xs rounded-full bg-primary px-8 text-lg font-bold uppercase tracking-wider text-primary-foreground shadow-lg hover:bg-primary/90"
-                  >
-                    <Link href="/register">
-                      Register for Shalom {conference.year}
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </Button>
+                  <div className="flex flex-col items-center lg:items-start">
+                    <Button
+                      asChild
+                      size="lg"
+                      className="mt-10 h-14 w-full max-w-xs rounded-full bg-primary px-8 text-lg font-bold uppercase tracking-wider text-primary-foreground shadow-lg hover:bg-primary/90"
+                    >
+                      <Link href="/register">
+                        Register for Shalom {conference.year}
+                        <ArrowRight className="ml-2 h-5 w-5" />
+                      </Link>
+                    </Button>
+                    <Button
+                      asChild
+                      variant="outline"
+                      size="lg"
+                      className="mt-3 h-auto min-h-12 w-full max-w-xs rounded-full border-primary/40 bg-white/5 px-5 py-3 text-sm font-bold uppercase tracking-wide text-white hover:border-primary hover:bg-primary/10 hover:text-white"
+                    >
+                      <Link href="/register?badge=1">
+                        Already registered? Create your “I’m Attending” badge
+                      </Link>
+                    </Button>
+                  </div>
                 ) : null}
               </div>
             </div>

@@ -50,6 +50,20 @@ export interface RegistrationInput {
   wantsAttendeeBadge?: boolean;
 }
 
+export interface ExistingRegistrationBadgeInput {
+  /** @minLength 1 */
+  firstName: string;
+  /** @minLength 1 */
+  lastName: string;
+  email: string;
+  conferenceYear: number;
+}
+
+export interface BadgeAccess {
+  registrationId: number;
+  badgeUploadToken: string;
+}
+
 export type BadgeUploadInputContentType =
   (typeof BadgeUploadInputContentType)[keyof typeof BadgeUploadInputContentType];
 
