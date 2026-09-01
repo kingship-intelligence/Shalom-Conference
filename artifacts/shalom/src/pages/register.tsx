@@ -111,7 +111,7 @@ function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File
 
   return (
     <div
-      className={`group relative w-full rounded-2xl border-2 border-dashed transition-all p-8 text-center flex flex-col items-center justify-center min-h-[240px] overflow-hidden ${
+      className={`group relative flex aspect-[4/5] w-full max-w-md flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed p-8 text-center transition-all ${
         isDragging
           ? "border-primary bg-primary/10"
           : value
@@ -150,7 +150,7 @@ function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File
             exit={{ opacity: 0, scale: 0.9 }}
             className="flex flex-col items-center gap-5 w-full relative z-10"
           >
-            <div className="relative w-32 h-32 rounded-full overflow-hidden border-2 border-primary shadow-[0_0_30px_rgba(234,88,12,0.3)]">
+            <div className="relative aspect-[4/5] w-40 overflow-hidden rounded-2xl border-2 border-primary shadow-[0_0_30px_rgba(234,88,12,0.3)]">
               <img src={preview} alt="Portrait preview" className="w-full h-full object-cover" />
               <button
                 type="button"

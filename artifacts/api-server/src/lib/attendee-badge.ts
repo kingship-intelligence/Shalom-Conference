@@ -14,11 +14,11 @@ if (!templateUrl) {
 const ATTENDEE_TEMPLATE = readFileSync(templateUrl);
 
 const PHOTO_AREA = {
-  left: 205,
+  left: 367,
   top: 702,
-  width: 712,
-  height: 486,
-  radius: 52,
+  width: 388,
+  height: 485,
+  radius: 42,
 } as const;
 
 export async function createAttendeeBadge(input: {

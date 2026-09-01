@@ -18,3 +18,10 @@ uri = "file://artifacts/api-server/preview/shalom-attendee-badge-sample.png"
 type = "image"
 title = "Sample I’m Attending Badge"
 description = "A sample badge rendered with the new Shalom template and a representative portrait."
+
+[[outputs]]
+id = "gvEAOurOL1NkCryh9L4FM"
+uri = "file://artifacts/api-server/preview/shalom-attendee-4x5-sample.png"
+type = "image"
+title = "4:5 I’m Attending Badge Sample"
+description = "Sample badge showing the new 4:5 portrait window for iPhone-friendly photos."
