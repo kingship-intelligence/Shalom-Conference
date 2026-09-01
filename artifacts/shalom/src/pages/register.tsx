@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, CheckCircle2, Calendar, MapPin, Sparkles, Upload, X } from "lucide-react";
 import {
   useCreateRegistration,
+  useRequestExistingRegistrationBadge,
   useRequestRegistrationBadgeUploadUrl,
   useCompleteRegistrationBadge,
   useSkipRegistrationBadge
@@ -78,15 +79,32 @@ const registrationSchema = z.object({
 );
 
 type RegistrationInput = z.infer<typeof registrationSchema>;
-type SubmitStage = "idle" | "registering" | "preparing" | "uploading" | "finishing";
+type SubmitStage = "idle" | "registering" | "requesting" | "preparing" | "uploading" | "finishing";
 
 const STAGE_MESSAGES: Record<SubmitStage, string> = {
   idle: "Confirm Registration",
   registering: "Securing your spot...",
+  requesting: "Finding your registration...",
   preparing: "Preparing badge...",
   uploading: "Uploading photo...",
   finishing: "Finalizing details...",
 };
+
+const existingBadgeSchema = z.object({
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  email: z.string().email("Please enter a valid email"),
+});
+
+type ExistingBadgeInput = z.infer<typeof existingBadgeSchema>;
+
+function getPortraitValidationMessage(file: File): string | null {
+  if (file.size > 5 * 1024 * 1024) return "Photo must be less than 5MB";
+  if (!["image/jpeg", "image/png", "image/webp"].includes(file.type)) {
+    return "Photo must be JPG, PNG, or WebP";
+  }
+  return null;
+}
 
 function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File) => void }) {
   const [preview, setPreview] = useState<string | null>(null);
@@ -201,7 +219,301 @@ function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File
   );
 }
 
-export default function Register() {
+function ExistingRegistrationBadge() {
+  const [portraitFile, setPortraitFile] = useState<File>();
+  const [isSuccess, setIsSuccess] = useState(false);
+  const [submitStage, setSubmitStage] = useState<SubmitStage>("idle");
+  const { toast } = useToast();
+  const requestExistingBadge = useRequestExistingRegistrationBadge();
+  const requestUploadUrl = useRequestRegistrationBadgeUploadUrl();
+  const completeBadge = useCompleteRegistrationBadge();
+  const skipBadge = useSkipRegistrationBadge();
+  const form = useForm<ExistingBadgeInput>({
+    resolver: zodResolver(existingBadgeSchema),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+    },
+  });
+
+  const isLoading = submitStage !== "idle";
+
+  const onSubmit = async (data: ExistingBadgeInput) => {
+    if (!portraitFile) {
+      toast({
+        title: "Portrait photo required",
+        description: "Please select a portrait photo for your badge.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const portraitError = getPortraitValidationMessage(portraitFile);
+    if (portraitError) {
+      toast({
+        title: "Invalid portrait photo",
+        description: portraitError,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    let access: { registrationId: number; badgeUploadToken: string } | undefined;
+    try {
+      setSubmitStage("requesting");
+      access = await requestExistingBadge.mutateAsync({
+        data: {
+          ...data,
+          conferenceYear: 2026,
+        },
+      });
+
+      setSubmitStage("preparing");
+      const uploadUrlRes = await requestUploadUrl.mutateAsync({
+        registrationId: access.registrationId,
+        data: {
+          token: access.badgeUploadToken,
+          name: portraitFile.name,
+          size: portraitFile.size,
+          contentType: portraitFile.type as "image/jpeg" | "image/png" | "image/webp",
+        },
+      });
+
+      setSubmitStage("uploading");
+      const putRes = await fetch(uploadUrlRes.uploadURL, {
+        method: "PUT",
+        headers: {
+          "Content-Type": portraitFile.type,
+        },
+        body: portraitFile,
+      });
+
+      if (!putRes.ok) {
+        throw new Error(`Upload failed with status: ${putRes.status}`);
+      }
+
+      setSubmitStage("finishing");
+      const completion = await completeBadge.mutateAsync({
+        registrationId: access.registrationId,
+        data: {
+          token: access.badgeUploadToken,
+          objectPath: uploadUrlRes.objectPath,
+        },
+      });
+
+      if (completion.badgeDeliveryStatus !== "delivered") {
+        throw new Error("Badge delivery was not completed");
+      }
+
+      setIsSuccess(true);
+    } catch (error: any) {
+      if (access) {
+        await skipBadge.mutateAsync({
+          registrationId: access.registrationId,
+          data: { token: access.badgeUploadToken },
+        }).catch(() => undefined);
+      }
+      setSubmitStage("idle");
+
+      if (error?.status === 404) {
+        toast({
+          title: "Registration not found",
+          description: "Use the same first name, last name, and email address from your Shalom 2026 registration.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Badge Creation Failed",
+          description: "We couldn't create your badge right now. Please check your photo and try again.",
+          variant: "destructive",
+        });
+      }
+    }
+  };
+
+  if (isSuccess) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="max-w-md w-full text-center space-y-8 p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl"
+        >
+          <div className="flex justify-center">
+            <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center text-primary shadow-[0_0_30px_rgba(234,88,12,0.3)]">
+              <CheckCircle2 className="h-10 w-10" />
+            </div>
+          </div>
+          <div className="space-y-4">
+            <h1 className="text-4xl font-bold italic text-white" style={{ fontFamily: "var(--font-display)" }}>
+              Your Badge Is On Its Way
+            </h1>
+            <p className="text-white/70 text-lg">
+              Your personalized “I’m Attending” badge has been created and sent to your registration email.
+            </p>
+          </div>
+          <Button asChild className="w-full h-14 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-bold uppercase tracking-widest border-none">
+            <Link href="/2026">Back to Shalom 2026</Link>
+          </Button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground relative pb-20">
+      <div className="fixed inset-0 pointer-events-none">
+        <div className="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
+        <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 rounded-full bg-secondary/10 blur-[100px]" />
+      </div>
+
+      <SiteHeader />
+
+      <main className="container relative z-10 mx-auto max-w-2xl px-4 mt-8">
+        <div className="text-center mb-12">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center mb-8">
+            <img src={shalomLogo} alt="SHALOM" className="h-16 w-auto" />
+          </motion.div>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary"
+          >
+            Already registered for Shalom 2026?
+          </motion.p>
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="text-5xl sm:text-6xl font-bold uppercase italic text-white mb-6"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Create Your Badge
+          </motion.h1>
+          <p className="mx-auto max-w-xl text-white/60">
+            Enter the same details you used to register, upload a portrait, and we’ll email you a personalized “I’m Attending” badge.
+          </p>
+        </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl"
+        >
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">First Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="John"
+                          {...field}
+                          className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
+                          data-testid="input-badge-firstName"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">Last Name</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Doe"
+                          {...field}
+                          className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
+                          data-testid="input-badge-lastName"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">Registration Email</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="email"
+                        placeholder="john@example.com"
+                        {...field}
+                        className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
+                        data-testid="input-badge-email"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="space-y-3">
+                <label className="text-white/50 uppercase tracking-widest text-xs font-bold">Portrait Photo</label>
+                <PortraitUpload value={portraitFile} onChange={setPortraitFile} />
+                <p className="text-center text-xs text-white/40">Use a clear portrait photo. JPG, PNG, or WebP up to 5MB.</p>
+              </div>
+
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full h-16 rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4 relative overflow-hidden"
+                data-testid="button-create-badge"
+              >
+                <AnimatePresence mode="wait">
+                  {isLoading ? (
+                    <motion.div
+                      key="loading"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="flex items-center gap-3 absolute inset-0 justify-center"
+                    >
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <span className="text-lg">{STAGE_MESSAGES[submitStage]}</span>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="idle"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="flex items-center gap-2 absolute inset-0 justify-center"
+                    >
+                      Create My Badge <ArrowRight className="h-6 w-6" />
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <div className="opacity-0 flex items-center gap-2">Create My Badge <ArrowRight className="h-6 w-6" /></div>
+              </Button>
+
+              <Button asChild type="button" variant="ghost" className="w-full text-white/60 hover:bg-white/5 hover:text-white">
+                <Link href="/2026">Back to 2026 Conference Details</Link>
+              </Button>
+            </form>
+          </Form>
+        </motion.div>
+      </main>
+    </div>
+  );
+}
+
+function RegistrationForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [badgeDelivered, setBadgeDelivered] = useState(false);
   const [submitStage, setSubmitStage] = useState<SubmitStage>("idle");
@@ -672,4 +984,9 @@ export default function Register() {
       </main>
     </div>
   );
+}
+
+export default function Register() {
+  const isBadgeOnly = new URLSearchParams(window.location.search).get("badge") === "1";
+  return isBadgeOnly ? <ExistingRegistrationBadge /> : <RegistrationForm />;
 }

@@ -75,6 +75,36 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Registration"
+  /registrations/badge-request:
+    post:
+      operationId: requestExistingRegistrationBadge
+      tags: [badges]
+      summary: Request an attendee badge for an existing registration
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ExistingRegistrationBadgeInput"
+      responses:
+        "200":
+          description: Short-lived authorization for creating an attendee badge
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/BadgeAccess"
+        "400":
+          description: Invalid badge request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Matching registration was not found or is not eligible
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /registrations/{registrationId}/badge/upload-url:
     post:
       operationId: requestRegistrationBadgeUploadUrl
@@ -321,6 +351,20 @@ components:
         wantsAttendeeBadge:
           type: boolean
           description: Whether a portrait will be uploaded to create an attendee badge.
+    ExistingRegistrationBadgeInput:
+      type: object
+      required: [firstName, lastName, email, conferenceYear]
+      properties:
+        firstName:      { type: string, minLength: 1 }
+        lastName:       { type: string, minLength: 1 }
+        email:          { type: string, format: email }
+        conferenceYear: { type: integer }
+    BadgeAccess:
+      type: object
+      required: [registrationId, badgeUploadToken]
+      properties:
+        registrationId: { type: integer }
+        badgeUploadToken: { type: string }
     BadgeUploadInput:
       type: object
       required: [token, name, size, contentType]

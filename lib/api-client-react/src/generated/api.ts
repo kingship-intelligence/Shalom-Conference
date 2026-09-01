@@ -17,11 +17,13 @@ import type {
 } from "@tanstack/react-query";
 
 import type {
+  BadgeAccess,
   BadgeCompleteInput,
   BadgeSkipInput,
   BadgeUploadInput,
   BadgeUploadUrl,
   ErrorResponse,
+  ExistingRegistrationBadgeInput,
   HealthStatus,
   MerchOrder,
   MerchOrderEmailError,
@@ -278,6 +280,96 @@ export function useListRegistrations<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * @summary Request an attendee badge for an existing registration
+ */
+export const getRequestExistingRegistrationBadgeUrl = () => {
+  return `/api/registrations/badge-request`;
+};
+
+export const requestExistingRegistrationBadge = async (
+  existingRegistrationBadgeInput: ExistingRegistrationBadgeInput,
+  options?: RequestInit,
+): Promise<BadgeAccess> => {
+  return customFetch<BadgeAccess>(getRequestExistingRegistrationBadgeUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(existingRegistrationBadgeInput),
+  });
+};
+
+export const getRequestExistingRegistrationBadgeMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestExistingRegistrationBadge>>,
+    TError,
+    { data: BodyType<ExistingRegistrationBadgeInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof requestExistingRegistrationBadge>>,
+  TError,
+  { data: BodyType<ExistingRegistrationBadgeInput> },
+  TContext
+> => {
+  const mutationKey = ["requestExistingRegistrationBadge"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof requestExistingRegistrationBadge>>,
+    { data: BodyType<ExistingRegistrationBadgeInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return requestExistingRegistrationBadge(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type RequestExistingRegistrationBadgeMutationResult = NonNullable<
+  Awaited<ReturnType<typeof requestExistingRegistrationBadge>>
+>;
+export type RequestExistingRegistrationBadgeMutationBody =
+  BodyType<ExistingRegistrationBadgeInput>;
+export type RequestExistingRegistrationBadgeMutationError =
+  ErrorType<ErrorResponse>;
+
+/**
+ * @summary Request an attendee badge for an existing registration
+ */
+export const useRequestExistingRegistrationBadge = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof requestExistingRegistrationBadge>>,
+    TError,
+    { data: BodyType<ExistingRegistrationBadgeInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof requestExistingRegistrationBadge>>,
+  TError,
+  { data: BodyType<ExistingRegistrationBadgeInput> },
+  TContext
+> => {
+  return useMutation(
+    getRequestExistingRegistrationBadgeMutationOptions(options),
+  );
+};
 
 /**
  * @summary Request a private attendee photo upload URL

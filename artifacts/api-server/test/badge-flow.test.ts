@@ -163,6 +163,44 @@ describe("attendee badge delivery flow", () => {
     assert.notEqual(body.badgeUploadToken, state.rows[0].badgeUploadTokenHash);
   });
 
+  it("issues badge access for an existing registration", async () => {
+    await request(makeApp(), "POST", "/registrations", {
+      ...registration,
+      wantsAttendeeBadge: false,
+    });
+
+    const response = await request(makeApp(), "POST", "/registrations/badge-request", {
+      firstName: registration.firstName,
+      lastName: registration.lastName,
+      email: registration.email,
+      conferenceYear: registration.conferenceYear,
+    });
+    const body = await response.json();
+
+    assert.equal(response.status, 200);
+    assert.equal(body.registrationId, state.rows[0].id);
+    assert.match(body.badgeUploadToken, /^[a-f0-9]{64}$/);
+    assert.equal(state.rows[0].badgeUploadTokenHash.length, 64);
+    assert.notEqual(body.badgeUploadToken, state.rows[0].badgeUploadTokenHash);
+  });
+
+  it("does not issue badge access after a badge was already delivered", async () => {
+    await request(makeApp(), "POST", "/registrations", {
+      ...registration,
+      wantsAttendeeBadge: false,
+    });
+    state.rows[0].badgeSentAt = new Date();
+
+    const response = await request(makeApp(), "POST", "/registrations/badge-request", {
+      firstName: registration.firstName,
+      lastName: registration.lastName,
+      email: registration.email,
+      conferenceYear: registration.conferenceYear,
+    });
+
+    assert.equal(response.status, 404);
+  });
+
   it("authorizes portrait upload only with the issued token", async () => {
     const created = await (await request(makeApp(), "POST", "/registrations", registration)).json();
     const uploadDetails = { name: "portrait.png", size: 8, contentType: "image/png" };

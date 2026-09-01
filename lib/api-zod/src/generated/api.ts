@@ -55,6 +55,22 @@ export const ListRegistrationsResponse = zod.array(
 );
 
 /**
+ * @summary Request an attendee badge for an existing registration
+ */
+
+export const RequestExistingRegistrationBadgeBody = zod.object({
+  firstName: zod.string().min(1),
+  lastName: zod.string().min(1),
+  email: zod.string().email(),
+  conferenceYear: zod.number(),
+});
+
+export const RequestExistingRegistrationBadgeResponse = zod.object({
+  registrationId: zod.number(),
+  badgeUploadToken: zod.string(),
+});
+
+/**
  * @summary Request a private attendee photo upload URL
  */
 export const RequestRegistrationBadgeUploadUrlParams = zod.object({
