@@ -164,7 +164,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                     <Button
                       asChild
                       size="lg"
-                      className="mt-10 h-14 w-full max-w-xs rounded-full bg-primary px-8 text-lg font-bold uppercase tracking-wider text-primary-foreground shadow-lg hover:bg-primary/90"
+                      className="mt-10 h-14 w-full max-w-xs whitespace-normal rounded-full bg-primary px-6 text-base font-bold uppercase leading-tight tracking-wide text-center text-primary-foreground shadow-lg hover:bg-primary/90 sm:px-8 sm:text-lg sm:tracking-wider"
                     >
                       <Link href="/register">
                         Register for Shalom {conference.year}
@@ -175,7 +175,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                       asChild
                       variant="outline"
                       size="lg"
-                      className="mt-3 h-auto min-h-12 w-full max-w-xs rounded-full border-primary/40 bg-white/5 px-5 py-3 text-sm font-bold uppercase tracking-wide text-white hover:border-primary hover:bg-primary/10 hover:text-white"
+                      className="mt-3 h-auto min-h-12 w-full max-w-xs whitespace-normal rounded-full border-primary/40 bg-white/5 px-5 py-3 text-xs font-bold uppercase leading-snug tracking-[0.08em] text-center text-white hover:border-primary hover:bg-primary/10 hover:text-white sm:text-sm sm:tracking-wide"
                     >
                       <Link href="/register?badge=1">
                         Already registered? Create your “I’m Attending” badge
@@ -219,7 +219,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                   <Button
                     asChild
                     size="lg"
-                    className="h-14 w-full max-w-xs rounded-none px-8 text-lg font-bold uppercase tracking-wider bg-glow sm:w-auto"
+                    className="h-14 w-full max-w-xs whitespace-normal rounded-none px-6 text-base font-bold uppercase leading-tight tracking-wide text-center bg-glow sm:w-auto sm:px-8 sm:text-lg sm:tracking-wider"
                   >
                     <a href={conference.registrationUrl} target="_blank" rel="noreferrer">
                       Register for Shalom {conference.year}
@@ -231,7 +231,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                   asChild
                   variant="outline"
                   size="lg"
-                  className="h-14 w-full max-w-xs rounded-none border-white/20 px-8 text-lg font-medium uppercase tracking-wider sm:w-auto"
+                  className="h-14 w-full max-w-xs whitespace-normal rounded-none border-white/20 px-6 text-base font-medium uppercase leading-tight tracking-wide text-center sm:w-auto sm:px-8 sm:text-lg sm:tracking-wider"
                 >
                   <Link href="/archive">
                     View Archives <ArrowRight className="h-5 w-5" />
