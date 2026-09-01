@@ -1,4 +1,4 @@
-import { ArrowRight, Flame, Heart, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
 import { currentConference } from "@/data/conferences";
@@ -48,24 +48,23 @@ export default function About() {
           <div className="container mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
             {[
               {
-                icon: <Heart className="h-8 w-8 text-primary" />,
                 title: "Pure Worship",
+                titleClass: "text-primary",
                 text: "We make room for undistracted worship that turns hearts toward Jesus.",
               },
               {
-                icon: <Flame className="h-8 w-8 text-secondary" />,
                 title: "Deliverance",
+                titleClass: "text-secondary",
                 text: "We believe God still breaks chains, restores lives, and meets people with freedom.",
               },
               {
-                icon: <Sparkles className="h-8 w-8 text-primary" />,
                 title: "Spiritual Renewal",
+                titleClass: "text-primary",
                 text: "We gather with expectation for fresh hunger, healing, courage, and peace.",
               },
             ].map((item) => (
               <article key={item.title} className="rounded-2xl border border-white/10 bg-background/60 p-8 text-center md:text-left">
-                <div className="mx-auto mb-6 w-fit rounded-xl bg-white/5 p-4 md:mx-0">{item.icon}</div>
-                <h2 className="mb-4 text-2xl font-bold text-white">{item.title}</h2>
+                <h2 className={`mb-4 text-2xl font-bold ${item.titleClass}`}>{item.title}</h2>
                 <p className="leading-relaxed text-muted-foreground">{item.text}</p>
               </article>
             ))}
