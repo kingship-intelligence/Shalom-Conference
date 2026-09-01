@@ -75,7 +75,7 @@ export default function Home() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="flex max-w-2xl flex-col items-center text-center sm:items-start sm:text-left"
+            className="mx-auto flex max-w-3xl flex-col items-center text-center"
           >
             <h1
               className="mb-6 text-[3.25rem] font-bold uppercase leading-[0.88] tracking-wide text-white sm:text-6xl lg:text-[4.5rem] xl:text-[5.5rem] italic"
