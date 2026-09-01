@@ -14,17 +14,13 @@ const NAV_LINKS = [
   { label: "Archive", href: "/archive" },
 ];
 
-type SiteHeaderProps = {
-  overlay?: boolean;
-};
-
-export default function SiteHeader({ overlay = false }: SiteHeaderProps) {
+export default function SiteHeader() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [location] = useLocation();
 
   return (
-    <header className={overlay ? "absolute inset-x-0 top-0 z-50 bg-transparent" : "sticky top-0 z-50 bg-black"}>
-      <nav className="container mx-auto flex max-w-7xl items-center justify-between px-4 py-5 sm:px-6">
+    <header className="sticky top-0 z-50 bg-black">
+      <nav className="container mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <Link href="/" className="flex items-center gap-3">
           <img src={shalomLogo} alt="SHALOM" className="h-9 w-auto object-contain" />
         </Link>
@@ -70,7 +66,7 @@ export default function SiteHeader({ overlay = false }: SiteHeaderProps) {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className={`sm:hidden overflow-hidden border-t border-white/10 ${overlay ? "bg-black/35 backdrop-blur-md" : ""}`}
+            className="sm:hidden overflow-hidden border-t border-white/10"
           >
             <div className="flex flex-col px-4 py-3 gap-1">
               {NAV_LINKS.map((l) => (
