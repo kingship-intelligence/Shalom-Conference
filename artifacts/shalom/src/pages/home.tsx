@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Mail, MessageSquare } from "lucide-react";
+import { ArrowRight, ChevronDown, Mail, MessageSquare } from "lucide-react";
 import { SiInstagram } from "react-icons/si";
 import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
@@ -67,7 +67,7 @@ export default function Home() {
             type="video/mp4"
           />
         </video>
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(7,3,15,0.9)_0%,rgba(20,5,28,0.7)_42%,rgba(20,5,28,0.28)_100%)]" />
+        <div className="hero-overlay-shift absolute inset-0 -z-10" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
 
         <div className="container mx-auto max-w-7xl">
@@ -90,11 +90,11 @@ export default function Home() {
               <Button
                 asChild
                 size="lg"
-                className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md"
+                className="group rounded-full bg-primary text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary/90 hover:brightness-110 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                 data-testid="button-register-hero"
               >
                 <Link href="/register">
-                  Register <ArrowRight className="ml-2 h-5 w-5" />
+                  Register <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
                 </Link>
               </Button>
               <Button
@@ -108,10 +108,18 @@ export default function Home() {
             </div>
           </motion.div>
         </div>
+        <a
+          href="#home-cta"
+          aria-label="Scroll to explore more of Shalom Conference"
+          className="hero-scroll-indicator absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1 text-[10px] font-bold uppercase tracking-[0.28em] text-white/75 transition-colors hover:text-white motion-reduce:animate-none"
+        >
+          <span>Scroll to explore</span>
+          <ChevronDown className="h-4 w-4" aria-hidden="true" />
+        </a>
       </section>
 
       {/* CTA — solid orange */}
-      <section className="bg-primary px-4 py-28 sm:px-6">
+      <section id="home-cta" className="bg-primary px-4 py-28 sm:px-6">
         <div className="container mx-auto max-w-3xl text-center">
           <FadeIn>
             <p className="mb-5 text-sm font-bold uppercase tracking-[0.3em] text-white/70">Don't Miss Out</p>
