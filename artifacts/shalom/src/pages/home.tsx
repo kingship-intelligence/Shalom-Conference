@@ -43,11 +43,11 @@ export default function Home() {
 
   return (
     <div className="min-h-screen text-gray-900 bg-white">
-      <SiteHeader />
+      <SiteHeader overlay />
 
       {/* HERO — full-bleed video */}
       <section
-        className="relative isolate flex min-h-[min(760px,calc(100svh-76px))] items-center overflow-hidden bg-gray-950 px-6 py-20 text-white sm:px-10 lg:px-16"
+        className="relative isolate flex min-h-[100svh] items-end overflow-hidden bg-gray-950 px-6 pb-20 pt-36 text-white sm:px-10 sm:pb-24 lg:px-16 lg:pb-28"
         style={{ backgroundImage: "url('/images/home/shalom-hero-video-poster.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
         <video
@@ -67,26 +67,30 @@ export default function Home() {
             type="video/mp4"
           />
         </video>
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(7,3,15,0.9)_0%,rgba(20,5,28,0.7)_42%,rgba(20,5,28,0.28)_100%)]" />
-        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(7,3,15,0.88)_0%,rgba(20,5,28,0.5)_48%,rgba(22,95,125,0.18)_100%)]" />
+        <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/75 via-black/10 to-black/25" />
 
         <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7 }}
-            className="flex max-w-2xl flex-col items-center text-center sm:items-start sm:text-left"
+            className="flex max-w-4xl flex-col items-start text-left"
           >
+            <p className="mb-6 text-xs font-bold uppercase tracking-[0.38em] text-primary sm:text-sm">
+              Shalom {currentConference.year}
+            </p>
             <h1
-              className="mb-6 text-[3.25rem] font-bold uppercase leading-[0.88] tracking-wide text-white sm:text-6xl lg:text-[4.5rem] xl:text-[5.5rem] italic"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="mb-8 max-w-4xl text-[clamp(4.25rem,11vw,9rem)] font-normal leading-[0.82] tracking-[-0.055em] text-white"
+              style={{ fontFamily: "var(--font-serif)" }}
             >
-              {currentConference.year}: {currentConference.theme}
+              <span className="block">Welcome to</span>
+              <span className="block italic text-[#b9eafa]">{currentConference.theme}</span>
             </h1>
-            <p className="mb-8 max-w-xl text-lg font-medium leading-relaxed text-white/80">
+            <p className="mb-9 max-w-xl text-base font-medium leading-relaxed text-white/80 sm:text-lg">
               A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
             </p>
-            <div className="flex flex-wrap justify-center gap-3">
+            <div className="flex flex-wrap gap-3">
               <Button
                 asChild
                 size="lg"
@@ -110,24 +114,26 @@ export default function Home() {
         </div>
       </section>
 
-      {/* CTA — solid orange */}
-      <section className="bg-primary px-4 py-28 sm:px-6">
-        <div className="container mx-auto max-w-3xl text-center">
+      {/* CTA — editorial light field */}
+      <section className="bg-[#b9eafa] px-6 py-24 text-[#111827] sm:px-10 lg:px-16 lg:py-32">
+        <div className="container mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-end">
           <FadeIn>
-            <p className="mb-5 text-sm font-bold uppercase tracking-[0.3em] text-white/70">Don't Miss Out</p>
+            <p className="mb-5 text-sm font-bold uppercase tracking-[0.3em] text-primary">Don't Miss Out</p>
             <h2
-              className="mb-6 text-6xl font-bold uppercase tracking-wide text-white sm:text-8xl"
-              style={{ fontFamily: "var(--font-display)" }}
+              className="mb-6 max-w-3xl text-6xl font-normal leading-[0.88] tracking-[-0.04em] sm:text-8xl"
+              style={{ fontFamily: "var(--font-serif)" }}
             >
               Join Us For 2026
             </h2>
-            <p className="mx-auto mb-12 max-w-xl text-xl font-medium text-white/85">
+          </FadeIn>
+          <FadeIn delay={0.1} className="lg:justify-self-end">
+            <p className="mb-8 max-w-md text-lg font-medium leading-relaxed text-[#233044]/80">
               A simple invitation to gather, worship, pray, and encounter the Comforter together.
             </p>
             <Button
               asChild
               size="lg"
-              className="h-16 rounded-full bg-white px-12 text-xl font-bold uppercase tracking-widest text-primary hover:bg-white/92 border-none shadow-lg"
+              className="h-14 rounded-full bg-primary px-10 text-base font-bold uppercase tracking-widest text-white hover:bg-primary/90 border-none shadow-lg"
               data-testid="button-register-footer"
             >
               <Link href="/register">
