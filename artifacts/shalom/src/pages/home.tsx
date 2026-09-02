@@ -172,7 +172,7 @@ export default function Home() {
         <a
           href="#home-cta"
           aria-label="Scroll to explore more of Shalom Conference"
-          className="hero-scroll-indicator absolute bottom-5 left-1/2 z-10 flex -translate-x-1/2 flex-col items-center gap-1 text-[10px] font-bold uppercase tracking-[0.28em] text-white/75 transition-colors hover:text-white motion-reduce:animate-none"
+          className="hero-scroll-indicator absolute bottom-5 left-1/2 z-10 hidden -translate-x-1/2 flex-col items-center gap-1 text-[10px] font-bold uppercase tracking-[0.28em] text-white/75 transition-colors hover:text-white motion-reduce:animate-none md:flex"
         >
           <span>Scroll to explore</span>
           <ChevronDown className="h-4 w-4" aria-hidden="true" />
