@@ -21,17 +21,24 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 );
 
 const HERO_SEGMENT_COUNT = 15;
+const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 768px)";
 
 export default function Home() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [heroSegment, setHeroSegment] = useState(0);
   const [heroPlaybackBlocked, setHeroPlaybackBlocked] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(() =>
+    typeof window === "undefined" ? true : window.matchMedia(HERO_DESKTOP_MEDIA_QUERY).matches,
+  );
 
   const startHeroPlayback = useCallback(() => {
     const video = heroVideoRef.current;
     if (!video) return;
 
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    if (
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
+      !window.matchMedia(HERO_DESKTOP_MEDIA_QUERY).matches
+    ) {
       video.pause();
       setHeroPlaybackBlocked(false);
       return;
@@ -53,9 +60,18 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const desktopPreference = window.matchMedia(HERO_DESKTOP_MEDIA_QUERY);
+    const syncViewport = () => setIsDesktop(desktopPreference.matches);
+
+    syncViewport();
+    desktopPreference.addEventListener?.("change", syncViewport);
+    return () => desktopPreference.removeEventListener?.("change", syncViewport);
+  }, []);
+
+  useEffect(() => {
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const syncPlayback = () => {
-      if (motionPreference.matches) {
+      if (!isDesktop || motionPreference.matches) {
         heroVideoRef.current?.pause();
         setHeroPlaybackBlocked(false);
       } else {
@@ -73,34 +89,36 @@ export default function Home() {
       video?.removeEventListener("canplay", syncPlayback);
       motionPreference.removeEventListener?.("change", syncPlayback);
     };
-  }, [heroSegment, startHeroPlayback]);
+  }, [heroSegment, isDesktop, startHeroPlayback]);
 
   return (
     <div className="min-h-screen text-gray-900 bg-white">
       <SiteHeader />
 
-      {/* HERO — full-bleed video */}
+      {/* HERO — image on mobile, video on desktop */}
       <section
         className="relative isolate flex min-h-[min(760px,calc(100svh-76px))] items-center overflow-hidden bg-gray-950 px-6 py-20 text-white sm:px-10 lg:px-16"
         style={{ backgroundImage: "url('/images/home/shalom-hero-video-poster.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
       >
-        <video
-          key={heroSegment}
-          ref={heroVideoRef}
-          autoPlay
-          muted
-          playsInline
-          preload="auto"
-          poster="/images/home/shalom-hero-video-poster.jpg"
-          className="absolute inset-0 -z-20 h-full w-full object-cover"
-          onEnded={() => setHeroSegment((segment) => (segment + 1) % HERO_SEGMENT_COUNT)}
-          aria-hidden="true"
-        >
-          <source
-            src={`/videos/shalom-hero-segments/segment-${String(heroSegment + 1).padStart(2, "0")}.mp4`}
-            type="video/mp4"
-          />
-        </video>
+        {isDesktop && (
+          <video
+            key={heroSegment}
+            ref={heroVideoRef}
+            autoPlay
+            muted
+            playsInline
+            preload="auto"
+            poster="/images/home/shalom-hero-video-poster.jpg"
+            className="absolute inset-0 -z-20 h-full w-full object-cover"
+            onEnded={() => setHeroSegment((segment) => (segment + 1) % HERO_SEGMENT_COUNT)}
+            aria-hidden="true"
+          >
+            <source
+              src={`/videos/shalom-hero-segments/segment-${String(heroSegment + 1).padStart(2, "0")}.mp4`}
+              type="video/mp4"
+            />
+          </video>
+        )}
         <div className="hero-overlay-shift absolute inset-0 -z-10" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
         {heroPlaybackBlocked && (
