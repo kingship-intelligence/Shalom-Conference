@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
@@ -25,21 +25,55 @@ const HERO_SEGMENT_COUNT = 15;
 export default function Home() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [heroSegment, setHeroSegment] = useState(0);
+  const [heroPlaybackBlocked, setHeroPlaybackBlocked] = useState(false);
+
+  const startHeroPlayback = useCallback(() => {
+    const video = heroVideoRef.current;
+    if (!video) return;
+
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      video.pause();
+      setHeroPlaybackBlocked(false);
+      return;
+    }
+
+    // Set both properties before calling play(). This is important on iOS,
+    // where the muted property must be present when autoplay is evaluated.
+    video.defaultMuted = true;
+    video.muted = true;
+    video.setAttribute("muted", "");
+
+    video.play()
+      .then(() => setHeroPlaybackBlocked(false))
+      .catch(() => {
+        if (video.paused) {
+          setHeroPlaybackBlocked(true);
+        }
+      });
+  }, []);
 
   useEffect(() => {
     const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
     const syncPlayback = () => {
       if (motionPreference.matches) {
         heroVideoRef.current?.pause();
+        setHeroPlaybackBlocked(false);
       } else {
-        heroVideoRef.current?.play().catch(() => undefined);
+        startHeroPlayback();
       }
     };
 
     syncPlayback();
+    const video = heroVideoRef.current;
+    video?.addEventListener("loadeddata", syncPlayback);
+    video?.addEventListener("canplay", syncPlayback);
     motionPreference.addEventListener?.("change", syncPlayback);
-    return () => motionPreference.removeEventListener?.("change", syncPlayback);
-  }, [heroSegment]);
+    return () => {
+      video?.removeEventListener("loadeddata", syncPlayback);
+      video?.removeEventListener("canplay", syncPlayback);
+      motionPreference.removeEventListener?.("change", syncPlayback);
+    };
+  }, [heroSegment, startHeroPlayback]);
 
   return (
     <div className="min-h-screen text-gray-900 bg-white">
@@ -69,6 +103,15 @@ export default function Home() {
         </video>
         <div className="hero-overlay-shift absolute inset-0 -z-10" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
+        {heroPlaybackBlocked && (
+          <button
+            type="button"
+            onClick={startHeroPlayback}
+            className="absolute bottom-14 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/40 bg-black/60 px-5 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white backdrop-blur-sm transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          >
+            Play background video
+          </button>
+        )}
 
         <div className="container mx-auto max-w-7xl">
           <motion.div
