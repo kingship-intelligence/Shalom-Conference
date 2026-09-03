@@ -2,9 +2,9 @@ import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Home from "@/pages/home";
 import { lazy, Suspense, useEffect } from "react";
 
+const Home = lazy(() => import("@/pages/home"));
 const NotFound = lazy(() => import("@/pages/not-found"));
 const Register = lazy(() => import("@/pages/register"));
 const Archive = lazy(() => import("@/pages/archive"));
