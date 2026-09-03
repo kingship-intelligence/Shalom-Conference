@@ -53,6 +53,8 @@ function SpeakerCard({ speaker }: { speaker: Conference["speakers"][number] }) {
           <img
             src={speaker.image}
             alt={speaker.name}
+            loading="lazy"
+            decoding="async"
             className={`${aspectClass} h-auto w-full bg-background/60 object-contain`}
           />
         ) : (
@@ -82,7 +84,13 @@ function SpeakerCard({ speaker }: { speaker: Conference["speakers"][number] }) {
           style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
         >
           {speaker.image ? (
-            <img src={speaker.image} alt={speaker.name} className={imageClass} />
+            <img
+              src={speaker.image}
+              alt={speaker.name}
+              loading="lazy"
+              decoding="async"
+              className={imageClass}
+            />
           ) : (
             <div className="flex h-full items-center justify-center bg-primary/5">
               <Users className="h-10 w-10 text-primary" />
@@ -132,6 +140,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                 src={conference.flyer}
                 alt=""
                 aria-hidden="true"
+                decoding="async"
                 className="h-full w-full scale-110 object-cover opacity-40 blur-2xl"
               />
               <div className="absolute inset-0 bg-background/70" />
@@ -143,6 +152,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                 <img
                   src={conference.flyer}
                   alt={`Shalom ${conference.year} — ${conference.theme}`}
+                  fetchPriority="high"
                   className="max-h-[78vh] w-auto max-w-sm rounded-2xl shadow-2xl ring-1 ring-white/10 sm:max-w-md"
                 />
               </div>
