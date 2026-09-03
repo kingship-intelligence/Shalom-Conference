@@ -351,6 +351,17 @@ components:
         wantsAttendeeBadge:
           type: boolean
           description: Whether a portrait will be uploaded to create an attendee badge.
+        plusOne:
+          $ref: "#/components/schemas/PlusOneInput"
+    PlusOneInput:
+      type: object
+      description: An optional additional attendee registered with the primary attendee.
+      required: [firstName, lastName, email]
+      properties:
+        firstName: { type: string, minLength: 1 }
+        lastName:  { type: string, minLength: 1 }
+        email:     { type: string, format: email }
+        phone:     { type: string }
     ExistingRegistrationBadgeInput:
       type: object
       required: [firstName, lastName, email, conferenceYear]
