@@ -2,17 +2,18 @@ import { Switch, Route, Router as WouterRouter } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import NotFound from "@/pages/not-found";
 import Home from "@/pages/home";
-import Register from "@/pages/register";
-import Archive from "@/pages/archive";
-import ConferenceYear from "@/pages/conference-year";
-import About from "@/pages/about";
-import Partner from "@/pages/partner";
-import Testimonies from "@/pages/testimonies";
-import Admin from "@/pages/admin";
-import Shop from "@/pages/shop";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
+
+const NotFound = lazy(() => import("@/pages/not-found"));
+const Register = lazy(() => import("@/pages/register"));
+const Archive = lazy(() => import("@/pages/archive"));
+const ConferenceYear = lazy(() => import("@/pages/conference-year"));
+const About = lazy(() => import("@/pages/about"));
+const Partner = lazy(() => import("@/pages/partner"));
+const Testimonies = lazy(() => import("@/pages/testimonies"));
+const Admin = lazy(() => import("@/pages/admin"));
+const Shop = lazy(() => import("@/pages/shop"));
 
 const queryClient = new QueryClient();
 
@@ -48,7 +49,9 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
+          <Suspense fallback={<div className="min-h-screen bg-background" aria-label="Loading page" />}>
+            <Router />
+          </Suspense>
         </WouterRouter>
         <Toaster />
       </TooltipProvider>
