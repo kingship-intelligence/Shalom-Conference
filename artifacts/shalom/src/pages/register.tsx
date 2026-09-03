@@ -47,11 +47,21 @@ const registrationSchema = z.object({
   conferenceYear: z.number().default(2026),
   volunteer: z.boolean().default(false),
   volunteerRole: z.string().optional(),
+  hasPlusOne: z.boolean().default(false),
+  plusOne: z.object({
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z.string().email("Please enter a valid email"),
+    phone: z.string().optional(),
+  }).optional(),
   wantsAttendeeBadge: z.boolean().default(false),
   portraitFile: z.any().optional(),
 }).refine(
   (d) => !d.volunteer || !!d.volunteerRole,
   { message: "Please select a volunteer role", path: ["volunteerRole"] }
+).refine(
+  (d) => !d.hasPlusOne || !!d.plusOne,
+  { message: "Please add your plus one’s details", path: ["plusOne"] }
 ).refine(
   (d) => {
     if (d.wantsAttendeeBadge && !d.portraitFile) return false;
@@ -516,6 +526,7 @@ function ExistingRegistrationBadge() {
 function RegistrationForm() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [badgeDelivered, setBadgeDelivered] = useState(false);
+  const [registeredPlusOne, setRegisteredPlusOne] = useState(false);
   const [submitStage, setSubmitStage] = useState<SubmitStage>("idle");
 
   const { toast } = useToast();
@@ -535,12 +546,15 @@ function RegistrationForm() {
       conferenceYear: 2026,
       volunteer: false,
       volunteerRole: "",
+      hasPlusOne: false,
+      plusOne: undefined,
       wantsAttendeeBadge: false,
       portraitFile: undefined,
     },
   });
 
   const isVolunteer = form.watch("volunteer");
+  const hasPlusOne = form.watch("hasPlusOne");
   const wantsBadge = form.watch("wantsAttendeeBadge");
   const isLoading = submitStage !== "idle";
 
@@ -556,6 +570,14 @@ function RegistrationForm() {
         conferenceYear: data.conferenceYear,
         volunteer: data.volunteer,
         volunteerRole: data.volunteerRole || undefined,
+        plusOne: data.hasPlusOne && data.plusOne
+          ? {
+              firstName: data.plusOne.firstName,
+              lastName: data.plusOne.lastName,
+              email: data.plusOne.email,
+              phone: data.plusOne.phone || undefined,
+            }
+          : undefined,
         wantsAttendeeBadge: data.wantsAttendeeBadge,
       };
 
@@ -615,13 +637,14 @@ function RegistrationForm() {
       }
 
       setBadgeDelivered(delivered);
+      setRegisteredPlusOne(data.hasPlusOne);
       setIsSuccess(true);
     } catch (error: any) {
       setSubmitStage("idle");
       if (error.status === 409) {
         toast({
           title: "Already Registered",
-          description: "This email is already registered for Shalom 2026.",
+          description: error.data?.error || "One of these attendees is already registered for Shalom 2026.",
           variant: "destructive",
         });
       } else {
@@ -658,7 +681,7 @@ function RegistrationForm() {
               Thank You!
             </h1>
             <p className="text-white/70 text-lg">
-              Your registration for Shalom 2026 is confirmed. We can't wait to worship with you.
+              Your registration{registeredPlusOne ? " and your plus one’s registration" : ""} for Shalom 2026 is confirmed. We can't wait to worship with you.
             </p>
             <motion.div
               initial={{ opacity: 0, y: 10 }}
@@ -667,7 +690,9 @@ function RegistrationForm() {
               className="p-4 rounded-2xl bg-white/5 border border-white/10 mt-6"
             >
               <p className="text-white/90 text-sm font-medium">
-                {badgeDelivered
+                {registeredPlusOne
+                  ? `Confirmation emails have been sent to both attendees${badgeDelivered ? ", including your personalized badge" : ""}.`
+                  : badgeDelivered
                   ? "Your confirmation email with your personalized badge attached has been sent."
                   : "Your confirmation email has been sent."}
               </p>
@@ -825,6 +850,143 @@ function RegistrationForm() {
                   </FormItem>
                 )}
               />
+
+              <FormField
+                control={form.control}
+                name="hasPlusOne"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5">
+                    <FormControl>
+                      <Checkbox
+                        checked={field.value}
+                        onCheckedChange={(checked) => {
+                          field.onChange(checked);
+                          if (!checked) form.setValue("plusOne", undefined);
+                        }}
+                        className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                        data-testid="checkbox-plus-one"
+                      />
+                    </FormControl>
+                    <div className="space-y-1">
+                      <FormLabel className="cursor-pointer text-base font-bold text-white">
+                        I’m registering a plus one
+                      </FormLabel>
+                      <p className="text-sm text-white/50">
+                        Add one additional attendee to your registration.
+                      </p>
+                    </div>
+                  </FormItem>
+                )}
+              />
+
+              <AnimatePresence>
+                {hasPlusOne && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="space-y-5 rounded-2xl border border-primary/20 bg-primary/5 p-5">
+                      <div>
+                        <p className="text-sm font-bold uppercase tracking-widest text-white">Plus one details</p>
+                        <p className="mt-1 text-sm text-white/50">Their confirmation email will be sent separately.</p>
+                      </div>
+
+                      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                        <FormField
+                          control={form.control}
+                          name="plusOne.firstName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/50">
+                                First Name
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Jane"
+                                  {...field}
+                                  value={field.value ?? ""}
+                                  className="h-14 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
+                                  data-testid="input-plus-one-firstName"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+
+                        <FormField
+                          control={form.control}
+                          name="plusOne.lastName"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/50">
+                                Last Name
+                              </FormLabel>
+                              <FormControl>
+                                <Input
+                                  placeholder="Doe"
+                                  {...field}
+                                  value={field.value ?? ""}
+                                  className="h-14 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
+                                  data-testid="input-plus-one-lastName"
+                                />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+
+                      <FormField
+                        control={form.control}
+                        name="plusOne.email"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/50">
+                              Email Address
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                type="email"
+                                placeholder="jane@example.com"
+                                {...field}
+                                value={field.value ?? ""}
+                                className="h-14 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
+                                data-testid="input-plus-one-email"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name="plusOne.phone"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/50">
+                              Phone Number (Optional)
+                            </FormLabel>
+                            <FormControl>
+                              <Input
+                                placeholder="+1 (555) 000-0000"
+                                {...field}
+                                value={field.value ?? ""}
+                                className="h-14 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
+                                data-testid="input-plus-one-phone"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
 
               <FormField
                 control={form.control}

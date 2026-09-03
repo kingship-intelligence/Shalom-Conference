@@ -20,7 +20,8 @@ const state = { rows: [], nextId: 1, storage: null, badge: Buffer.from("badge"),
 const sent: any[] = [];
 
 function fakeDb() {
-  return {
+  const database = {
+    transaction: async (callback) => callback(database),
     select() {
       return {
         from() {
@@ -68,6 +69,7 @@ function fakeDb() {
       };
     },
   };
+  return database;
 }
 
 const registrationsPath = pathToFileURL(resolve("src/routes/registrations.ts")).href;
@@ -161,6 +163,44 @@ describe("attendee badge delivery flow", () => {
     assert.match(body.badgeUploadToken, /^[a-f0-9]{64}$/);
     assert.equal(state.rows[0].badgeUploadTokenHash.length, 64);
     assert.notEqual(body.badgeUploadToken, state.rows[0].badgeUploadTokenHash);
+  });
+
+  it("registers a plus one as a separate attendee and emails both people", async () => {
+    const response = await request(makeApp(), "POST", "/registrations", {
+      ...registration,
+      wantsAttendeeBadge: false,
+      plusOne: {
+        firstName: "Grace",
+        lastName: "Hopper",
+        email: "grace@example.com",
+        phone: "555-0101",
+      },
+    });
+
+    assert.equal(response.status, 201);
+    assert.equal(state.rows.length, 2);
+    assert.equal(state.rows[1].firstName, "Grace");
+    assert.equal(state.rows[1].email, "grace@example.com");
+    assert.equal(state.rows[1].volunteer, false);
+    assert.deepEqual(sent.map((message) => message.email), [
+      "ada@example.com",
+      "grace@example.com",
+    ]);
+  });
+
+  it("rejects using the same email for the primary attendee and plus one", async () => {
+    const response = await request(makeApp(), "POST", "/registrations", {
+      ...registration,
+      wantsAttendeeBadge: false,
+      plusOne: {
+        firstName: "Guest",
+        lastName: "Attendee",
+        email: registration.email,
+      },
+    });
+
+    assert.equal(response.status, 409);
+    assert.equal(state.rows.length, 0);
   });
 
   it("issues badge access for an existing registration", async () => {

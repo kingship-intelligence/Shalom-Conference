@@ -36,6 +36,18 @@ export type RegistrationCreated = Registration & {
   badgeUploadToken?: string;
 };
 
+/**
+ * An optional additional attendee registered with the primary attendee.
+ */
+export interface PlusOneInput {
+  /** @minLength 1 */
+  firstName: string;
+  /** @minLength 1 */
+  lastName: string;
+  email: string;
+  phone?: string;
+}
+
 export interface RegistrationInput {
   /** @minLength 1 */
   firstName: string;
@@ -48,6 +60,7 @@ export interface RegistrationInput {
   volunteerRole?: string;
   /** Whether a portrait will be uploaded to create an attendee badge. */
   wantsAttendeeBadge?: boolean;
+  plusOne?: PlusOneInput;
 }
 
 export interface ExistingRegistrationBadgeInput {
