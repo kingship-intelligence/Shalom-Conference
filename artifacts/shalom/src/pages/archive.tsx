@@ -36,6 +36,8 @@ export default function Archive() {
                     <img
                       src={conference.image}
                       alt={`${conference.year} ${conference.theme}`}
+                      loading="lazy"
+                      decoding="async"
                       className="h-full w-full object-cover opacity-70 transition duration-500 group-hover:scale-105 group-hover:opacity-90"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />

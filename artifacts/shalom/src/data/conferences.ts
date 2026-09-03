@@ -1,12 +1,13 @@
-import oreOlajuyigbeImage from "@assets/IMG_1085_1787621731433.JPG";
-import bPraizImage from "@assets/IMG_5100_1787621750084.JPG";
-import gbemiJImage from "@assets/IMG_1081_1787621760140.JPG";
-import ejHaroldImage from "@assets/IMG_1084_1787621774400.JPG";
-import robertBannermanImage from "@assets/Robert_Bannerman_Headshot_1787621782938.jpg";
-import tobiSamagbeyiImage from "@assets/IMG_1082_1787621799133.JPG";
-import reveileMusicImageOne from "@assets/IMG_9826_1787837392601.jpeg";
 import shalom2026FlyerImage from "@assets/image_1787961443681.jpeg";
-import prophetShamarBennettImage from "@assets/image_1788129880525.png";
+
+const oreOlajuyigbeImage = "/images/2026/speakers/ore-olajuyigbe.webp";
+const bPraizImage = "/images/2026/speakers/b-praiz.webp";
+const gbemiJImage = "/images/2026/speakers/gbemi-j.webp";
+const ejHaroldImage = "/images/2026/speakers/ejay-harold.webp";
+const robertBannermanImage = "/images/2026/speakers/robert-bannerman.webp";
+const tobiSamagbeyiImage = "/images/2026/speakers/tobi-samagbeyi.webp";
+const reveileMusicImageOne = "/images/2026/speakers/reveille-music.webp";
+const prophetShamarBennettImage = "/images/2026/speakers/prophet-shamar-bennett.webp";
 
 export type Conference = {
   year: string;
