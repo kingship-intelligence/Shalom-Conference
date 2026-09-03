@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { PlusOneInput } from "./plusOneInput";
 
 export interface RegistrationInput {
   /** @minLength 1 */
@@ -18,4 +19,5 @@ export interface RegistrationInput {
   volunteerRole?: string;
   /** Whether a portrait will be uploaded to create an attendee badge. */
   wantsAttendeeBadge?: boolean;
+  plusOne?: PlusOneInput;
 }

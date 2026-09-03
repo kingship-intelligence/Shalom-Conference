@@ -21,6 +21,7 @@ export * from "./merchOrderInput";
 export * from "./merchOrderItem";
 export * from "./merchOrderItemSize";
 export * from "./merchOrderStatus";
+export * from "./plusOneInput";
 export * from "./registration";
 export * from "./registrationBadgeDeliveryStatus";
 export * from "./registrationCreated";

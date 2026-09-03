@@ -23,6 +23,8 @@ const router: IRouter = Router();
 const MAX_PORTRAIT_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PORTRAIT_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
+class DuplicateRegistrationError extends Error {}
+
 function hashUploadToken(token: string): string {
   return createHash("sha256").update(token).digest("hex");
 }
@@ -81,44 +83,81 @@ router.post("/registrations", async (req, res): Promise<void> => {
     return;
   }
 
-  const { wantsAttendeeBadge = false, ...registrationInput } = parsed.data;
-
-  // Check for duplicate email + year
-  const [existing] = await db
-    .select()
-    .from(registrationsTable)
-    .where(
-      and(
-        eq(registrationsTable.email, parsed.data.email),
-        eq(registrationsTable.conferenceYear, parsed.data.conferenceYear)
-      )
-    );
-
-  if (existing) {
-    res.status(409).json({ error: "This email is already registered." });
-    return;
-  }
-
+  const { wantsAttendeeBadge = false, plusOne, ...registrationInput } = parsed.data;
   const badgeUploadToken = wantsAttendeeBadge ? createUploadToken() : undefined;
   const badgeUploadExpiresAt = badgeUploadToken ? getBadgeUploadExpiry() : null;
 
-  const [registration] = await db
-    .insert(registrationsTable)
-    .values({
-      ...registrationInput,
-      badgeUploadTokenHash: badgeUploadToken ? hashUploadToken(badgeUploadToken) : null,
-      badgeUploadExpiresAt,
-    })
-    .returning();
+  try {
+    const created = await db.transaction(async (tx) => {
+      const attendeeEmails = [registrationInput.email, ...(plusOne ? [plusOne.email] : [])];
+      if (new Set(attendeeEmails.map((email) => email.toLowerCase())).size !== attendeeEmails.length) {
+        throw new DuplicateRegistrationError();
+      }
 
-  sendStandardConfirmation(registration).catch((err: unknown) => {
-    req.log.error({ err }, "Failed to send registration confirmation email");
-  });
+      for (const email of attendeeEmails) {
+        const [existing] = await tx
+          .select()
+          .from(registrationsTable)
+          .where(
+            and(
+              eq(registrationsTable.email, email),
+              eq(registrationsTable.conferenceYear, registrationInput.conferenceYear),
+            ),
+          );
+        if (existing) {
+          throw new DuplicateRegistrationError();
+        }
+      }
 
-  res.status(201).json({
-    ...toRegistrationResponse(registration),
-    ...(badgeUploadToken ? { badgeUploadToken } : {}),
-  });
+      const [registration] = await tx
+        .insert(registrationsTable)
+        .values({
+          ...registrationInput,
+          badgeUploadTokenHash: badgeUploadToken ? hashUploadToken(badgeUploadToken) : null,
+          badgeUploadExpiresAt,
+        })
+        .returning();
+
+      const [plusOneRegistration] = plusOne
+        ? await tx
+            .insert(registrationsTable)
+            .values({
+              firstName: plusOne.firstName,
+              lastName: plusOne.lastName,
+              email: plusOne.email,
+              phone: plusOne.phone,
+              conferenceYear: registrationInput.conferenceYear,
+              volunteer: false,
+              volunteerRole: null,
+            })
+            .returning()
+        : [undefined];
+
+      return { registration, plusOneRegistration };
+    });
+
+    for (const attendee of [created.registration, created.plusOneRegistration]) {
+      if (!attendee) continue;
+      sendStandardConfirmation(attendee).catch((err: unknown) => {
+        req.log.error(
+          { err, registrationId: attendee.id },
+          "Failed to send registration confirmation email",
+        );
+      });
+    }
+
+    res.status(201).json({
+      ...toRegistrationResponse(created.registration),
+      ...(badgeUploadToken ? { badgeUploadToken } : {}),
+    });
+  } catch (err) {
+    if (err instanceof DuplicateRegistrationError) {
+      res.status(409).json({ error: "One of these attendees is already registered." });
+      return;
+    }
+    req.log.error({ err }, "Failed to create registration");
+    res.status(500).json({ error: "We could not complete the registration. Please try again." });
+  }
 });
 
 router.post("/registrations/badge-request", async (req, res): Promise<void> => {

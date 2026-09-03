@@ -33,6 +33,17 @@ export const CreateRegistrationBody = zod.object({
     .describe(
       "Whether a portrait will be uploaded to create an attendee badge.",
     ),
+  plusOne: zod
+    .object({
+      firstName: zod.string().min(1),
+      lastName: zod.string().min(1),
+      email: zod.string().email(),
+      phone: zod.string().optional(),
+    })
+    .optional()
+    .describe(
+      "An optional additional attendee registered with the primary attendee.",
+    ),
 });
 
 /**
