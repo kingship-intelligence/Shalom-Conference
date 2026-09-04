@@ -1,4 +1,4 @@
-import shalom2026FlyerImage from "@assets/image_1787961443681.jpeg";
+const shalom2026FlyerImage = "/images/2026/shalom-2026-flyer.webp";
 
 const oreOlajuyigbeImage = "/images/2026/speakers/ore-olajuyigbe.webp";
 const bPraizImage = "/images/2026/speakers/b-praiz.webp";
