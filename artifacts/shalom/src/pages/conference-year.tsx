@@ -12,13 +12,27 @@ type ConferenceYearProps = {
   year?: string;
 };
 
-function SpeakerCard({ speaker }: { speaker: Conference["speakers"][number] }) {
+const SPEAKER_AUTO_FLIP_DELAY_MS = 5000;
+
+function SpeakerCard({
+  speaker,
+  autoFlip = false,
+}: {
+  speaker: Conference["speakers"][number];
+  autoFlip?: boolean;
+}) {
   const [flipped, setFlipped] = useState(false);
   const cardRef = useRef<HTMLDivElement>(null);
   const isLandscape = speaker.imageLayout === "landscape";
 
   useEffect(() => {
-    if (!speaker.bio || !cardRef.current || typeof IntersectionObserver === "undefined") {
+    if (
+      !speaker.bio ||
+      !autoFlip ||
+      !cardRef.current ||
+      typeof IntersectionObserver === "undefined" ||
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    ) {
       return;
     }
 
@@ -28,7 +42,7 @@ function SpeakerCard({ speaker }: { speaker: Conference["speakers"][number] }) {
       ([entry]) => {
         if (entry.isIntersecting) {
           observer.unobserve(card);
-          timeout = window.setTimeout(() => setFlipped(true), 700);
+           timeout = window.setTimeout(() => setFlipped(true), SPEAKER_AUTO_FLIP_DELAY_MS);
         }
       },
       { threshold: 0.3 },
@@ -41,7 +55,7 @@ function SpeakerCard({ speaker }: { speaker: Conference["speakers"][number] }) {
         window.clearTimeout(timeout);
       }
     };
-  }, [speaker.bio]);
+  }, [autoFlip, speaker.bio]);
 
   const aspectClass = isLandscape ? "aspect-[3/2]" : "aspect-[4/5]";
   const imageClass = "h-full w-full object-contain";
@@ -305,7 +319,11 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               </h2>
               <div className="grid gap-4 sm:grid-cols-2">
                 {conference.speakers.map((speaker) => (
-                  <SpeakerCard key={speaker.name} speaker={speaker} />
+                  <SpeakerCard
+                    key={speaker.name}
+                    speaker={speaker}
+                    autoFlip={year === "2026"}
+                  />
                 ))}
               </div>
             </div>
