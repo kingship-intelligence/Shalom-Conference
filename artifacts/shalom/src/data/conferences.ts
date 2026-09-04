@@ -76,8 +76,18 @@ export const conferences: Conference[] = [
     ],
     speakers: [
       {
+        name: "Prophet Shamar Bennett",
+        role: "Prophet",
+        image: prophetShamarBennettImage,
+        bio: `Prophet Shamar Bennett is the visionary and founder of Shamar Bennett Ministries and “The Prophetic Flow.” This mighty prophetic voice has traveled the globe extensively preaching the gospel in the United States, the Caribbean, Europe, and Africa, with signs and wonders following. He has been afforded the opportunity and grace of God to minister in many different arenas, including radio, television, conferences, and revivals.
+
+As a prophet, he has been called upon by business leaders, political leaders, and spiritual leaders to provide prophetic insight and direction that has literally shifted the lives and destinies of both individuals and nations.
+
+In addition to his work in the church arena, Prophet Shamar Bennett holds a Master’s Degree in Business Administration and a Bachelor’s Degree in Business Management. He has studied abroad in England and the Dominican Republic and has sat on the boards of companies as both a spiritual advisor and subject matter expert.`,
+      },
+      {
         name: "Ore Olajuyigbe",
-        role: "Minister",
+        role: "Music Minister",
         image: oreOlajuyigbeImage,
         bio: `Ore Olajuyigbe is a gifted worship leader and vocalist with a heart for creating an atmosphere where people can encounter God through sincere and heartfelt worship.
 
@@ -87,7 +97,7 @@ Whether leading worship or serving alongside other ministers, Ore’s heart is t
       },
       {
         name: "B-Praiz",
-        role: "Minister",
+        role: "Music Minister",
         image: bPraizImage,
         bio: `Boluwatife Olukoya, known as B-Praiz, is a gospel minister and songwriter with a divine mandate to release a sound that brings liberty to God’s people. Based in Baltimore, Maryland, USA, he was born and raised in Lagos, Nigeria, where his passion for music and ministry began.
 
@@ -97,7 +107,7 @@ Beyond music, he is deeply committed to spreading the gospel and using his sound
       },
       {
         name: "Gbemi J",
-        role: "Minister",
+        role: "Music Minister",
         image: gbemiJImage,
         bio: `Gbemi J is a passionate gospel artist, worship leader, and music minister with a heart for leading people into genuine encounters with God through worship and praise.
 
@@ -109,7 +119,7 @@ Whether through live ministration or recorded music, Gbemi’s heart remains cen
       },
       {
         name: "Robert Bannerman",
-        role: "Minister",
+        role: "Music Minister",
         image: robertBannermanImage,
         bio: `Robert Bannerman is a passionate worship leader and music minister with a heart for leading people into genuine encounters with God through worship.
 
@@ -119,7 +129,7 @@ With humility and a commitment to serving the body of Christ, Robert continues t
       },
       {
         name: "Ejay Harold",
-        role: "Minister",
+        role: "Music Minister",
         image: ejHaroldImage,
         bio: `Ejay Harold is a Christian recording artist, worship leader, and music minister whose ministry is centered on creating authentic encounters with God through worship.
 
@@ -129,7 +139,7 @@ Beyond his recorded music, Ejay ministers across various worship gatherings and 
       },
       {
         name: "Tobi Samagbeyi",
-        role: "Minister",
+        role: "Music Minister",
         image: tobiSamagbeyiImage,
         bio: `Minister Tobi Samagbeyi is a passionate worship minister based in the DMV area, devoted to serving God through music and ministry. A member of CCI DMV, her life reflects a deep commitment to Christ, evident both in her lifestyle and her sound.
 
@@ -139,7 +149,7 @@ She has ministered alongside notable gospel artists, including CalledOut Music, 
       },
       {
         name: "Reveille Music",
-        role: "Minister",
+        role: "Music Minister",
         image: reveileMusicImageOne,
         imageLayout: "landscape",
         bio: `Reveille Music is one of the worship expressions of RCCG Higher Ground Assembly, a collective of worship leaders, vocalists, and musicians united by a passion for God’s presence and a desire to see lives transformed through worship.
@@ -147,16 +157,6 @@ She has ministered alongside notable gospel artists, including CalledOut Music, 
 The name “Reveille,” meaning to awaken, reflects the heart of the ministry: to awaken hearts to Jesus and stir a generation toward deeper intimacy with God. Through passionate praise, heartfelt worship, and Spirit-led ministry, Reveille Music seeks to create an atmosphere where people can genuinely encounter God.
 
 With a sound that blends contemporary worship with vibrant African praise, Reveille Music is committed to spiritual growth, excellence, unity, and service. Whether ministering within the local church or beyond its walls, their mission is to exalt Jesus and awaken a generation to a life of worship.`,
-      },
-      {
-        name: "Prophet Shamar Bennett",
-        role: "Minister",
-        image: prophetShamarBennettImage,
-        bio: `Prophet Shamar Bennett is the visionary and founder of Shamar Bennett Ministries and “The Prophetic Flow.” This mighty prophetic voice has traveled the globe extensively preaching the gospel in the United States, the Caribbean, Europe, and Africa, with signs and wonders following. He has been afforded the opportunity and grace of God to minister in many different arenas, including radio, television, conferences, and revivals.
-
-As a prophet, he has been called upon by business leaders, political leaders, and spiritual leaders to provide prophetic insight and direction that has literally shifted the lives and destinies of both individuals and nations.
-
-In addition to his work in the church arena, Prophet Shamar Bennett holds a Master’s Degree in Business Administration and a Bachelor’s Degree in Business Management. He has studied abroad in England and the Dominican Republic and has sat on the boards of companies as both a spiritual advisor and subject matter expert.`,
       },
     ],
   },
