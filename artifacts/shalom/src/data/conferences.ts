@@ -152,6 +152,11 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
         name: "Prophet Shamar Bennett",
         role: "Minister",
         image: prophetShamarBennettImage,
+        bio: `Prophet Shamar Bennett is the visionary and founder of Shamar Bennett Ministries and “The Prophetic Flow.” This mighty prophetic voice has traveled the globe extensively preaching the gospel in the United States, the Caribbean, Europe, and Africa, with signs and wonders following. He has been afforded the opportunity and grace of God to minister in many different arenas, including radio, television, conferences, and revivals.
+
+As a prophet, he has been called upon by business leaders, political leaders, and spiritual leaders to provide prophetic insight and direction that has literally shifted the lives and destinies of both individuals and nations.
+
+In addition to his work in the church arena, Prophet Shamar Bennett holds a Master’s Degree in Business Administration and a Bachelor’s Degree in Business Management. He has studied abroad in England and the Dominican Republic and has sat on the boards of companies as both a spiritual advisor and subject matter expert.`,
       },
     ],
   },
