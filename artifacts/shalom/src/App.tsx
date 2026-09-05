@@ -14,6 +14,7 @@ const Partner = lazy(() => import("@/pages/partner"));
 const Testimonies = lazy(() => import("@/pages/testimonies"));
 const Admin = lazy(() => import("@/pages/admin"));
 const Shop = lazy(() => import("@/pages/shop"));
+const PrayerCharge = lazy(() => import("@/pages/prayer-charge"));
 
 const queryClient = new QueryClient();
 
@@ -22,6 +23,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/register" component={Register} />
+      <Route path="/prayer-charge" component={PrayerCharge} />
       <Route path="/2026">
         <ConferenceYear year="2026" />
       </Route>

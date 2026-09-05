@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import shalomLogo from "@assets/logo_1778697155106.png";
 
 const NAV_LINKS = [
+  { label: "Prayer Charge", href: "/prayer-charge" },
   { label: "2026", href: "/2026" },
   { label: "About", href: "/about" },
   { label: "Partner", href: "/partner" },
