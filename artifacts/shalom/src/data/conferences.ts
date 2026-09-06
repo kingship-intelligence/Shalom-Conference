@@ -88,7 +88,7 @@ In addition to his work in the church arena, Prophet Shamar Bennett holds a Mast
       },
       {
         name: "Tomide Olulana",
-        role: "Music Minister",
+        role: "Minister",
         image: tomideOlulanaImage,
       },
       {
