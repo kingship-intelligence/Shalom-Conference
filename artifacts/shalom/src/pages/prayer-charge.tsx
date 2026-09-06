@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link } from "wouter";
-import { ArrowRight, CalendarDays, Clock3, Flame } from "lucide-react";
+import { ArrowRight, CalendarDays, Clock3 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import SiteFooter from "@/components/SiteFooter";
@@ -59,11 +59,6 @@ export default function PrayerCharge() {
               transition={{ duration: 0.6 }}
               className="order-2 text-center lg:order-1 lg:text-left"
             >
-              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.22em] text-primary">
-                <Flame className="h-4 w-4" />
-                Spiritual preparation
-              </div>
-
               <h1 className="text-5xl font-black uppercase leading-[0.92] tracking-tight text-white sm:text-7xl">
                 Prayer
                 <span className="block text-primary">Charge</span>
@@ -119,8 +114,7 @@ export default function PrayerCharge() {
 
         <section className="px-4 py-16 text-center sm:px-6 sm:py-20">
           <div className="mx-auto max-w-2xl">
-            <p className="text-sm font-bold uppercase tracking-[0.28em] text-primary">One theme. One pursuit.</p>
-            <h2 className="mt-4 text-3xl font-bold text-white sm:text-4xl">
+            <h2 className="text-3xl font-bold text-white sm:text-4xl">
               Preparing the way for Shalom 2026.
             </h2>
             <p className="mt-5 leading-relaxed text-muted-foreground">

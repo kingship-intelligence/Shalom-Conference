@@ -173,9 +173,6 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
 
               {/* About */}
               <div className="text-center lg:text-left">
-                <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
-                  About Shalom {conference.year}
-                </p>
                 <h2 className="mb-6 text-2xl font-black uppercase tracking-tighter text-white sm:text-3xl lg:text-4xl">
                   {conference.summary}
                 </h2>

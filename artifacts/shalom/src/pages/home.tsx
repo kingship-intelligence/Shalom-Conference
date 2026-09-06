@@ -158,7 +158,6 @@ export default function Home() {
       <section id="home-cta" className="bg-primary px-4 py-28 sm:px-6">
         <div className="container mx-auto max-w-3xl text-center">
           <FadeIn>
-            <p className="mb-5 text-sm font-bold uppercase tracking-[0.3em] text-white/70">Don't Miss Out</p>
             <h2
               className="mb-6 text-6xl font-bold uppercase tracking-wide text-white sm:text-8xl"
               style={{ fontFamily: "var(--font-display)" }}
