@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { ArrowRight, Calendar, Mail, MapPin, MessageSquare, Sparkles, Users, Zap } from "lucide-react";
-import { SiInstagram } from "react-icons/si";
+import { SiInstagram, SiYoutube } from "react-icons/si";
 import { Button } from "@/components/ui/button";
 import { currentConference, getConferenceByYear, type Conference } from "@/data/conferences";
 import NotFound from "@/pages/not-found";
@@ -392,6 +392,16 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
             >
               <SiInstagram className="h-5 w-5" />
               @shalomconference
+            </a>
+            <a
+              href="https://youtube.com/@shalomconference?si=o4djdLbW1gG5iLOa"
+              target="_blank"
+              rel="noreferrer"
+              aria-label="Shalom Conference on YouTube"
+              className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-primary"
+            >
+              <SiYoutube className="h-5 w-5" />
+              YouTube
             </a>
           </div>
         </div>
