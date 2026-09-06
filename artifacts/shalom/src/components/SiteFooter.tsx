@@ -1,6 +1,6 @@
 import { Link } from "wouter";
 import { Mail, MessageSquare } from "lucide-react";
-import { SiInstagram } from "react-icons/si";
+import { SiInstagram, SiYoutube } from "react-icons/si";
 import shalomLogo from "@assets/logo_1778697155106.png";
 
 export default function SiteFooter() {
@@ -73,6 +73,16 @@ export default function SiteFooter() {
           >
             <SiInstagram className="h-5 w-5" />
             @shalomconference
+          </a>
+          <a
+            href="https://youtube.com/@shalomconference?si=o4djdLbW1gG5iLOa"
+            target="_blank"
+            rel="noreferrer"
+            aria-label="Shalom Conference on YouTube"
+            className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest"
+          >
+            <SiYoutube className="h-5 w-5" />
+            YouTube
           </a>
         </div>
       </div>
