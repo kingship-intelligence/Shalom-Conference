@@ -36,9 +36,6 @@ export default function Partner() {
         <section className="relative overflow-hidden px-4 py-20 text-center sm:px-6 sm:py-24 sm:text-left">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.16),transparent_46%)]" />
           <div className="container relative z-10 mx-auto max-w-6xl">
-            <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
-              Partner With Us
-            </p>
             <h1 className="mb-8 text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl md:text-8xl">
               Help Carry The Vision
             </h1>
@@ -80,9 +77,6 @@ export default function Partner() {
             </div>
 
             <div className="text-center lg:text-left">
-              <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
-                Ways To Partner
-              </p>
               <h2 className="mb-8 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
                 Pray, Give, Serve, Invite
               </h2>
@@ -101,9 +95,6 @@ export default function Partner() {
                 <div className="mt-10 rounded-2xl border border-primary/30 bg-primary/10 p-6 sm:p-8">
                   <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                     <div>
-                      <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
-                        Support The Gathering
-                      </p>
                       <h3 className="text-2xl font-black uppercase tracking-tight text-white">
                         Give via Cash App
                       </h3>
@@ -174,9 +165,6 @@ export default function Partner() {
                 </div>
 
               <div className="mt-8 rounded-2xl border border-white/10 bg-card/60 p-6 text-left sm:p-8">
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.3em] text-primary">
-                  Finance Follow-Up
-                </p>
                 <h3 className="text-2xl font-black uppercase tracking-tight text-white">
                   Sponsorships &amp; larger gifts
                 </h3>

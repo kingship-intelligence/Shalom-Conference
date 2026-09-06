@@ -14,9 +14,6 @@ export default function Archive() {
         <section className="px-4 py-20 sm:px-6 sm:py-24">
           <div className="container mx-auto max-w-7xl">
             <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16 md:mx-0 md:text-left">
-              <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
-                Conference Archive
-              </p>
               <h1 className="mb-6 text-4xl font-black uppercase tracking-tighter text-white sm:text-5xl md:text-7xl">
                 Previous Shalom Gatherings
               </h1>

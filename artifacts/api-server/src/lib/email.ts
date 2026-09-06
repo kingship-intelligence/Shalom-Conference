@@ -110,7 +110,7 @@ export async function sendRegistrationConfirmation(opts: {
         <table width="100%" cellpadding="0" cellspacing="0" style="margin:24px 0 0;">
           <tr>
             <td style="background:linear-gradient(135deg,#f97316,#ea580c);border-radius:10px;padding:16px 20px;">
-              <p style="margin:0;font-size:15px;font-weight:700;color:#ffffff;">You're a volunteer! 🙌</p>
+              <p style="margin:0;font-size:15px;font-weight:700;color:#ffffff;">You're a volunteer!</p>
               <p style="margin:6px 0 0;font-size:13px;color:rgba(255,255,255,0.8);">We'll reach out with more details before the conference.</p>
             </td>
           </tr>

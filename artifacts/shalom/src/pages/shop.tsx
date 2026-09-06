@@ -39,9 +39,6 @@ export default function Shop() {
         <section className="relative overflow-hidden px-4 py-20 text-center sm:px-6 sm:py-28">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--primary)/0.18),transparent_48%)]" />
           <div className="container relative z-10 mx-auto max-w-5xl">
-            <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm">
-              Shalom Merch
-            </p>
             <h1
               className="mb-8 text-5xl font-black uppercase leading-none tracking-tighter text-white sm:text-7xl md:text-8xl"
               style={{ fontFamily: "var(--font-display)" }}

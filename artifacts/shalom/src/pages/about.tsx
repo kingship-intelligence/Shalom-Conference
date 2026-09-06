@@ -14,9 +14,6 @@ export default function About() {
         <section className="relative overflow-hidden px-4 py-20 text-center sm:px-6 sm:py-24 sm:text-left">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.18),transparent_45%)]" />
           <div className="container relative z-10 mx-auto max-w-6xl">
-            <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
-              About Shalom
-            </p>
             <h1 className="mb-8 text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl md:text-8xl">
               What Is Shalom?
             </h1>
@@ -74,9 +71,6 @@ export default function About() {
         <section className="px-4 py-20 sm:px-6 sm:py-24">
           <div className="container mx-auto max-w-4xl">
             <div className="text-center lg:text-left">
-              <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary sm:text-sm sm:tracking-[0.35em]">
-                The Heart
-              </p>
               <h2 className="mb-8 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
                 We Are Gathering Around The Comforter
               </h2>
