@@ -91,7 +91,15 @@ export default function Home() {
       {/* HERO — image on mobile, video on desktop */}
       <section
         className="relative isolate flex min-h-[min(760px,calc(100svh-76px))] items-center overflow-hidden bg-gray-950 px-6 py-20 text-white sm:px-10 lg:px-16"
-        style={{ backgroundImage: "url('/images/home/shalom-hero-video-poster.jpg')", backgroundSize: "cover", backgroundPosition: "center" }}
+        style={{
+          backgroundImage: `url('${
+            isDesktop
+              ? "/images/home/shalom-hero-video-poster.jpg"
+              : "/images/home/shalom-hero-new.jpg"
+          }')`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
       >
         {isDesktop && (
           <video
