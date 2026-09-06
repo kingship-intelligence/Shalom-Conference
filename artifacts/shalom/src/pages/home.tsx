@@ -26,7 +26,6 @@ const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 768px)";
 export default function Home() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
   const [heroSegment, setHeroSegment] = useState(0);
-  const [heroPlaybackBlocked, setHeroPlaybackBlocked] = useState(false);
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window === "undefined" ? true : window.matchMedia(HERO_DESKTOP_MEDIA_QUERY).matches,
   );
@@ -40,7 +39,6 @@ export default function Home() {
       !window.matchMedia(HERO_DESKTOP_MEDIA_QUERY).matches
     ) {
       video.pause();
-      setHeroPlaybackBlocked(false);
       return;
     }
 
@@ -50,13 +48,9 @@ export default function Home() {
     video.muted = true;
     video.setAttribute("muted", "");
 
-    video.play()
-      .then(() => setHeroPlaybackBlocked(false))
-      .catch(() => {
-        if (video.paused) {
-          setHeroPlaybackBlocked(true);
-        }
-      });
+    video.play().catch(() => {
+      // If autoplay is unavailable, quietly retain the hero background image.
+    });
   }, []);
 
   useEffect(() => {
@@ -73,7 +67,6 @@ export default function Home() {
     const syncPlayback = () => {
       if (!isDesktop || motionPreference.matches) {
         heroVideoRef.current?.pause();
-        setHeroPlaybackBlocked(false);
       } else {
         startHeroPlayback();
       }
@@ -121,16 +114,6 @@ export default function Home() {
         )}
         <div className="hero-overlay-shift absolute inset-0 -z-10" />
         <div className="absolute inset-0 -z-10 bg-gradient-to-t from-black/55 via-transparent to-black/20" />
-        {heroPlaybackBlocked && (
-          <button
-            type="button"
-            onClick={startHeroPlayback}
-            className="absolute bottom-14 left-1/2 z-20 -translate-x-1/2 rounded-full border border-white/40 bg-black/60 px-5 py-2 text-xs font-bold uppercase tracking-[0.18em] text-white backdrop-blur-sm transition-colors hover:bg-black/80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          >
-            Play background video
-          </button>
-        )}
-
         <div className="container mx-auto max-w-7xl">
           <motion.div
             initial={{ opacity: 0, y: 24 }}
