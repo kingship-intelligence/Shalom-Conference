@@ -8,6 +8,7 @@ const robertBannermanImage = "/images/2026/speakers/robert-bannerman.webp";
 const tobiSamagbeyiImage = "/images/2026/speakers/tobi-samagbeyi.webp";
 const reveileMusicImageOne = "/images/2026/speakers/reveille-music.webp";
 const prophetShamarBennettImage = "/images/2026/speakers/prophet-shamar-bennett.webp";
+const tomideOlulanaImage = "/images/2026/speakers/tomide-olulana.webp";
 
 export type Conference = {
   year: string;
@@ -146,6 +147,11 @@ Beyond his recorded music, Ejay ministers across various worship gatherings and 
 With releases such as Abba, Forever, and Son of Suffering, Tobi's music carries a heartfelt expression of worship, drawing listeners into deeper intimacy with God. Her style blends grace, authenticity, and spiritual depth, creating an atmosphere in which lives are transformed by the presence of the Holy Spirit.
 
 She has ministered alongside notable gospel artists, including CalledOut Music, and continues to impact audiences through her dynamic and spirit-led worship. Her mission is to raise a generation of true worshippers and to see hearts aligned with the will of God through music.`,
+      },
+      {
+        name: "Tomide Olulana",
+        role: "Music Minister",
+        image: tomideOlulanaImage,
       },
       {
         name: "Reveille Music",
