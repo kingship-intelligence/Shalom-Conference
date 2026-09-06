@@ -87,6 +87,11 @@ As a prophet, he has been called upon by business leaders, political leaders, an
 In addition to his work in the church arena, Prophet Shamar Bennett holds a Master’s Degree in Business Administration and a Bachelor’s Degree in Business Management. He has studied abroad in England and the Dominican Republic and has sat on the boards of companies as both a spiritual advisor and subject matter expert.`,
       },
       {
+        name: "Tomide Olulana",
+        role: "Music Minister",
+        image: tomideOlulanaImage,
+      },
+      {
         name: "Ore Olajuyigbe",
         role: "Music Minister",
         image: oreOlajuyigbeImage,
@@ -147,11 +152,6 @@ Beyond his recorded music, Ejay ministers across various worship gatherings and 
 With releases such as Abba, Forever, and Son of Suffering, Tobi's music carries a heartfelt expression of worship, drawing listeners into deeper intimacy with God. Her style blends grace, authenticity, and spiritual depth, creating an atmosphere in which lives are transformed by the presence of the Holy Spirit.
 
 She has ministered alongside notable gospel artists, including CalledOut Music, and continues to impact audiences through her dynamic and spirit-led worship. Her mission is to raise a generation of true worshippers and to see hearts aligned with the will of God through music.`,
-      },
-      {
-        name: "Tomide Olulana",
-        role: "Music Minister",
-        image: tomideOlulanaImage,
       },
       {
         name: "Reveille Music",
