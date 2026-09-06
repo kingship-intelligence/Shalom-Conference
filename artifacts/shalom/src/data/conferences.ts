@@ -90,6 +90,11 @@ In addition to his work in the church arena, Prophet Shamar Bennett holds a Mast
         name: "Tomide Olulana",
         role: "Minister",
         image: tomideOlulanaImage,
+        bio: `Tomide Olulana is a dedicated Christian youth leader, community coordinator, and speaker who has devoted his life to empowering the next generation of faith-driven leaders. Raised in a vibrant Christian household as the son of Pastors Ayoola and Oluremi Olulana, Tomide’s deep-rooted values and passion for ministry were shaped by a strong spiritual upbringing.
+
+Today, Tomide serves as the Youth President for “Reveille,” a prominent youth leadership division focused on spiritual growth, character development, and community impact. Known for his visionary approach to youth ministry, he has been instrumental in creating spaces where young adults can deepen their relationship with God and discover their purpose.
+
+Among his notable leadership achievements is his work spearheading the Shalom Conference—a major faith-driven youth empowerment event designed to foster resilience, spiritual renewal, and community bond among young people. Through Reveille and initiatives like the Shalom Conference, Tomide continues to build a lasting legacy of faith, service, and leadership. He resides in the United States with his wife, Dr. Mofoluwake “Foluke” Olulana.`,
       },
       {
         name: "Ore Olajuyigbe",
