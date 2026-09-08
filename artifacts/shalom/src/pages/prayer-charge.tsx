@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
-import prayerChargeFlyer from "@assets/0_prayer_charge_1_1788642033929.png";
+import prayerChargeFlyer from "@assets/0_prayer_charge_1_1788642033929_updated.png";
 
 function upsertMeta(name: string, content: string) {
   let tag = document.querySelector(`meta[name="${name}"]`);
