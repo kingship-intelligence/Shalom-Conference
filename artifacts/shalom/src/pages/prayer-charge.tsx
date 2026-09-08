@@ -31,7 +31,7 @@ export default function PrayerCharge() {
   useEffect(() => {
     const title = "Prayer Charge | Shalom Conference";
     const description =
-      "Join Shalom for a 12-hour prayer charge on September 25, 2026, as we spiritually prepare for Shalom Conference 2026.";
+      "Join Shalom for a 12-hour prayer charge on September 26, 2026, as we spiritually prepare for Shalom Conference 2026.";
 
     document.title = title;
     upsertMeta("description", description);
@@ -74,14 +74,14 @@ export default function PrayerCharge() {
                   <CalendarDays className="h-5 w-5 shrink-0 text-primary" />
                   <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-white/45">Date</p>
-                    <p className="mt-1 font-semibold text-white">September 25, 2026</p>
+                    <p className="mt-1 font-semibold text-white">September 26, 2026</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 border border-white/10 bg-white/[0.03] px-4 py-4">
                   <Clock3 className="h-5 w-5 shrink-0 text-primary" />
                   <div>
                     <p className="text-xs font-bold uppercase tracking-widest text-white/45">Time</p>
-                    <p className="mt-1 font-semibold text-white">12 PM – 12 AM</p>
+                    <p className="mt-1 font-semibold text-white">12 AM – 12 PM</p>
                   </div>
                 </div>
               </div>
@@ -105,7 +105,7 @@ export default function PrayerCharge() {
             >
               <img
                 src={prayerChargeFlyer}
-                alt="12-Hour Prayer Charge, September 25, 2026, from 12 PM to 12 AM"
+                alt="12-Hour Prayer Charge, September 26, 2026, from 12 AM to 12 PM"
                 className="h-auto w-full shadow-2xl shadow-black/40"
               />
             </motion.div>
