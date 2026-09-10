@@ -9,6 +9,7 @@ const tobiSamagbeyiImage = "/images/2026/speakers/tobi-samagbeyi.webp";
 const reveileMusicImageOne = "/images/2026/speakers/reveille-music.webp";
 const prophetShamarBennettImage = "/images/2026/speakers/prophet-shamar-bennett.webp";
 const tomideOlulanaImage = "/images/2026/speakers/tomide-olulana.webp";
+const femiOpeyemiImage = "/images/2026/speakers/femi-opeyemi.webp";
 
 export type Conference = {
   year: string;
@@ -157,6 +158,14 @@ Beyond his recorded music, Ejay ministers across various worship gatherings and 
 With releases such as Abba, Forever, and Son of Suffering, Tobi's music carries a heartfelt expression of worship, drawing listeners into deeper intimacy with God. Her style blends grace, authenticity, and spiritual depth, creating an atmosphere in which lives are transformed by the presence of the Holy Spirit.
 
 She has ministered alongside notable gospel artists, including CalledOut Music, and continues to impact audiences through her dynamic and spirit-led worship. Her mission is to raise a generation of true worshippers and to see hearts aligned with the will of God through music.`,
+      },
+      {
+        name: "Femi Opeyemi",
+        role: "Music Minister",
+        image: femiOpeyemiImage,
+        bio: `Femi Opeyemi is a gifted, spirit-filled gospel singer, songwriter, and worship leader whose passion for music began at the age of 12. Raised in a Christian family, he has grown into a dedicated minister whose music and worship ministry bring hope, encouragement, and spiritual inspiration to many. In 2019, Femi released his soul-stirring single, “Iwo Loba,” a heartfelt expression of his love for God and his commitment to sharing the message of faith through music. Known for his powerful ministrations and sincere worship, he continues to impact lives across the nation.
+
+Beyond music ministry, Femi is a compassionate medical scientist. His devotion to God, family, and service remains a source of inspiration to everyone around him.`,
       },
       {
         name: "Reveille Music",
