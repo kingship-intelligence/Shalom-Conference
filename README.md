@@ -42,6 +42,32 @@ From the repo root:
 pnpm install
 ```
 
+## Windows And PowerShell
+
+Unix-style environment variables (`PORT=5173 command`) do not work in PowerShell. Use `$env:NAME="value"` or the cross-platform root scripts below.
+
+**PowerShell examples:**
+
+```powershell
+$env:PORT = "5173"
+$env:BASE_PATH = "/"
+pnpm --filter @workspace/shalom dev
+```
+
+```powershell
+$env:PORT = "5000"
+pnpm --filter @workspace/api-server dev
+```
+
+Set `DATABASE_URL` when using registration, testimony, merch, or admin API routes (health check works without it).
+
+From the repo root you can also use:
+
+```powershell
+pnpm run dev:shalom
+pnpm run dev:api
+```
+
 ## Run The Frontend
 
 The main app is in `artifacts/shalom`. Its Vite config requires `PORT` and `BASE_PATH`.
@@ -78,7 +104,7 @@ Expected response:
 { "status": "ok" }
 ```
 
-If you add routes that use the shared database package, also set `DATABASE_URL`:
+Database-backed routes require `DATABASE_URL`. The health endpoint does not.
 
 ```sh
 PORT=5000 DATABASE_URL=postgres://USER:PASSWORD@localhost:5432/DB_NAME pnpm --filter @workspace/api-server dev
