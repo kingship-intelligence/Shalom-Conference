@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight, CheckCircle2, Calendar, MapPin, Sparkles, Upload, X } from "lucide-react";
+import { Calendar, CheckCircle2, MapPin, Sparkles, Upload, X } from "lucide-react";
 import {
   useCreateRegistration,
   useRequestExistingRegistrationBadge,
@@ -12,7 +12,6 @@ import {
   useCompleteRegistrationBadge,
   useSkipRegistrationBadge
 } from "@workspace/api-client-react";
-import shalomLogo from "@assets/logo_1778697155106.png";
 import { Button } from "@/components/ui/button";
 import SiteHeader from "@/components/SiteHeader";
 import {
@@ -116,6 +115,9 @@ function getPortraitValidationMessage(file: File): string | null {
   return null;
 }
 
+const labelClass = "text-white/50 uppercase tracking-widest text-[10px] font-bold mb-2 block";
+const inputClass = "bg-transparent border-0 border-b border-white/20 rounded-none px-0 h-12 text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-white transition-colors w-full";
+
 function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File) => void }) {
   const [preview, setPreview] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -139,12 +141,12 @@ function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File
 
   return (
     <div
-      className={`group relative flex aspect-[4/5] w-full max-w-md flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed p-8 text-center transition-all ${
+      className={`group relative flex aspect-[3/4] w-full max-w-[200px] flex-col items-center justify-center overflow-hidden border transition-colors ${
         isDragging
-          ? "border-primary bg-primary/10"
+          ? "border-white bg-white/5"
           : value
-          ? "border-white/20 bg-white/5"
-          : "border-white/10 bg-white/5 hover:border-white/20 hover:bg-white/10"
+          ? "border-white/20 bg-transparent"
+          : "border-white/10 bg-transparent hover:border-white/30"
       }`}
       onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
       onDragLeave={() => setIsDragging(false)}
@@ -173,37 +175,24 @@ function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File
         {preview ? (
           <motion.div
             key="preview"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            className="flex flex-col items-center gap-5 w-full relative z-10"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="w-full h-full relative group/preview"
           >
-            <div className="relative aspect-[4/5] w-40 overflow-hidden rounded-2xl border-2 border-primary shadow-[0_0_30px_rgba(234,88,12,0.3)]">
-              <img src={preview} alt="Portrait preview" className="w-full h-full object-cover" />
+            <img src={preview} alt="Portrait preview" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/preview:opacity-100 transition-opacity flex items-center justify-center">
               <button
                 type="button"
                 onClick={(e) => {
                   e.stopPropagation();
                   onChange(undefined);
                 }}
-                className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity"
+                className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black transition-colors"
                 aria-label="Remove photo"
               >
-                <X className="w-8 h-8 text-white" />
+                <X className="w-5 h-5" />
               </button>
-            </div>
-            <div className="space-y-3 w-full">
-              <div className="text-sm font-bold text-white/90 truncate px-4 max-w-xs mx-auto">
-                {value?.name}
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => inputRef.current?.click()}
-                className="rounded-full bg-white/5 border-white/20 text-white hover:bg-white/10 hover:text-white h-10 px-6"
-              >
-                Change Photo
-              </Button>
             </div>
           </motion.div>
         ) : (
@@ -212,15 +201,13 @@ function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="flex flex-col items-center gap-4 cursor-pointer w-full h-full justify-center relative z-10"
+            className="flex flex-col items-center gap-4 cursor-pointer p-6 text-center w-full h-full justify-center"
             onClick={() => inputRef.current?.click()}
           >
-            <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center group-hover:scale-110 transition-transform">
-              <Upload className="w-8 h-8 text-primary" />
-            </div>
-            <div className="space-y-2">
-              <p className="text-white font-bold text-lg">Click to upload or drag and drop</p>
-              <p className="text-white/50 text-sm">JPG, PNG, WebP (Max 5MB)</p>
+            <Upload className="w-6 h-6 text-white/40 group-hover:text-white transition-colors" />
+            <div>
+              <p className="text-white/80 text-sm font-medium">Upload Photo</p>
+              <p className="text-white/40 text-[10px] uppercase tracking-wider mt-2">JPG, PNG, WebP</p>
             </div>
           </motion.div>
         )}
@@ -238,6 +225,7 @@ function ExistingRegistrationBadge() {
   const requestUploadUrl = useRequestRegistrationBadgeUploadUrl();
   const completeBadge = useCompleteRegistrationBadge();
   const skipBadge = useSkipRegistrationBadge();
+  
   const form = useForm<ExistingBadgeInput>({
     resolver: zodResolver(existingBadgeSchema),
     defaultValues: {
@@ -344,177 +332,190 @@ function ExistingRegistrationBadge() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full text-center space-y-8 p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl"
-        >
-          <div className="flex justify-center">
-            <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center text-primary shadow-[0_0_30px_rgba(234,88,12,0.3)]">
-              <CheckCircle2 className="h-10 w-10" />
+      <div className="min-h-screen bg-background text-foreground flex flex-col">
+        <SiteHeader />
+        <main className="flex-1 container mx-auto max-w-3xl px-6 py-24 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full space-y-12"
+          >
+            <div className="border border-white/10 p-8 sm:p-16 space-y-8 relative overflow-hidden bg-white/5">
+              <CheckCircle2 className="h-10 w-10 text-white" />
+              <div>
+                <h1 className="text-4xl sm:text-5xl font-bold uppercase text-white mb-6" style={{ fontFamily: "var(--font-display)" }}>
+                  Your Badge Is On Its Way
+                </h1>
+                <p className="text-white/60 text-lg leading-relaxed max-w-xl">
+                  Your personalized “I’m Attending” badge has been created and sent to your registration email.
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="space-y-4">
-            <h1 className="text-4xl font-bold italic text-white" style={{ fontFamily: "var(--font-display)" }}>
-              Your Badge Is On Its Way
-            </h1>
-            <p className="text-white/70 text-lg">
-              Your personalized “I’m Attending” badge has been created and sent to your registration email.
-            </p>
-          </div>
-          <Button asChild className="w-full h-14 whitespace-normal rounded-full bg-gradient-to-r from-primary to-secondary text-center text-white font-bold uppercase leading-tight tracking-widest border-none">
-            <Link href="/2026">Back to Shalom 2026</Link>
-          </Button>
-        </motion.div>
+            <div>
+              <Button asChild className="h-14 px-8 bg-white text-black hover:bg-white/90 rounded-none font-bold uppercase tracking-widest text-sm">
+                <Link href="/2026">Back to Shalom 2026</Link>
+              </Button>
+            </div>
+          </motion.div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground relative pb-20">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
-        <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 rounded-full bg-secondary/10 blur-[100px]" />
-      </div>
-
+    <div className="min-h-screen bg-background text-foreground selection:bg-white selection:text-black flex flex-col pb-20">
       <SiteHeader />
 
-      <main className="container relative z-10 mx-auto max-w-2xl px-4 mt-8">
-        <div className="text-center mb-12">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex justify-center mb-8">
-            <img src={shalomLogo} alt="SHALOM" className="h-16 w-auto" />
-          </motion.div>
+      <main className="flex-1 container mx-auto max-w-3xl px-6 py-16 sm:py-24">
+        <div className="mb-16">
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary"
+            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-white/50"
           >
             Already registered for Shalom 2026?
           </motion.p>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-5xl sm:text-6xl font-bold uppercase italic text-white mb-6"
+            className="text-4xl sm:text-6xl font-bold uppercase text-white mb-6"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Create Your Badge
           </motion.h1>
-          <p className="mx-auto max-w-xl text-white/60">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="max-w-xl text-white/60 text-lg leading-relaxed"
+          >
             Enter the same details you used to register, upload a portrait, and we’ll email you a personalized “I’m Attending” badge.
-          </p>
+          </motion.p>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl"
+          transition={{ delay: 0.3 }}
         >
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">First Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="John"
-                          {...field}
-                          className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                          data-testid="input-badge-firstName"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">Last Name</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Doe"
-                          {...field}
-                          className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                          data-testid="input-badge-lastName"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-16">
+              <div className="space-y-8">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                  01. Verification Details
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={labelClass}>First Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="John"
+                            {...field}
+                            className={inputClass}
+                            data-testid="input-badge-firstName"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={labelClass}>Last Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Doe"
+                            {...field}
+                            className={inputClass}
+                            data-testid="input-badge-lastName"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <div className="sm:col-span-2">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className={labelClass}>Registration Email</FormLabel>
+                          <FormControl>
+                            <Input
+                              type="email"
+                              placeholder="john@example.com"
+                              {...field}
+                              className={inputClass}
+                              data-testid="input-badge-email"
+                            />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
               </div>
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">Registration Email</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="john@example.com"
-                        {...field}
-                        className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                        data-testid="input-badge-email"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-3">
-                <label className="text-white/50 uppercase tracking-widest text-xs font-bold">Portrait Photo</label>
-                <PortraitUpload value={portraitFile} onChange={setPortraitFile} />
-                <p className="text-center text-xs text-white/40">Use a clear portrait photo. JPG, PNG, or WebP up to 5MB.</p>
+              <div className="space-y-8">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                  02. Badge Photo
+                </h2>
+                <div className="flex flex-col sm:flex-row gap-8 items-start">
+                  <PortraitUpload value={portraitFile} onChange={setPortraitFile} />
+                  <div className="text-sm text-white/50 max-w-xs space-y-2 pt-2">
+                    <p>Please provide a clear portrait photo.</p>
+                    <p>This image will be used to generate your official attendee badge.</p>
+                    <p className="text-white/30 text-[10px] uppercase tracking-widest mt-6 block">Requirements</p>
+                    <p className="text-white/40 text-xs">Max size: 5MB<br/>Formats: JPG, PNG, WebP</p>
+                  </div>
+                </div>
               </div>
 
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-16 whitespace-normal rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase leading-tight tracking-widest text-center text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4 relative overflow-hidden"
-                data-testid="button-create-badge"
-              >
-                <AnimatePresence mode="wait">
-                  {isLoading ? (
-                    <motion.div
-                      key="loading"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="flex items-center gap-3 absolute inset-0 justify-center"
-                    >
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span className="text-lg">{STAGE_MESSAGES[submitStage]}</span>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="idle"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="flex items-center gap-2 absolute inset-0 justify-center"
-                    >
-                      Create My Badge <ArrowRight className="h-6 w-6" />
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-                <div className="opacity-0 flex items-center gap-2">Create My Badge <ArrowRight className="h-6 w-6" /></div>
-              </Button>
-
-              <Button asChild type="button" variant="ghost" className="w-full whitespace-normal text-center leading-tight text-white/60 hover:bg-white/5 hover:text-white">
-                <Link href="/2026">Back to 2026 Conference Details</Link>
-              </Button>
+              <div className="pt-8 border-t border-white/10 flex flex-col-reverse sm:flex-row gap-6 items-center justify-between">
+                <Button asChild type="button" variant="ghost" className="text-white/60 hover:bg-transparent hover:text-white rounded-none px-0 w-full sm:w-auto justify-start">
+                  <Link href="/2026">← Back to Conference Details</Link>
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full sm:w-auto h-14 px-10 bg-white text-black hover:bg-white/90 rounded-none font-bold uppercase tracking-widest text-sm"
+                  data-testid="button-create-badge"
+                >
+                  <AnimatePresence mode="wait">
+                    {isLoading ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center gap-3"
+                      >
+                        <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                        <span>{STAGE_MESSAGES[submitStage]}</span>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="idle"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        Create My Badge
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
+              </div>
             </form>
           </Form>
         </motion.div>
@@ -659,487 +660,418 @@ function RegistrationForm() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full text-center space-y-8 p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl relative overflow-hidden"
-        >
-          {badgeDelivered && (
-            <div className="absolute top-0 right-0 -mr-16 -mt-16 w-48 h-48 bg-primary/20 rounded-full blur-[50px] pointer-events-none" />
-          )}
-          <div className="flex justify-center relative z-10">
-            <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center text-primary shadow-[0_0_30px_rgba(234,88,12,0.3)]">
-              <CheckCircle2 className="h-10 w-10" />
+      <div className="min-h-screen bg-background text-foreground flex flex-col">
+        <SiteHeader />
+        <main className="flex-1 container mx-auto max-w-3xl px-6 py-24 flex items-center justify-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full space-y-12"
+          >
+            <div className="border border-white/10 p-8 sm:p-16 space-y-8 relative overflow-hidden bg-white/5">
+              <CheckCircle2 className="h-10 w-10 text-white" />
+              <div>
+                <h1
+                  className="text-4xl sm:text-5xl font-bold uppercase text-white mb-6"
+                  style={{ fontFamily: "var(--font-display)" }}
+                >
+                  Thank You
+                </h1>
+                <p className="text-white/60 text-lg leading-relaxed max-w-xl">
+                  Your registration{registeredPlusOne ? " and your plus one’s registration" : ""} for Shalom 2026 is confirmed. We look forward to worshipping with you.
+                </p>
+              </div>
+
+              <div className="pt-8 border-t border-white/10">
+                <p className="text-white/50 text-sm leading-relaxed max-w-xl">
+                  {registeredPlusOne
+                    ? `Confirmation emails have been sent to both attendees${badgeDelivered ? ", including your personalized badge" : ""}.`
+                    : badgeDelivered
+                    ? "Your confirmation email with your personalized badge attached has been sent."
+                    : "Your confirmation email has been sent."}
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="space-y-4 relative z-10">
-            <h1
-              className="text-4xl font-bold italic text-white"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Thank You!
-            </h1>
-            <p className="text-white/70 text-lg">
-              Your registration{registeredPlusOne ? " and your plus one’s registration" : ""} for Shalom 2026 is confirmed. We can't wait to worship with you.
-            </p>
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="p-4 rounded-2xl bg-white/5 border border-white/10 mt-6"
-            >
-              <p className="text-white/90 text-sm font-medium">
-                {registeredPlusOne
-                  ? `Confirmation emails have been sent to both attendees${badgeDelivered ? ", including your personalized badge" : ""}.`
-                  : badgeDelivered
-                  ? "Your confirmation email with your personalized badge attached has been sent."
-                  : "Your confirmation email has been sent."}
-              </p>
-            </motion.div>
-          </div>
-          <Button asChild className="w-full h-14 rounded-full bg-gradient-to-r from-primary to-secondary text-white font-bold uppercase tracking-widest border-none hover:shadow-[0_0_30px_rgba(234,88,12,0.4)] transition-all">
-            <Link href="/">Back to Home</Link>
-          </Button>
-        </motion.div>
+            <div>
+              <Button asChild className="h-14 px-8 bg-white text-black hover:bg-white/90 rounded-none font-bold uppercase tracking-widest text-sm">
+                <Link href="/">Return Home</Link>
+              </Button>
+            </div>
+          </motion.div>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground relative pb-20">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
-        <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 rounded-full bg-secondary/10 blur-[100px]" />
-      </div>
-
+    <div className="min-h-screen bg-background text-foreground selection:bg-white selection:text-black flex flex-col pb-20">
       <SiteHeader />
 
-      <main className="container relative z-10 mx-auto max-w-2xl px-4 mt-8">
-        <div className="text-center mb-12">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
+      <main className="flex-1 container mx-auto max-w-3xl px-6 py-16 sm:py-24">
+        <div className="mb-16">
+          <motion.p
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="flex justify-center mb-8"
+            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-white/50"
           >
-            <img src={shalomLogo} alt="SHALOM" className="h-16 w-auto" />
-          </motion.div>
-
+            Shalom 2026
+          </motion.p>
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-6xl sm:text-7xl font-bold uppercase italic text-white mb-6"
+            className="text-4xl sm:text-6xl font-bold uppercase text-white mb-6"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Register
           </motion.h1>
-
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="flex flex-wrap justify-center gap-4"
+            className="mt-10 grid border-y border-white/10 sm:grid-cols-3"
           >
-            <div className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-1.5 border border-white/10 backdrop-blur-sm text-sm font-bold">
-              <Calendar className="h-4 w-4 text-primary" />
-              <span className="text-white/90">Oct 9-10, 2026</span>
+            <div className="flex items-center gap-3 border-b border-white/10 py-4 sm:border-b-0 sm:border-r sm:pr-5">
+              <Calendar className="h-4 w-4 shrink-0 text-primary" />
+              <span className="text-sm font-medium text-white/80">Oct 9–10, 2026</span>
             </div>
-            <div className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-1.5 border border-white/10 backdrop-blur-sm text-sm font-bold">
-              <MapPin className="h-4 w-4 text-primary" />
-              <span className="text-white/90">Windsor Mill, MD</span>
+            <div className="flex items-center gap-3 border-b border-white/10 py-4 sm:border-b-0 sm:border-r sm:px-5">
+              <MapPin className="h-4 w-4 shrink-0 text-primary" />
+              <span className="text-sm font-medium text-white/80">Windsor Mill, MD</span>
             </div>
-            <div className="flex items-center gap-2 rounded-full bg-white/5 px-4 py-1.5 border border-white/10 backdrop-blur-sm text-sm font-bold">
-              <Sparkles className="h-4 w-4 text-primary" />
-              <span className="text-white/90">John 14:26-27</span>
+            <div className="flex items-center gap-3 py-4 sm:pl-5">
+              <Sparkles className="h-4 w-4 shrink-0 text-primary" />
+              <span className="text-sm font-medium text-white/80">John 14:26–27</span>
             </div>
           </motion.div>
         </div>
 
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
+          initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl"
         >
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
-                        First Name
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="John"
-                          {...field}
-                          className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                          data-testid="input-firstName"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
-                        Last Name
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="Doe"
-                          {...field}
-                          className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                          data-testid="input-lastName"
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-16">
+              
+              {/* Section: Personal Details */}
+              <div className="space-y-8">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                  01. Personal Details
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
+                  <FormField
+                    control={form.control}
+                    name="firstName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={labelClass}>First Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="John" {...field} className={inputClass} data-testid="input-firstName" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="lastName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={labelClass}>Last Name</FormLabel>
+                        <FormControl>
+                          <Input placeholder="Doe" {...field} className={inputClass} data-testid="input-lastName" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="email"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={labelClass}>Email Address</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder="john@example.com" {...field} className={inputClass} data-testid="input-email" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="phone"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className={labelClass}>Phone Number (Optional)</FormLabel>
+                        <FormControl>
+                          <Input type="tel" placeholder="+1 (555) 000-0000" {...field} className={inputClass} data-testid="input-phone" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
               </div>
 
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
-                      Email Address
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="john@example.com"
-                        {...field}
-                        className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                        data-testid="input-email"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="phone"
-                render={({ field: { value, ...rest } }) => (
-                  <FormItem>
-                    <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
-                      Phone Number (Optional)
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="+1 (555) 000-0000"
-                        value={value ?? ""}
-                        {...rest}
-                        className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                        data-testid="input-phone"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="hasPlusOne"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked);
-                          if (!checked) form.setValue("plusOne", undefined);
-                        }}
-                        className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                        data-testid="checkbox-plus-one"
-                      />
-                    </FormControl>
-                    <div className="space-y-1">
-                      <FormLabel className="cursor-pointer text-base font-bold text-white">
-                        I’m registering a plus one
-                      </FormLabel>
-                      <p className="text-sm text-white/50">
-                        Add one additional attendee to your registration.
-                      </p>
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              <AnimatePresence>
-                {hasPlusOne && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="space-y-5 rounded-2xl border border-primary/20 bg-primary/5 p-5">
-                      <div>
-                        <p className="text-sm font-bold uppercase tracking-widest text-white">Plus one details</p>
-                        <p className="mt-1 text-sm text-white/50">Their confirmation email will be sent separately.</p>
+              {/* Section: Volunteer */}
+              <div className="space-y-8">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                  02. Volunteer
+                </h2>
+                <FormField
+                  control={form.control}
+                  name="volunteer"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-4 space-y-0 p-4 border border-white/10 hover:border-white/30 transition-colors">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black mt-1"
+                        />
+                      </FormControl>
+                      <div className="space-y-1.5 leading-none">
+                        <FormLabel className="text-sm font-medium text-white cursor-pointer block">
+                          I would like to volunteer
+                        </FormLabel>
+                        <p className="text-sm text-white/50">
+                          Help us make Shalom 2026 an unforgettable experience. We'll reach out with details.
+                        </p>
                       </div>
+                    </FormItem>
+                  )}
+                />
 
-                      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                <AnimatePresence>
+                  {isVolunteer && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-2 pb-2">
+                        <FormField
+                          control={form.control}
+                          name="volunteerRole"
+                          render={({ field }) => (
+                            <FormItem className="space-y-4">
+                              <FormLabel className={labelClass}>Select a Role</FormLabel>
+                              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                                {VOLUNTEER_ROLES.map((role) => (
+                                  <button
+                                    key={role}
+                                    type="button"
+                                    onClick={() => field.onChange(role)}
+                                    className={`px-4 py-3 text-sm font-medium border text-left transition-colors ${
+                                      field.value === role
+                                        ? "border-white bg-white text-black"
+                                        : "border-white/10 text-white/60 hover:border-white/30 hover:text-white"
+                                    }`}
+                                  >
+                                    {role}
+                                  </button>
+                                ))}
+                              </div>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Section: Plus One */}
+              <div className="space-y-8">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                  03. Plus One
+                </h2>
+                <FormField
+                  control={form.control}
+                  name="hasPlusOne"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-4 space-y-0 p-4 border border-white/10 hover:border-white/30 transition-colors">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black mt-1"
+                        />
+                      </FormControl>
+                      <div className="space-y-1.5 leading-none">
+                        <FormLabel className="text-sm font-medium text-white cursor-pointer block">
+                          I’m registering a plus one
+                        </FormLabel>
+                        <p className="text-sm text-white/50">
+                          Add one additional attendee to your registration.
+                        </p>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <AnimatePresence>
+                  {hasPlusOne && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-6 pb-2 grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
                         <FormField
                           control={form.control}
                           name="plusOne.firstName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/50">
-                                First Name
-                              </FormLabel>
+                              <FormLabel className={labelClass}>Guest First Name</FormLabel>
                               <FormControl>
-                                <Input
-                                  placeholder="Jane"
-                                  {...field}
-                                  value={field.value ?? ""}
-                                  className="h-14 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                                  data-testid="input-plus-one-firstName"
-                                />
+                                <Input placeholder="Jane" {...field} className={inputClass} data-testid="input-plusOne-firstName" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
-
                         <FormField
                           control={form.control}
                           name="plusOne.lastName"
                           render={({ field }) => (
                             <FormItem>
-                              <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/50">
-                                Last Name
-                              </FormLabel>
+                              <FormLabel className={labelClass}>Guest Last Name</FormLabel>
                               <FormControl>
-                                <Input
-                                  placeholder="Doe"
-                                  {...field}
-                                  value={field.value ?? ""}
-                                  className="h-14 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                                  data-testid="input-plus-one-lastName"
-                                />
+                                <Input placeholder="Doe" {...field} className={inputClass} data-testid="input-plusOne-lastName" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="plusOne.email"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={labelClass}>Guest Email</FormLabel>
+                              <FormControl>
+                                <Input type="email" placeholder="jane@example.com" {...field} className={inputClass} data-testid="input-plusOne-email" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name="plusOne.phone"
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel className={labelClass}>Guest Phone (Optional)</FormLabel>
+                              <FormControl>
+                                <Input type="tel" placeholder="+1 (555) 000-0000" {...field} className={inputClass} data-testid="input-plusOne-phone" />
                               </FormControl>
                               <FormMessage />
                             </FormItem>
                           )}
                         />
                       </div>
-
-                      <FormField
-                        control={form.control}
-                        name="plusOne.email"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/50">
-                              Email Address
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                type="email"
-                                placeholder="jane@example.com"
-                                {...field}
-                                value={field.value ?? ""}
-                                className="h-14 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                                data-testid="input-plus-one-email"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-
-                      <FormField
-                        control={form.control}
-                        name="plusOne.phone"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-bold uppercase tracking-widest text-white/50">
-                              Phone Number (Optional)
-                            </FormLabel>
-                            <FormControl>
-                              <Input
-                                placeholder="+1 (555) 000-0000"
-                                {...field}
-                                value={field.value ?? ""}
-                                className="h-14 rounded-xl border-white/10 bg-white/5 text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                                data-testid="input-plus-one-phone"
-                              />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <FormField
-                control={form.control}
-                name="volunteer"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked);
-                          if (!checked) form.setValue("volunteerRole", "");
-                        }}
-                        className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                        data-testid="checkbox-volunteer"
-                      />
-                    </FormControl>
-                    <div className="space-y-1">
-                      <FormLabel className="text-white font-bold text-base cursor-pointer">
-                        I would like to volunteer
-                      </FormLabel>
-                      <p className="text-white/50 text-sm">
-                        Help us make Shalom 2026 an unforgettable experience. We'll reach out with details.
-                      </p>
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              {isVolunteer && (
-                <FormField
-                  control={form.control}
-                  name="volunteerRole"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
-                        Volunteer Role
-                      </FormLabel>
-                      <div className="flex flex-wrap gap-2 pt-1">
-                        {VOLUNTEER_ROLES.map((role) => {
-                          const selected = field.value === role;
-                          return (
-                            <button
-                              key={role}
-                              type="button"
-                              onClick={() => field.onChange(role)}
-                              className={`px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide border transition-all ${
-                                selected
-                                  ? "bg-primary border-primary text-white"
-                                  : "bg-white/5 border-white/10 text-white/60 hover:border-primary/50 hover:text-white"
-                              }`}
-                            >
-                              {role}
-                            </button>
-                          );
-                        })}
-                      </div>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              )}
-
-              <FormField
-                control={form.control}
-                name="wantsAttendeeBadge"
-                render={({ field }) => (
-                  <FormItem className="flex flex-row items-start gap-4 rounded-2xl border border-white/10 bg-white/5 p-5">
-                    <FormControl>
-                      <Checkbox
-                        checked={field.value}
-                        onCheckedChange={(checked) => {
-                          field.onChange(checked);
-                          if (!checked) form.setValue("portraitFile", undefined);
-                        }}
-                        className="mt-1 border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                        data-testid="checkbox-badge"
-                      />
-                    </FormControl>
-                    <div className="space-y-1">
-                      <FormLabel className="text-white font-bold text-base cursor-pointer">
-                        I want a personalized "I'm Attending" badge
-                      </FormLabel>
-                      <p className="text-white/50 text-sm">
-                        Receive a custom digital badge with your portrait to share with friends.
-                      </p>
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              <AnimatePresence>
-                {wantsBadge && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: "auto" }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="overflow-hidden"
-                  >
-                    <div className="pt-2 pb-2">
-                      <FormField
-                        control={form.control}
-                        name="portraitFile"
-                        render={({ field: { value, onChange } }) => (
-                          <FormItem>
-                            <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
-                              Portrait Photo
-                            </FormLabel>
-                            <FormControl>
-                              <PortraitUpload value={value} onChange={onChange} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              <Button
-                type="submit"
-                disabled={isLoading}
-                className="w-full h-16 whitespace-normal rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase leading-tight tracking-widest text-center text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4 relative overflow-hidden"
-                data-testid="button-submit"
-              >
-                <AnimatePresence mode="wait">
-                  {isLoading ? (
-                    <motion.div
-                      key="loading"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="flex items-center gap-3 absolute inset-0 justify-center"
-                    >
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      <span className="text-lg">{STAGE_MESSAGES[submitStage]}</span>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key="idle"
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="flex items-center gap-2 absolute inset-0 justify-center"
-                    >
-                      Confirm Registration <ArrowRight className="h-6 w-6" />
                     </motion.div>
                   )}
                 </AnimatePresence>
-                {/* Invisible placeholder to keep the height structure */}
-                <div className="opacity-0 flex items-center gap-2">Confirm Registration <ArrowRight className="h-6 w-6" /></div>
-              </Button>
+              </div>
+
+              {/* Section: Badge */}
+              <div className="space-y-8">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                  04. Attendee Badge
+                </h2>
+                <FormField
+                  control={form.control}
+                  name="wantsAttendeeBadge"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-start space-x-4 space-y-0 p-4 border border-white/10 hover:border-white/30 transition-colors">
+                      <FormControl>
+                        <Checkbox
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                          className="rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black mt-1"
+                        />
+                      </FormControl>
+                      <div className="space-y-1.5 leading-none">
+                        <FormLabel className="text-sm font-medium text-white cursor-pointer block">
+                          I want a personalized "I'm Attending" badge
+                        </FormLabel>
+                        <p className="text-sm text-white/50">
+                          Receive a custom digital badge with your portrait to share with friends.
+                        </p>
+                      </div>
+                    </FormItem>
+                  )}
+                />
+
+                <AnimatePresence>
+                  {wantsBadge && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <div className="pt-6 pb-2 flex flex-col sm:flex-row gap-8 items-start">
+                        <PortraitUpload
+                          value={form.watch("portraitFile")}
+                          onChange={(file) => form.setValue("portraitFile", file, { shouldValidate: true })}
+                        />
+                        <div className="text-sm text-white/50 max-w-xs space-y-2 pt-2">
+                          <p>Please provide a clear portrait photo.</p>
+                          <p className="text-white/30 text-[10px] uppercase tracking-widest mt-6 block">Requirements</p>
+                          <p className="text-white/40 text-xs">Max size: 5MB<br/>Formats: JPG, PNG, WebP</p>
+                        </div>
+                      </div>
+                      {form.formState.errors.portraitFile && (
+                        <p className="text-sm font-medium text-destructive mt-4">
+                          {form.formState.errors.portraitFile.message as string}
+                        </p>
+                      )}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Actions */}
+              <div className="pt-8 border-t border-white/10 flex justify-end">
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full sm:w-auto h-14 px-10 bg-white text-black hover:bg-white/90 rounded-none font-bold uppercase tracking-widest text-sm"
+                  data-testid="button-create-badge"
+                >
+                  <AnimatePresence mode="wait">
+                    {isLoading ? (
+                      <motion.div
+                        key="loading"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="flex items-center gap-3"
+                      >
+                        <div className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+                        <span>{STAGE_MESSAGES[submitStage]}</span>
+                      </motion.div>
+                    ) : (
+                      <motion.div
+                        key="idle"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                      >
+                        Confirm Registration
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </Button>
+              </div>
             </form>
           </Form>
         </motion.div>
@@ -1149,6 +1081,11 @@ function RegistrationForm() {
 }
 
 export default function Register() {
-  const isBadgeOnly = new URLSearchParams(window.location.search).get("badge") === "1";
-  return isBadgeOnly ? <ExistingRegistrationBadge /> : <RegistrationForm />;
+  const searchParams = new URLSearchParams(window.location.search);
+  const isExistingBadge = searchParams.get("badge") === "true";
+
+  if (isExistingBadge) {
+    return <ExistingRegistrationBadge />;
+  }
+  return <RegistrationForm />;
 }
