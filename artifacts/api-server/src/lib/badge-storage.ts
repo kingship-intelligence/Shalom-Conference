@@ -95,4 +95,13 @@ export const badgeStorage = {
       size: Number(metadata.size ?? buffer.length),
     };
   },
+
+  async deletePortrait(objectPath: string): Promise<void> {
+    if (!objectPath.startsWith(`/objects/${PRIVATE_BADGE_PREFIX}`)) {
+      throw new Error("Invalid attendee portrait location");
+    }
+
+    const key = objectPath.slice("/objects/".length);
+    await getFileForKey(key).delete({ ignoreNotFound: true });
+  },
 };

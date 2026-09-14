@@ -6,6 +6,7 @@ import {
   CompleteRegistrationBadgeBody,
   CompleteRegistrationBadgeParams,
   CreateRegistrationBody,
+  DeleteRegistrationParams,
   RequestExistingRegistrationBadgeBody,
   ListRegistrationsResponse,
   ListRegistrationsResponseItem,
@@ -16,6 +17,7 @@ import {
   SkipRegistrationBadgeParams,
 } from "@workspace/api-zod";
 import { createAttendeeBadge } from "../lib/attendee-badge";
+import { hasAdminSession } from "../lib/admin-session";
 import { badgeStorage } from "../lib/badge-storage";
 import { sendRegistrationConfirmation } from "../lib/email";
 
@@ -207,6 +209,46 @@ router.get("/registrations", async (_req, res): Promise<void> => {
     .from(registrationsTable)
     .orderBy(registrationsTable.createdAt);
   res.json(ListRegistrationsResponse.parse(registrations));
+});
+
+router.delete("/registrations/:registrationId", async (req, res): Promise<void> => {
+  if (!hasAdminSession(req)) {
+    res.status(401).json({ error: "Admin sign-in is required." });
+    return;
+  }
+
+  const parsed = DeleteRegistrationParams.safeParse(req.params);
+  if (
+    !parsed.success ||
+    !Number.isInteger(parsed.data.registrationId) ||
+    parsed.data.registrationId < 1
+  ) {
+    res.status(400).json({ error: "Invalid registration ID." });
+    return;
+  }
+
+  const [deletedRegistration] = await db
+    .delete(registrationsTable)
+    .where(eq(registrationsTable.id, parsed.data.registrationId))
+    .returning();
+
+  if (!deletedRegistration) {
+    res.status(404).json({ error: "Registration not found." });
+    return;
+  }
+
+  if (deletedRegistration.badgePhotoObjectPath) {
+    try {
+      await badgeStorage.deletePortrait(deletedRegistration.badgePhotoObjectPath);
+    } catch (err) {
+      req.log.error(
+        { err, registrationId: deletedRegistration.id },
+        "Registration deleted but attendee portrait cleanup failed",
+      );
+    }
+  }
+
+  res.status(204).send();
 });
 
 router.post(

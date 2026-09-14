@@ -282,6 +282,90 @@ export function useListRegistrations<
 }
 
 /**
+ * @summary Delete a registration (admin)
+ */
+export const getDeleteRegistrationUrl = (registrationId: number) => {
+  return `/api/registrations/${registrationId}`;
+};
+
+export const deleteRegistration = async (
+  registrationId: number,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getDeleteRegistrationUrl(registrationId), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteRegistrationMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteRegistration>>,
+    TError,
+    { registrationId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteRegistration>>,
+  TError,
+  { registrationId: number },
+  TContext
+> => {
+  const mutationKey = ["deleteRegistration"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteRegistration>>,
+    { registrationId: number }
+  > = (props) => {
+    const { registrationId } = props ?? {};
+
+    return deleteRegistration(registrationId, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteRegistrationMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteRegistration>>
+>;
+
+export type DeleteRegistrationMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Delete a registration (admin)
+ */
+export const useDeleteRegistration = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteRegistration>>,
+    TError,
+    { registrationId: number },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteRegistration>>,
+  TError,
+  { registrationId: number },
+  TContext
+> => {
+  return useMutation(getDeleteRegistrationMutationOptions(options));
+};
+
+/**
  * @summary Request an attendee badge for an existing registration
  */
 export const getRequestExistingRegistrationBadgeUrl = () => {
