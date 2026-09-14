@@ -66,6 +66,13 @@ export const ListRegistrationsResponse = zod.array(
 );
 
 /**
+ * @summary Delete a registration (admin)
+ */
+export const DeleteRegistrationParams = zod.object({
+  registrationId: zod.coerce.number(),
+});
+
+/**
  * @summary Request an attendee badge for an existing registration
  */
 

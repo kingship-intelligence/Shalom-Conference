@@ -18,6 +18,7 @@ const table = {
 
 const state = { rows: [], nextId: 1, storage: null, badge: Buffer.from("badge"), badgeError: false };
 const sent: any[] = [];
+const deletedPortraits: string[] = [];
 
 function fakeDb() {
   const database = {
@@ -68,6 +69,18 @@ function fakeDb() {
         },
       };
     },
+    delete() {
+      return {
+        where() {
+          return {
+            returning: async () => {
+              const deleted = state.rows.shift();
+              return deleted ? [deleted] : [];
+            },
+          };
+        },
+      };
+    },
   };
   return database;
 }
@@ -76,6 +89,7 @@ const registrationsPath = pathToFileURL(resolve("src/routes/registrations.ts")).
 const storagePath = pathToFileURL(resolve("src/lib/badge-storage.ts")).href;
 const badgePath = pathToFileURL(resolve("src/lib/attendee-badge.ts")).href;
 const emailPath = pathToFileURL(resolve("src/lib/email.ts")).href;
+const adminSessionPath = pathToFileURL(resolve("src/lib/admin-session.ts")).href;
 
 mock.module("@workspace/db", {
   namedExports: { db: fakeDb(), registrationsTable: table },
@@ -88,7 +102,15 @@ mock.module(storagePath, {
     badgeStorage: {
       createPortraitUpload: async () => ({ uploadURL: "https://upload.test", objectPath: "/objects/attendee-badges/photo" }),
       downloadPortrait: async () => state.storage,
+      deletePortrait: async (objectPath) => {
+        deletedPortraits.push(objectPath);
+      },
     },
+  },
+});
+mock.module(adminSessionPath, {
+  namedExports: {
+    hasAdminSession: (req) => req.headers["x-test-admin"] === "1",
   },
 });
 mock.module(badgePath, {
@@ -120,14 +142,17 @@ function makeApp() {
   return app;
 }
 
-async function request(app, method, path, body) {
+async function request(app, method, path, body, admin = false) {
   const server = app.listen(0);
   await new Promise((resolve) => server.once("listening", resolve));
   const port = server.address().port;
   try {
     return await fetch(`http://127.0.0.1:${port}${path}`, {
       method,
-      headers: { "content-type": "application/json" },
+      headers: {
+        "content-type": "application/json",
+        ...(admin ? { "x-test-admin": "1" } : {}),
+      },
       body: body === undefined ? undefined : JSON.stringify(body),
     });
   } finally {
@@ -154,6 +179,7 @@ describe("attendee badge delivery flow", () => {
     state.storage = { buffer: Buffer.from("portrait"), contentType: "image/png", size: 8 };
     state.badgeError = false;
     sent.length = 0;
+    deletedPortraits.length = 0;
   });
 
   it("registers an attendee and returns a one-time badge token", async () => {
@@ -339,5 +365,37 @@ describe("attendee badge delivery flow", () => {
       contentType: "image/png",
     });
     assert.equal(response.status, 401);
+  });
+
+  it("requires an admin session to delete a registration", async () => {
+    await request(makeApp(), "POST", "/registrations", {
+      ...registration,
+      wantsAttendeeBadge: false,
+    });
+
+    const response = await request(makeApp(), "DELETE", "/registrations/1");
+
+    assert.equal(response.status, 401);
+    assert.equal(state.rows.length, 1);
+  });
+
+  it("deletes a registration and its private portrait for an admin", async () => {
+    await request(makeApp(), "POST", "/registrations", {
+      ...registration,
+      wantsAttendeeBadge: false,
+    });
+    state.rows[0].badgePhotoObjectPath = "/objects/attendee-badges/photo";
+
+    const response = await request(makeApp(), "DELETE", "/registrations/1", undefined, true);
+
+    assert.equal(response.status, 204);
+    assert.equal(state.rows.length, 0);
+    assert.deepEqual(deletedPortraits, ["/objects/attendee-badges/photo"]);
+  });
+
+  it("returns not found when an admin deletes a missing registration", async () => {
+    const response = await request(makeApp(), "DELETE", "/registrations/999", undefined, true);
+
+    assert.equal(response.status, 404);
   });
 });

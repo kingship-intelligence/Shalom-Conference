@@ -75,6 +75,34 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Registration"
+  /registrations/{registrationId}:
+    delete:
+      operationId: deleteRegistration
+      tags: [registrations]
+      summary: Delete a registration (admin)
+      parameters:
+        - $ref: "#/components/parameters/RegistrationId"
+      responses:
+        "204":
+          description: Registration deleted
+        "400":
+          description: Invalid registration ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Registration not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /registrations/badge-request:
     post:
       operationId: requestExistingRegistrationBadge

@@ -1,7 +1,9 @@
 import { useState } from "react";
 import {
+  getListRegistrationsQueryKey,
   getListMerchOrdersQueryKey,
   useConfirmMerchOrderPayment,
+  useDeleteRegistration,
   useListMerchOrders,
   useListRegistrations,
   useListTestimonies,
@@ -14,7 +16,18 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, ShoppingBag } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, ShoppingBag, Trash2 } from "lucide-react";
 
 const SESSION_KEY = "shalom_admin_auth";
 
@@ -194,6 +207,8 @@ function LoginScreen({ onLogin, loading, error }: { onLogin: (u: string, p: stri
 export default function Admin() {
   const { authed, login, logout, loading, error } = useAdminAuth();
   const queryClient = useQueryClient();
+  const [deletingRegistrationId, setDeletingRegistrationId] = useState<number | null>(null);
+  const [deleteRegistrationError, setDeleteRegistrationError] = useState("");
 
   const registrationsQuery = useListRegistrations();
   const testimoniesQuery = useListTestimonies();
@@ -204,6 +219,18 @@ export default function Admin() {
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListMerchOrdersQueryKey() });
+      },
+    },
+  });
+  const deleteRegistrationMutation = useDeleteRegistration({
+    mutation: {
+      onSuccess: () => {
+        setDeleteRegistrationError("");
+        setDeletingRegistrationId(null);
+        queryClient.invalidateQueries({ queryKey: getListRegistrationsQueryKey() });
+      },
+      onError: () => {
+        setDeleteRegistrationError("Unable to remove this registration. Please try again.");
       },
     },
   });
@@ -277,6 +304,12 @@ export default function Admin() {
               </div>
             </div>
 
+            {deleteRegistrationError && (
+              <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+                {deleteRegistrationError}
+              </p>
+            )}
+
             {registrationsQuery.isLoading ? (
               <div className="space-y-4">
                 {[1, 2, 3].map((i) => (
@@ -317,14 +350,65 @@ export default function Admin() {
                         </div>
                       )}
                     </div>
-                    <div className="text-right flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
-                      <div className="flex items-center gap-1 text-xs font-bold text-primary uppercase">
-                        <Calendar className="h-3 w-3" />
-                        <span>Shalom {reg.conferenceYear}</span>
+                    <div className="flex items-center justify-between gap-4 sm:justify-end">
+                      <div className="text-right flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
+                        <div className="flex items-center gap-1 text-xs font-bold text-primary uppercase">
+                          <Calendar className="h-3 w-3" />
+                          <span>Shalom {reg.conferenceYear}</span>
+                        </div>
+                        <span className="text-[10px] text-white/30 uppercase tracking-tighter">
+                          {format(new Date(reg.createdAt), "MMM d, yyyy")}
+                        </span>
                       </div>
-                      <span className="text-[10px] text-white/30 uppercase tracking-tighter">
-                        {format(new Date(reg.createdAt), "MMM d, yyyy")}
-                      </span>
+                      <AlertDialog
+                        onOpenChange={(open) => {
+                          if (open) {
+                            setDeletingRegistrationId(reg.id);
+                            setDeleteRegistrationError("");
+                          } else if (!deleteRegistrationMutation.isPending) {
+                            setDeletingRegistrationId(null);
+                          }
+                        }}
+                      >
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="icon"
+                            className="shrink-0 border-red-500/30 text-red-300 hover:border-red-500/60 hover:bg-red-500/10 hover:text-red-200"
+                            aria-label={`Remove registration for ${reg.firstName} ${reg.lastName}`}
+                            title="Remove registration"
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="border-white/10 bg-gray-950 text-white">
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>Remove this registration?</AlertDialogTitle>
+                            <AlertDialogDescription className="text-white/60">
+                              This will permanently remove {reg.firstName} {reg.lastName}&apos;s registration
+                              and any private attendee portrait attached to it. This action cannot be undone.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel className="border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white">
+                              Cancel
+                            </AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-red-600 text-white hover:bg-red-500"
+                              disabled={deleteRegistrationMutation.isPending}
+                              onClick={() => {
+                                setDeletingRegistrationId(reg.id);
+                                deleteRegistrationMutation.mutate({ registrationId: reg.id });
+                              }}
+                            >
+                              {deleteRegistrationMutation.isPending && deletingRegistrationId === reg.id
+                                ? "Removing…"
+                                : "Remove registration"}
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </motion.div>
                 ))}
