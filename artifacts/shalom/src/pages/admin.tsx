@@ -27,7 +27,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, ShoppingBag, Trash2 } from "lucide-react";
+import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2 } from "lucide-react";
 
 const SESSION_KEY = "shalom_admin_auth";
 
@@ -207,6 +207,7 @@ function LoginScreen({ onLogin, loading, error }: { onLogin: (u: string, p: stri
 export default function Admin() {
   const { authed, login, logout, loading, error } = useAdminAuth();
   const queryClient = useQueryClient();
+  const [registrationSearch, setRegistrationSearch] = useState("");
   const [deletingRegistrationId, setDeletingRegistrationId] = useState<number | null>(null);
   const [deleteRegistrationError, setDeleteRegistrationError] = useState("");
 
@@ -238,6 +239,18 @@ export default function Admin() {
   const registrations = [...(registrationsQuery.data || [])].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
+  const normalizedRegistrationSearch = registrationSearch.trim().toLowerCase();
+  const filteredRegistrations = normalizedRegistrationSearch
+    ? registrations.filter((registration) =>
+        [
+          registration.firstName,
+          registration.lastName,
+          `${registration.firstName} ${registration.lastName}`,
+          registration.email,
+          registration.phone,
+        ].some((value) => value?.toLowerCase().includes(normalizedRegistrationSearch))
+      )
+    : registrations;
 
   const testimonies = [...(testimoniesQuery.data || [])].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -289,11 +302,15 @@ export default function Admin() {
               <h2 className="text-2xl font-bold text-white uppercase tracking-wider">Registrations</h2>
               <div className="flex items-center gap-3">
                 <Badge className="bg-primary text-white">
-                  {registrationsQuery.isLoading ? "..." : registrations.length}
+                  {registrationsQuery.isLoading
+                    ? "..."
+                    : normalizedRegistrationSearch
+                      ? `${filteredRegistrations.length}/${registrations.length}`
+                      : registrations.length}
                 </Badge>
                 {registrations.length > 0 && (
                   <button
-                    onClick={() => exportCSV(registrations)}
+                    onClick={() => exportCSV(filteredRegistrations)}
                     className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
                     title="Export CSV"
                   >
@@ -303,6 +320,24 @@ export default function Admin() {
                 )}
               </div>
             </div>
+
+            {registrations.length > 0 && (
+              <div className="relative">
+                <Search
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35"
+                />
+                <Input
+                  type="search"
+                  value={registrationSearch}
+                  onChange={(event) => setRegistrationSearch(event.target.value)}
+                  placeholder="Search by name, email, or phone"
+                  aria-label="Search registrations"
+                  data-testid="input-registration-search"
+                  className="h-12 border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/35 focus-visible:border-primary focus-visible:ring-primary/20"
+                />
+              </div>
+            )}
 
             {deleteRegistrationError && (
               <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-200">
@@ -320,9 +355,13 @@ export default function Admin() {
               <div className="text-center py-20 text-white/30 rounded-2xl border border-dashed border-white/10">
                 No registrations yet
               </div>
+            ) : filteredRegistrations.length === 0 ? (
+              <div className="text-center py-20 text-white/30 rounded-2xl border border-dashed border-white/10">
+                No registrations match “{registrationSearch.trim()}”
+              </div>
             ) : (
               <div className="space-y-4">
-                {registrations.map((reg) => (
+                {filteredRegistrations.map((reg) => (
                   <motion.div
                     key={reg.id}
                     initial={{ opacity: 0, y: 10 }}
