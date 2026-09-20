@@ -169,12 +169,9 @@ export const SkipRegistrationBadgeResponse = zod.object({
 /**
  * @summary Submit a testimony
  */
-
 export const createTestimonyBodyTestimonyMin = 10;
 
 export const CreateTestimonyBody = zod.object({
-  name: zod.string().min(1),
-  email: zod.string().email(),
   conferenceYear: zod.number(),
   testimony: zod.string().min(createTestimonyBodyTestimonyMin),
 });

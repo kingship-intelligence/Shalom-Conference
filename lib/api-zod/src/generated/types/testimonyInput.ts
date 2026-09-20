@@ -7,9 +7,6 @@
  */
 
 export interface TestimonyInput {
-  /** @minLength 1 */
-  name: string;
-  email: string;
   conferenceYear: number;
   /** @minLength 10 */
   testimony: string;
