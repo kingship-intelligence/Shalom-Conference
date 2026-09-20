@@ -22,6 +22,75 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 
 const HERO_SEGMENT_COUNT = 15;
 const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 768px)";
+const CONFERENCE_START = new Date("2026-10-09T19:00:00-04:00").getTime();
+
+function getCountdownParts() {
+  const remaining = Math.max(0, CONFERENCE_START - Date.now());
+
+  return {
+    days: Math.floor(remaining / 86_400_000),
+    hours: Math.floor((remaining % 86_400_000) / 3_600_000),
+    minutes: Math.floor((remaining % 3_600_000) / 60_000),
+    seconds: Math.floor((remaining % 60_000) / 1_000),
+    hasStarted: remaining === 0,
+  };
+}
+
+function ConferenceCountdown() {
+  const [countdown, setCountdown] = useState(getCountdownParts);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setCountdown(getCountdownParts());
+    }, 1_000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const units = [
+    { label: "Days", value: countdown.days },
+    { label: "Hours", value: countdown.hours },
+    { label: "Minutes", value: countdown.minutes },
+    { label: "Seconds", value: countdown.seconds },
+  ];
+
+  return (
+    <section className="border-y border-white/10 bg-gray-950 px-4 py-14 text-white sm:px-6 sm:py-16">
+      <div className="container mx-auto max-w-5xl text-center">
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
+          October 9, 2026 · 7 PM ET
+        </p>
+        <h2
+          className="mt-4 text-3xl font-bold uppercase tracking-wide sm:text-5xl"
+          style={{ fontFamily: "var(--font-display)" }}
+        >
+          {countdown.hasStarted ? "Shalom 2026 Is Here" : "Countdown To Shalom 2026"}
+        </h2>
+
+        {!countdown.hasStarted && (
+          <div
+            className="mx-auto mt-10 grid max-w-3xl grid-cols-4 border-y border-white/15"
+            aria-label={`${countdown.days} days, ${countdown.hours} hours, ${countdown.minutes} minutes, and ${countdown.seconds} seconds until Shalom 2026`}
+          >
+            {units.map((unit, index) => (
+              <div
+                key={unit.label}
+                className={`py-6 sm:py-8 ${index > 0 ? "border-l border-white/15" : ""}`}
+              >
+                <span className="block font-mono text-3xl font-bold tabular-nums sm:text-6xl">
+                  {String(unit.value).padStart(2, "0")}
+                </span>
+                <span className="mt-2 block text-[9px] font-bold uppercase tracking-[0.18em] text-white/45 sm:text-xs sm:tracking-[0.25em]">
+                  {unit.label}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
 
 export default function Home() {
   const heroVideoRef = useRef<HTMLVideoElement>(null);
@@ -161,6 +230,8 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
+
+      <ConferenceCountdown />
 
       {/* CTA — solid orange */}
       <section id="home-cta" className="bg-primary px-4 py-28 sm:px-6">
