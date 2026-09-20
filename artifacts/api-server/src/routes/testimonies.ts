@@ -18,7 +18,11 @@ router.post("/testimonies", async (req, res): Promise<void> => {
 
   const [testimony] = await db
     .insert(testimoniesTable)
-    .values(parsed.data)
+    .values({
+      ...parsed.data,
+      name: "Anonymous",
+      email: "",
+    })
     .returning();
 
   res.status(201).json(ListTestimoniesResponseItem.parse(testimony));

@@ -486,9 +486,11 @@ export default function Admin() {
                     <div className="flex justify-between items-start">
                       <div>
                         <h3 className="text-lg font-bold text-white">{test.name}</h3>
-                        <p className="text-xs text-white/30 flex items-center gap-1">
-                          <Mail className="h-3 w-3" /> {test.email}
-                        </p>
+                        {test.email && (
+                          <p className="text-xs text-white/30 flex items-center gap-1">
+                            <Mail className="h-3 w-3" /> {test.email}
+                          </p>
+                        )}
                       </div>
                       <Badge variant="outline" className="border-white/20 text-white/50 text-[10px]">
                         {test.conferenceYear}

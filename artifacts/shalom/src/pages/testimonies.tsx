@@ -17,7 +17,6 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
@@ -29,8 +28,6 @@ import {
 import { useToast } from "@/hooks/use-toast";
 
 const testimonySchema = z.object({
-  name: z.string().min(1, "Name is required"),
-  email: z.string().email("Please enter a valid email"),
   conferenceYear: z.number().default(2026),
   testimony: z.string().min(10, "Please share at least a few words"),
 });
@@ -45,8 +42,6 @@ export default function Testimonies() {
   const form = useForm<TestimonyInput>({
     resolver: zodResolver(testimonySchema),
     defaultValues: {
-      name: "",
-      email: "",
       conferenceYear: 2026,
       testimony: "",
     },
@@ -162,49 +157,6 @@ export default function Testimonies() {
         >
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
-                      Full Name
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="John Doe"
-                        {...field}
-                        className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                        data-testid="input-name"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
-                      Email Address
-                    </FormLabel>
-                    <FormControl>
-                      <Input
-                        type="email"
-                        placeholder="john@example.com"
-                        {...field}
-                        className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
-                        data-testid="input-email"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <FormField
                 control={form.control}
                 name="conferenceYear"
