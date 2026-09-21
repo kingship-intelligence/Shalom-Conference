@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { ArrowRight, CalendarDays, Check, CheckCircle2, Clock3 } from "lucide-react";
+import { ArrowRight, CalendarDays, Check, CheckCircle2, ChevronDown, Clock3 } from "lucide-react";
 import { motion } from "framer-motion";
 import { useCreatePrayerChainSignup } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
@@ -160,15 +160,36 @@ export default function PrayerCharge() {
                 </div>
               </div>
 
-              <Button
-                asChild
-                className="mt-8 h-12 rounded-full bg-primary px-7 font-bold uppercase tracking-widest text-white hover:bg-primary/90"
+              <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:items-start">
+                <Button
+                  asChild
+                  className="h-12 rounded-full bg-primary px-7 font-bold uppercase tracking-widest text-white hover:bg-primary/90"
+                >
+                  <a href="#prayer-chain-signup">
+                    Register for Prayer Chain
+                    <ChevronDown className="ml-2 h-4 w-4" />
+                  </a>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  className="h-12 rounded-full border-white/20 bg-transparent px-7 font-bold uppercase tracking-widest text-white hover:bg-white/10 hover:text-white"
+                >
+                  <Link href="/2026">
+                    See Shalom 2026
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Link>
+                </Button>
+              </div>
+
+              <a
+                href="#prayer-chain-signup"
+                className="mt-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-white/45 transition-colors hover:text-primary"
+                aria-label="Scroll down to the Prayer Chain registration form"
               >
-                <Link href="/2026">
-                  See Shalom 2026
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
+                Scroll to sign up
+                <ChevronDown className="h-4 w-4 animate-bounce" />
+              </a>
             </motion.div>
 
             <motion.div
