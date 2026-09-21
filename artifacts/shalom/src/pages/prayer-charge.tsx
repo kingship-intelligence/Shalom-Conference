@@ -238,7 +238,7 @@ export default function PrayerCharge() {
                   </div>
                   <h3 className="mt-6 text-3xl font-bold text-white">You’re on the prayer chain.</h3>
                   <p className="mt-3 max-w-md text-white/55">
-                    Thank you for committing time to pray with us on September 26.
+                    Thank you for committing time to pray with us on September 26. We sent your selected prayer times to your email.
                   </p>
                   <Button
                     type="button"
