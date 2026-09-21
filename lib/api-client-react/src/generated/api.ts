@@ -28,6 +28,8 @@ import type {
   MerchOrder,
   MerchOrderEmailError,
   MerchOrderInput,
+  PrayerChainSignup,
+  PrayerChainSignupInput,
   Registration,
   RegistrationCreated,
   RegistrationInput,
@@ -889,6 +891,169 @@ export function useListTestimonies<
   request?: SecondParameter<typeof customFetch>;
 }): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
   const queryOptions = getListTestimoniesQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Join one or more Prayer Charge time slots
+ */
+export const getCreatePrayerChainSignupUrl = () => {
+  return `/api/prayer-chain-signups`;
+};
+
+export const createPrayerChainSignup = async (
+  prayerChainSignupInput: PrayerChainSignupInput,
+  options?: RequestInit,
+): Promise<PrayerChainSignup> => {
+  return customFetch<PrayerChainSignup>(getCreatePrayerChainSignupUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(prayerChainSignupInput),
+  });
+};
+
+export const getCreatePrayerChainSignupMutationOptions = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createPrayerChainSignup>>,
+    TError,
+    { data: BodyType<PrayerChainSignupInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createPrayerChainSignup>>,
+  TError,
+  { data: BodyType<PrayerChainSignupInput> },
+  TContext
+> => {
+  const mutationKey = ["createPrayerChainSignup"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createPrayerChainSignup>>,
+    { data: BodyType<PrayerChainSignupInput> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createPrayerChainSignup(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreatePrayerChainSignupMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createPrayerChainSignup>>
+>;
+export type CreatePrayerChainSignupMutationBody =
+  BodyType<PrayerChainSignupInput>;
+export type CreatePrayerChainSignupMutationError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary Join one or more Prayer Charge time slots
+ */
+export const useCreatePrayerChainSignup = <
+  TError = ErrorType<ErrorResponse>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createPrayerChainSignup>>,
+    TError,
+    { data: BodyType<PrayerChainSignupInput> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createPrayerChainSignup>>,
+  TError,
+  { data: BodyType<PrayerChainSignupInput> },
+  TContext
+> => {
+  return useMutation(getCreatePrayerChainSignupMutationOptions(options));
+};
+
+/**
+ * @summary List prayer-chain signups for the admin area
+ */
+export const getListPrayerChainSignupsUrl = () => {
+  return `/api/prayer-chain-signups`;
+};
+
+export const listPrayerChainSignups = async (
+  options?: RequestInit,
+): Promise<PrayerChainSignup[]> => {
+  return customFetch<PrayerChainSignup[]>(getListPrayerChainSignupsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListPrayerChainSignupsQueryKey = () => {
+  return [`/api/prayer-chain-signups`] as const;
+};
+
+export const getListPrayerChainSignupsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listPrayerChainSignups>>,
+  TError = ErrorType<ErrorResponse>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listPrayerChainSignups>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getListPrayerChainSignupsQueryKey();
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof listPrayerChainSignups>>
+  > = ({ signal }) => listPrayerChainSignups({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listPrayerChainSignups>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListPrayerChainSignupsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listPrayerChainSignups>>
+>;
+export type ListPrayerChainSignupsQueryError = ErrorType<ErrorResponse>;
+
+/**
+ * @summary List prayer-chain signups for the admin area
+ */
+
+export function useListPrayerChainSignups<
+  TData = Awaited<ReturnType<typeof listPrayerChainSignups>>,
+  TError = ErrorType<ErrorResponse>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof listPrayerChainSignups>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListPrayerChainSignupsQueryOptions(options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

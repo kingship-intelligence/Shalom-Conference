@@ -5,6 +5,7 @@ import {
   useConfirmMerchOrderPayment,
   useDeleteRegistration,
   useListMerchOrders,
+  useListPrayerChainSignups,
   useListRegistrations,
   useListTestimonies,
 } from "@workspace/api-client-react";
@@ -27,9 +28,23 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2 } from "lucide-react";
+import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2, Clock3 } from "lucide-react";
 
 const SESSION_KEY = "shalom_admin_auth";
+const PRAYER_SLOT_LABELS: Record<string, string> = {
+  "00:00": "12 AM – 1 AM",
+  "01:00": "1 AM – 2 AM",
+  "02:00": "2 AM – 3 AM",
+  "03:00": "3 AM – 4 AM",
+  "04:00": "4 AM – 5 AM",
+  "05:00": "5 AM – 6 AM",
+  "06:00": "6 AM – 7 AM",
+  "07:00": "7 AM – 8 AM",
+  "08:00": "8 AM – 9 AM",
+  "09:00": "9 AM – 10 AM",
+  "10:00": "10 AM – 11 AM",
+  "11:00": "11 AM – 12 PM",
+};
 
 function exportCSV(registrations: any[]) {
   const headers = ["First Name", "Last Name", "Email", "Phone", "Year", "Volunteer", "Role", "Registered At"];
@@ -78,6 +93,27 @@ function exportMerchOrdersCSV(orders: any[]) {
   const link = document.createElement("a");
   link.href = url;
   link.download = `shalom-merch-preorders-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function exportPrayerChainCSV(signups: any[]) {
+  const headers = ["Name", "Email", "Phone", "Available Prayer Times", "Submitted At"];
+  const rows = signups.map((signup) => [
+    signup.name,
+    signup.email,
+    signup.phone,
+    signup.timeSlots.map((slot: string) => PRAYER_SLOT_LABELS[slot] ?? slot).join("; "),
+    new Date(signup.createdAt).toLocaleString(),
+  ]);
+  const csv = [headers, ...rows]
+    .map((row) => row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(","))
+    .join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `prayer-chain-signups-${new Date().toISOString().slice(0, 10)}.csv`;
   link.click();
   URL.revokeObjectURL(url);
 }
@@ -216,6 +252,9 @@ export default function Admin() {
   const merchOrdersQuery = useListMerchOrders({
     query: { enabled: authed, queryKey: ["/api/merch-orders"] },
   });
+  const prayerChainQuery = useListPrayerChainSignups({
+    query: { enabled: authed, queryKey: ["/api/prayer-chain-signups"] },
+  });
   const verifyPaymentMutation = useConfirmMerchOrderPayment({
     mutation: {
       onSuccess: () => {
@@ -256,6 +295,9 @@ export default function Admin() {
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
   const merchOrders = [...(merchOrdersQuery.data || [])].sort((a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  const prayerChainSignups = [...(prayerChainQuery.data || [])].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
   const awaitingVerificationCount = merchOrders.filter((order) => order.status === "awaiting_verification").length;
@@ -506,6 +548,78 @@ export default function Admin() {
                       {format(new Date(test.createdAt), "MMM d, h:mm a")}
                     </p>
                   </motion.div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section data-testid="section-prayer-chain" className="space-y-6 lg:col-span-2">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-primary pt-4">
+              <div className="flex items-center gap-3">
+                <Clock3 className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-bold uppercase tracking-wider text-white">Prayer chain</h2>
+              </div>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-primary text-white">
+                  {prayerChainQuery.isLoading ? "..." : prayerChainSignups.length}
+                </Badge>
+                {prayerChainSignups.length > 0 && (
+                  <button
+                    onClick={() => exportPrayerChainCSV(prayerChainSignups)}
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-white/50 transition-colors hover:text-white"
+                    title="Export prayer-chain signups"
+                  >
+                    <Download className="h-4 w-4" />
+                    Export
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {prayerChainQuery.isLoading ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {[1, 2].map((item) => (
+                  <Skeleton key={item} className="h-48 w-full rounded-xl bg-white/5" />
+                ))}
+              </div>
+            ) : prayerChainSignups.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center text-white/30">
+                No prayer-chain signups yet
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {prayerChainSignups.map((signup) => (
+                  <article key={signup.id} className="rounded-xl border border-white/10 bg-white/5 p-5">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div>
+                        <p className="font-bold text-white">{signup.name}</p>
+                        <p className="mt-1 flex items-center gap-2 text-sm text-white/50">
+                          <Mail className="h-3.5 w-3.5" />
+                          {signup.email}
+                        </p>
+                        <p className="mt-1 flex items-center gap-2 text-sm text-white/50">
+                          <Phone className="h-3.5 w-3.5" />
+                          {signup.phone}
+                        </p>
+                      </div>
+                      <Badge variant="outline" className="border-primary/30 text-primary">
+                        {signup.timeSlots.length} {signup.timeSlots.length === 1 ? "hour" : "hours"}
+                      </Badge>
+                    </div>
+                    <div className="mt-5 flex flex-wrap gap-2">
+                      {signup.timeSlots.map((slot) => (
+                        <span
+                          key={slot}
+                          className="border border-white/10 bg-black/20 px-2.5 py-1.5 text-xs font-semibold text-white/70"
+                        >
+                          {PRAYER_SLOT_LABELS[slot] ?? slot}
+                        </span>
+                      ))}
+                    </div>
+                    <p className="mt-4 text-right text-[10px] uppercase text-white/20">
+                      {format(new Date(signup.createdAt), "MMM d, h:mm a")}
+                    </p>
+                  </article>
                 ))}
               </div>
             )}

@@ -134,6 +134,52 @@ export interface TestimonyInput {
   testimony: string;
 }
 
+export interface PrayerChainSignup {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  timeSlots: string[];
+  createdAt: string;
+}
+
+export type PrayerChainSignupInputTimeSlotsItem =
+  (typeof PrayerChainSignupInputTimeSlotsItem)[keyof typeof PrayerChainSignupInputTimeSlotsItem];
+
+export const PrayerChainSignupInputTimeSlotsItem = {
+  "00:00": "00:00",
+  "01:00": "01:00",
+  "02:00": "02:00",
+  "03:00": "03:00",
+  "04:00": "04:00",
+  "05:00": "05:00",
+  "06:00": "06:00",
+  "07:00": "07:00",
+  "08:00": "08:00",
+  "09:00": "09:00",
+  "10:00": "10:00",
+  "11:00": "11:00",
+} as const;
+
+export interface PrayerChainSignupInput {
+  /**
+   * @minLength 1
+   * @maxLength 160
+   */
+  name: string;
+  email: string;
+  /**
+   * @minLength 7
+   * @maxLength 40
+   */
+  phone: string;
+  /**
+   * @minItems 1
+   * @maxItems 12
+   */
+  timeSlots: PrayerChainSignupInputTimeSlotsItem[];
+}
+
 export type MerchOrderItemSize =
   (typeof MerchOrderItemSize)[keyof typeof MerchOrderItemSize];
 

@@ -52,3 +52,5 @@ export const merchOrdersTable = pgTable("merch_orders", {
 export const insertMerchOrderSchema = createInsertSchema(merchOrdersTable).omit({ id: true, createdAt: true });
 export type InsertMerchOrder = z.infer<typeof insertMerchOrderSchema>;
 export type MerchOrder = typeof merchOrdersTable.$inferSelect;
+
+export * from "./prayer-chain-signups";
