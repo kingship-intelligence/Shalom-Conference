@@ -244,6 +244,7 @@ export default function Admin() {
   const { authed, login, logout, loading, error } = useAdminAuth();
   const queryClient = useQueryClient();
   const [registrationSearch, setRegistrationSearch] = useState("");
+  const [prayerChainSearch, setPrayerChainSearch] = useState("");
   const [deletingRegistrationId, setDeletingRegistrationId] = useState<number | null>(null);
   const [deleteRegistrationError, setDeleteRegistrationError] = useState("");
 
@@ -300,6 +301,18 @@ export default function Admin() {
   const prayerChainSignups = [...(prayerChainQuery.data || [])].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
+  const normalizedPrayerChainSearch = prayerChainSearch.trim().toLowerCase();
+  const filteredPrayerChainSignups = normalizedPrayerChainSearch
+    ? prayerChainSignups.filter((signup) =>
+        [
+          signup.name,
+          signup.email,
+          signup.phone,
+          ...signup.timeSlots,
+          ...signup.timeSlots.map((slot) => PRAYER_SLOT_LABELS[slot]),
+        ].some((value) => value?.toLowerCase().includes(normalizedPrayerChainSearch))
+      )
+    : prayerChainSignups;
   const awaitingVerificationCount = merchOrders.filter((order) => order.status === "awaiting_verification").length;
   const verifiedCount = merchOrders.filter((order) => order.status === "verified").length;
 
@@ -561,11 +574,15 @@ export default function Admin() {
               </div>
               <div className="flex items-center gap-3">
                 <Badge className="bg-primary text-white">
-                  {prayerChainQuery.isLoading ? "..." : prayerChainSignups.length}
+                  {prayerChainQuery.isLoading
+                    ? "..."
+                    : normalizedPrayerChainSearch
+                      ? `${filteredPrayerChainSignups.length}/${prayerChainSignups.length}`
+                      : prayerChainSignups.length}
                 </Badge>
                 {prayerChainSignups.length > 0 && (
                   <button
-                    onClick={() => exportPrayerChainCSV(prayerChainSignups)}
+                    onClick={() => exportPrayerChainCSV(filteredPrayerChainSignups)}
                     className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-white/50 transition-colors hover:text-white"
                     title="Export prayer-chain signups"
                   >
@@ -575,6 +592,24 @@ export default function Admin() {
                 )}
               </div>
             </div>
+
+            {prayerChainSignups.length > 0 && (
+              <div className="relative">
+                <Search
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35"
+                />
+                <Input
+                  type="search"
+                  value={prayerChainSearch}
+                  onChange={(event) => setPrayerChainSearch(event.target.value)}
+                  placeholder="Search by name, email, phone, or prayer time"
+                  aria-label="Search prayer-chain signups"
+                  data-testid="input-prayer-chain-search"
+                  className="h-12 border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/35 focus-visible:border-primary focus-visible:ring-primary/20"
+                />
+              </div>
+            )}
 
             {prayerChainQuery.isLoading ? (
               <div className="grid gap-4 md:grid-cols-2">
@@ -586,9 +621,13 @@ export default function Admin() {
               <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center text-white/30">
                 No prayer-chain signups yet
               </div>
+            ) : filteredPrayerChainSignups.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center text-white/30">
+                No prayer-chain signups match “{prayerChainSearch.trim()}”
+              </div>
             ) : (
               <div className="grid gap-4 md:grid-cols-2">
-                {prayerChainSignups.map((signup) => (
+                {filteredPrayerChainSignups.map((signup) => (
                   <article key={signup.id} className="rounded-xl border border-white/10 bg-white/5 p-5">
                     <div className="flex flex-wrap items-start justify-between gap-4">
                       <div>
