@@ -15,7 +15,7 @@ mock.module("@replit/connectors-sdk", {
   },
 });
 
-const { sendRegistrationConfirmation } = await import("../src/lib/email.ts");
+const { sendPrayerChainConfirmation, sendRegistrationConfirmation } = await import("../src/lib/email.ts");
 
 describe("badge confirmation email", () => {
   it("sends a PNG attachment with a plain subject", async () => {
@@ -34,5 +34,25 @@ describe("badge confirmation email", () => {
     assert.match(raw, /Content-Type: image\/png; name="shalom-2026-attendee-badge\.png"/);
     assert.match(raw, /Content-Disposition: attachment; filename="shalom-2026-attendee-badge\.png"/);
     assert.ok(raw.includes(Buffer.from("badge-png").toString("base64")));
+  });
+});
+
+describe("prayer-chain confirmation email", () => {
+  it("includes every selected prayer time", async () => {
+    await sendPrayerChainConfirmation({
+      name: "Ada Lovelace",
+      email: "ada@example.com",
+      timeSlots: ["00:00", "05:00", "11:00"],
+    });
+
+    const raw = Buffer.from(calls.at(-1).raw.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString();
+    const encodedHtml = raw.split("Content-Transfer-Encoding: base64\r\n\r\n")[1].split("\r\n\r\n--inner_")[0];
+    const html = Buffer.from(encodedHtml.replace(/\r\n/g, ""), "base64").toString();
+
+    assert.match(raw, /Subject: Your Shalom Prayer Chain registration is confirmed\r\n/);
+    assert.match(html, /Hello Ada Lovelace/);
+    assert.match(html, /12 AM – 1 AM/);
+    assert.match(html, /5 AM – 6 AM/);
+    assert.match(html, /11 AM – 12 PM/);
   });
 });

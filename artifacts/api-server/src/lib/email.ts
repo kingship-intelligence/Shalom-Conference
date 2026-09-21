@@ -242,6 +242,101 @@ export async function sendRegistrationConfirmation(opts: {
   }
 }
 
+const PRAYER_SLOT_LABELS: Record<string, string> = {
+  "00:00": "12 AM – 1 AM",
+  "01:00": "1 AM – 2 AM",
+  "02:00": "2 AM – 3 AM",
+  "03:00": "3 AM – 4 AM",
+  "04:00": "4 AM – 5 AM",
+  "05:00": "5 AM – 6 AM",
+  "06:00": "6 AM – 7 AM",
+  "07:00": "7 AM – 8 AM",
+  "08:00": "8 AM – 9 AM",
+  "09:00": "9 AM – 10 AM",
+  "10:00": "10 AM – 11 AM",
+  "11:00": "11 AM – 12 PM",
+};
+
+export async function sendPrayerChainConfirmation(opts: {
+  name: string;
+  email: string;
+  timeSlots: string[];
+}): Promise<void> {
+  const siteUrl = getSiteUrl();
+  const slotRows = opts.timeSlots
+    .map((slot) => PRAYER_SLOT_LABELS[slot] ?? slot)
+    .map(
+      (label) =>
+        `<tr><td style="padding:11px 14px;border-bottom:1px solid #333;color:#ffffff;font-size:15px;font-weight:700;">${escapeHtml(label)}</td></tr>`,
+    )
+    .join("");
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Your Prayer Chain registration is confirmed</title>
+</head>
+<body style="margin:0;padding:0;background:#0d0d0d;font-family:Arial,sans-serif;color:#ffffff;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0d0d;padding:32px 16px;">
+    <tr><td align="center">
+      <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;background:#141414;border-radius:16px;overflow:hidden;">
+        <tr>
+          <td style="padding:32px;text-align:center;background:linear-gradient(160deg,#1a0a00,#0d0d0d);border-bottom:2px solid #f97316;">
+            <p style="margin:0;color:#f97316;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;">Shalom Prayer Charge</p>
+            <h1 style="margin:10px 0 0;font-size:30px;line-height:1.2;color:#ffffff;">You're on the Prayer Chain</h1>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:32px;">
+            <p style="margin:0 0 16px;font-size:18px;font-weight:700;color:#ffffff;">Hello ${escapeHtml(opts.name)},</p>
+            <p style="margin:0 0 22px;color:#c0c0c0;line-height:1.7;">
+              Thank you for committing to pray with us during the Shalom Prayer Charge on
+              <strong style="color:#f97316;">September 26, 2026</strong>.
+            </p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;background:#1f1f1f;border:1px solid #333;border-radius:10px;overflow:hidden;">
+              <tr><td style="padding:14px;color:#f97316;font-size:12px;font-weight:800;letter-spacing:2px;text-transform:uppercase;border-bottom:1px solid #333;">Your Prayer Times</td></tr>
+              ${slotRows}
+            </table>
+            <p style="margin:0;color:#a0a0a0;font-size:14px;line-height:1.7;">
+              Please keep this email for your schedule. The Shalom team may contact you if coordination is needed.
+            </p>
+            <table width="100%" cellpadding="0" cellspacing="0" style="margin:28px 0 0;">
+              <tr><td align="center">
+                <a href="${siteUrl}/prayer-charge" style="display:inline-block;background:#f97316;color:#ffffff;font-size:14px;font-weight:800;letter-spacing:1px;text-transform:uppercase;text-decoration:none;padding:14px 28px;border-radius:100px;">View Prayer Charge</a>
+              </td></tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="background:#0d0d0d;border-top:1px solid #222;padding:22px 32px;text-align:center;">
+            <p style="margin:0;color:#555;font-size:12px;">Questions? Email <a href="mailto:media@shalomconference.com" style="color:#f97316;text-decoration:none;">media@shalomconference.com</a>.</p>
+          </td>
+        </tr>
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>`;
+
+  const connectors = new ReplitConnectors();
+  const raw = buildRawMessage({
+    to: opts.email,
+    subject: "Your Shalom Prayer Chain registration is confirmed",
+    html,
+  });
+  const response = await connectors.proxy("google-mail", "/gmail/v1/users/me/messages/send", {
+    method: "POST",
+    body: JSON.stringify({ raw }),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Gmail API error ${response.status}: ${text}`);
+  }
+}
+
 export type MerchOrderEmailItem = {
   productName: string;
   size: string;

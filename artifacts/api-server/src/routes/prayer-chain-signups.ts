@@ -7,6 +7,7 @@ import {
   ListPrayerChainSignupsResponseItem,
 } from "@workspace/api-zod";
 import { hasAdminSession } from "../lib/admin-session";
+import { sendPrayerChainConfirmation } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -27,6 +28,17 @@ router.post("/prayer-chain-signups", async (req, res): Promise<void> => {
       phone: parsed.data.phone.trim(),
     })
     .returning();
+
+  sendPrayerChainConfirmation({
+    name: signup.name,
+    email: signup.email,
+    timeSlots: signup.timeSlots,
+  }).catch((err: unknown) => {
+    req.log.error(
+      { err, prayerChainSignupId: signup.id },
+      "Failed to send prayer-chain confirmation email",
+    );
+  });
 
   res.status(201).json(ListPrayerChainSignupsResponseItem.parse(signup));
 });
