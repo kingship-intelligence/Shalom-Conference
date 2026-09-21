@@ -16,6 +16,8 @@ tags:
     description: Attendee badge upload and delivery operations
   - name: testimonies
     description: Testimony operations
+  - name: prayer-chain
+    description: Prayer Charge prayer-chain signup operations
   - name: merch
     description: Merch preorder operations
 paths:
@@ -266,6 +268,49 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Testimony"
+  /prayer-chain-signups:
+    post:
+      operationId: createPrayerChainSignup
+      tags: [prayer-chain]
+      summary: Join one or more Prayer Charge time slots
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrayerChainSignupInput"
+      responses:
+        "201":
+          description: Prayer-chain signup created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrayerChainSignup"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listPrayerChainSignups
+      tags: [prayer-chain]
+      summary: List prayer-chain signups for the admin area
+      responses:
+        "200":
+          description: Prayer-chain signup list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PrayerChainSignup"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /merch-orders:
     post:
       operationId: createMerchOrder
@@ -445,6 +490,45 @@ components:
       properties:
         conferenceYear: { type: integer }
         testimony:      { type: string, minLength: 10 }
+    PrayerChainSignup:
+      type: object
+      required: [id, name, email, phone, timeSlots, createdAt]
+      properties:
+        id:        { type: integer }
+        name:      { type: string }
+        email:     { type: string, format: email }
+        phone:     { type: string }
+        timeSlots:
+          type: array
+          items: { type: string }
+        createdAt: { type: string, format: date-time }
+    PrayerChainSignupInput:
+      type: object
+      required: [name, email, phone, timeSlots]
+      properties:
+        name:  { type: string, minLength: 1, maxLength: 160 }
+        email: { type: string, format: email }
+        phone: { type: string, minLength: 7, maxLength: 40 }
+        timeSlots:
+          type: array
+          minItems: 1
+          maxItems: 12
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - "00:00"
+              - "01:00"
+              - "02:00"
+              - "03:00"
+              - "04:00"
+              - "05:00"
+              - "06:00"
+              - "07:00"
+              - "08:00"
+              - "09:00"
+              - "10:00"
+              - "11:00"
     MerchOrderItem:
       type: object
       required: [productName, size, quantity]

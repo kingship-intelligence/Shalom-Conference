@@ -190,6 +190,59 @@ export const ListTestimoniesResponseItem = zod.object({
 export const ListTestimoniesResponse = zod.array(ListTestimoniesResponseItem);
 
 /**
+ * @summary Join one or more Prayer Charge time slots
+ */
+export const createPrayerChainSignupBodyNameMax = 160;
+
+export const createPrayerChainSignupBodyPhoneMin = 7;
+export const createPrayerChainSignupBodyPhoneMax = 40;
+
+export const createPrayerChainSignupBodyTimeSlotsMax = 12;
+
+export const CreatePrayerChainSignupBody = zod.object({
+  name: zod.string().min(1).max(createPrayerChainSignupBodyNameMax),
+  email: zod.string().email(),
+  phone: zod
+    .string()
+    .min(createPrayerChainSignupBodyPhoneMin)
+    .max(createPrayerChainSignupBodyPhoneMax),
+  timeSlots: zod
+    .array(
+      zod.enum([
+        "00:00",
+        "01:00",
+        "02:00",
+        "03:00",
+        "04:00",
+        "05:00",
+        "06:00",
+        "07:00",
+        "08:00",
+        "09:00",
+        "10:00",
+        "11:00",
+      ]),
+    )
+    .min(1)
+    .max(createPrayerChainSignupBodyTimeSlotsMax),
+});
+
+/**
+ * @summary List prayer-chain signups for the admin area
+ */
+export const ListPrayerChainSignupsResponseItem = zod.object({
+  id: zod.number(),
+  name: zod.string(),
+  email: zod.string().email(),
+  phone: zod.string(),
+  timeSlots: zod.array(zod.string()),
+  createdAt: zod.coerce.date(),
+});
+export const ListPrayerChainSignupsResponse = zod.array(
+  ListPrayerChainSignupsResponseItem,
+);
+
+/**
  * @summary Submit a merch preorder after Cash App payment
  */
 export const createMerchOrderBodyNameMax = 160;
