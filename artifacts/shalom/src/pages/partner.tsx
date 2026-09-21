@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { ArrowRight, ArrowUpRight, HandHeart, HeartHandshake, Mail, Megaphone, ShieldCheck } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Mail, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
@@ -7,17 +7,14 @@ import SiteFooter from "@/components/SiteFooter";
 
 const partnerPaths = [
   {
-    icon: <HeartHandshake className="h-8 w-8 text-primary" />,
     title: "Sponsor The Gathering",
     text: "Help make space for students and young adults to encounter God through worship, ministry, and community.",
   },
   {
-    icon: <HandHeart className="h-8 w-8 text-secondary" />,
     title: "Serve With Us",
     text: "Join the volunteer team that welcomes guests, supports prayer moments, and helps the day run with excellence.",
   },
   {
-    icon: <Megaphone className="h-8 w-8 text-primary" />,
     title: "Spread The Word",
     text: "Invite your church, youth group, campus ministry, and community into what God is doing through Shalom.",
   },
@@ -51,7 +48,6 @@ export default function Partner() {
           <div className="container mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
             {partnerPaths.map((path) => (
               <article key={path.title} className="rounded-2xl border border-white/10 bg-background/60 p-8 text-center md:text-left">
-                <div className="mx-auto mb-6 w-fit rounded-xl bg-white/5 p-4 md:mx-0">{path.icon}</div>
                 <h2 className="mb-4 text-2xl font-bold text-white">{path.title}</h2>
                 <p className="leading-relaxed text-muted-foreground">{path.text}</p>
               </article>
