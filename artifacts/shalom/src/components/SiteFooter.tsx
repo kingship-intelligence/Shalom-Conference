@@ -64,6 +64,12 @@ export default function SiteFooter() {
           <p className="text-gray-500 text-sm uppercase tracking-[0.15em] font-semibold">
             © {new Date().getFullYear()} Shalom Conference. All rights reserved.
           </p>
+          <Link
+            href="/privacy"
+            className="text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-primary"
+          >
+            Privacy Policy
+          </Link>
           <a
             href="https://www.instagram.com/shalomconference/"
             target="_blank"
