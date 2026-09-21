@@ -1,5 +1,5 @@
 import { Link } from "wouter";
-import { Mail, MessageSquare } from "lucide-react";
+import { Mail, MessageSquare, ShieldCheck } from "lucide-react";
 import { SiInstagram, SiYoutube } from "react-icons/si";
 import shalomLogo from "@assets/logo_1778697155106.png";
 
@@ -15,7 +15,7 @@ export default function SiteFooter() {
           />
         </div>
 
-        <div className="grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-4 mb-12">
+        <div className="grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-5 mb-12">
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Contact</p>
             <a
@@ -55,6 +55,16 @@ export default function SiteFooter() {
               <Mail className="h-4 w-4 shrink-0 text-primary" />
               media@shalomconference.com
             </a>
+          </div>
+          <div>
+            <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Legal</p>
+            <Link
+              href="/privacy"
+              className="flex items-center justify-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-white"
+            >
+              <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
+              Privacy & Alert Policy
+            </Link>
           </div>
         </div>
 
