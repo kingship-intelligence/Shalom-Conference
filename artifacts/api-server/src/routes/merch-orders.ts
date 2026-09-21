@@ -16,8 +16,10 @@ import { getAdminIdentity, hasAdminSession } from "../lib/admin-session";
 const router: IRouter = Router();
 
 const MERCH_PRICES: Record<string, number> = {
-  "The Comforter Tee": 50,
-  "The Comforter Tee — Shalom Edition": 50,
+  "The Comforter Tee": 30,
+  "The Comforter Tee — Shalom Edition": 30,
+  "The Comforter Crewneck": 40,
+  "The Comforter Crewneck — Shalom Edition": 40,
 };
 
 const MerchOrderSubmission = CreateMerchOrderBody.superRefine((order, ctx) => {

@@ -22,7 +22,7 @@ const validOrder = {
   phone: "555-0100",
   paymentReference: "$ada-123",
   items: [{ productName: "The Comforter Tee", size: "M", quantity: 2 }],
-  total: 100,
+  total: 60,
 };
 
 function fakeDb() {
@@ -167,6 +167,24 @@ describe("merch preorder persistence and validation", () => {
       assert.equal(response.status, 400);
     }
     assert.equal(state.rows.length, 0);
+  });
+
+  it("accepts the updated tee and crewneck prices", async () => {
+    const order = {
+      ...validOrder,
+      items: [
+        { productName: "The Comforter Tee — Shalom Edition", size: "L", quantity: 1 },
+        { productName: "The Comforter Crewneck", size: "XL", quantity: 1 },
+        { productName: "The Comforter Crewneck — Shalom Edition", size: "S", quantity: 1 },
+      ],
+      total: 110,
+    };
+
+    const response = await request("POST", "/merch-orders", order);
+
+    assert.equal(response.status, 201);
+    assert.equal(state.rows[0].total, 110);
+    assert.deepEqual(state.rows[0].items, order.items);
   });
 
   it("does not expose the private preorder list without an admin session", async () => {
