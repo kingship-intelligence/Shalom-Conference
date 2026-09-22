@@ -52,6 +52,7 @@ const registrationSchema = z.object({
   email: z.string().email("Please enter a valid email"),
   phone: z.string().optional(),
   smsConsent: z.boolean().default(false),
+  termsAccepted: z.boolean().default(false),
   conferenceYear: z.number().default(2026),
   volunteer: z.boolean().default(false),
   volunteerRole: z.string().optional(),
@@ -70,6 +71,9 @@ const registrationSchema = z.object({
 ).refine(
   (d) => !d.hasPlusOne || !!d.plusOne,
   { message: "Please add your plus one’s details", path: ["plusOne"] }
+).refine(
+  (d) => d.termsAccepted,
+  { message: "Please agree to the Terms & Conditions and Privacy Policy", path: ["termsAccepted"] }
 ).refine(
   (d) => {
     if (d.wantsAttendeeBadge && !d.portraitFile) return false;
@@ -557,6 +561,7 @@ function RegistrationForm() {
       email: "",
       phone: "",
       smsConsent: false,
+      termsAccepted: false,
       conferenceYear: 2026,
       volunteer: false,
       volunteerRole: "",
@@ -921,7 +926,7 @@ function RegistrationForm() {
                           </FormControl>
                           <div className="space-y-2">
                             <FormLabel className="block cursor-pointer text-sm font-medium text-white">
-                              Send me Shalom updates by text
+                              Yes, sign me up for Shalom text updates
                             </FormLabel>
                             <p className="text-sm leading-relaxed text-white/50">
                               {hasPhone
@@ -941,6 +946,39 @@ function RegistrationForm() {
                       )}
                     />
                   </div>
+                  <FormField
+                    control={form.control}
+                    name="termsAccepted"
+                    render={({ field }) => (
+                      <FormItem className="flex flex-row items-start space-x-4 space-y-0 border border-white/10 p-4">
+                        <FormControl>
+                          <Checkbox
+                            checked={field.value}
+                            onCheckedChange={field.onChange}
+                            className="mt-1 rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
+                            data-testid="checkbox-terms-accepted"
+                          />
+                        </FormControl>
+                        <div className="space-y-2">
+                          <FormLabel className="block cursor-pointer text-sm font-medium text-white">
+                            I agree to the{" "}
+                            <Link href="/terms" className="text-primary underline underline-offset-4">
+                              Terms &amp; Conditions
+                            </Link>{" "}
+                            and{" "}
+                            <Link href="/privacy" className="text-primary underline underline-offset-4">
+                              Privacy Policy
+                            </Link>
+                            .
+                          </FormLabel>
+                          <p className="text-sm leading-relaxed text-white/50">
+                            Required to complete registration. SMS consent above is optional.
+                          </p>
+                          <FormMessage />
+                        </div>
+                      </FormItem>
+                    )}
+                  />
                 </div>
               </div>
 

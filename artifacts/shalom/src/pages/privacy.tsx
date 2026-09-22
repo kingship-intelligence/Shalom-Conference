@@ -63,9 +63,9 @@ const sections = [
           contacting us.
         </p>
         <p>
-          We may still send non-promotional messages that are necessary to
-          complete a request you made, such as registration confirmations,
-          Prayer Chain schedules, order updates, or direct responses.
+          The optional SMS program described here is for recurring conference
+          updates and reminders. Required registration correspondence is handled
+          separately and does not require opting in to recurring SMS updates.
         </p>
       </>
     ),
@@ -81,10 +81,10 @@ const sections = [
           They may use the information only to provide those services to us.
         </p>
         <p>
-          We may also disclose information when required by law, to protect
-          safety or rights, or as part of an organizational transition. Mobile
-          opt-in data and consent will not be shared with third parties for
-          their own marketing purposes.
+           We may also disclose information when required by law, to protect
+           safety or rights, or as part of an organizational transition. We do
+           not sell mobile information or share mobile information with third
+           parties or affiliates for their own marketing or promotional purposes.
         </p>
       </>
     ),

@@ -135,10 +135,11 @@ export default function Terms() {
                   </p>
                   <p>
                     You represent that you are authorized to use the mobile number
-                    provided. SMS opt-in information and consent will not be shared
-                    with third parties for their own marketing purposes. We may
-                    still send non-promotional messages necessary to complete a
-                    request you made, such as a registration confirmation.
+                    provided. We do not sell mobile information or share mobile
+                    information with third parties or affiliates for their own
+                    marketing or promotional purposes. Required registration
+                    correspondence is handled separately from this optional SMS
+                    program.
                   </p>
                 </div>
               </section>
