@@ -396,6 +396,7 @@ components:
         lastName:       { type: string }
         email:          { type: string }
         phone:          { type: ["string", "null"] }
+        smsConsent:     { type: boolean }
         conferenceYear: { type: integer }
         volunteer:      { type: boolean }
         volunteerRole:  { type: ["string", "null"] }
@@ -418,6 +419,7 @@ components:
         lastName:       { type: string, minLength: 1 }
         email:          { type: string, format: email }
         phone:          { type: string }
+        smsConsent:     { type: boolean, description: Whether the attendee opted in to receive SMS updates. }
         conferenceYear: { type: integer }
         volunteer:      { type: boolean }
         volunteerRole:  { type: string }

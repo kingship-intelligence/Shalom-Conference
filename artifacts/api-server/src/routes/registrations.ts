@@ -85,7 +85,11 @@ router.post("/registrations", async (req, res): Promise<void> => {
     return;
   }
 
-  const { wantsAttendeeBadge = false, plusOne, ...registrationInput } = parsed.data;
+  const { wantsAttendeeBadge = false, plusOne, smsConsent = false, ...registrationFields } = parsed.data;
+  const registrationInput = {
+    ...registrationFields,
+    smsConsent: Boolean(smsConsent && registrationFields.phone?.trim()),
+  };
   const badgeUploadToken = wantsAttendeeBadge ? createUploadToken() : undefined;
   const badgeUploadExpiresAt = badgeUploadToken ? getBadgeUploadExpiry() : null;
 

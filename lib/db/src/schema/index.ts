@@ -8,6 +8,7 @@ export const registrationsTable = pgTable("registrations", {
   lastName: text("last_name").notNull(),
   email: text("email").notNull(),
   phone: text("phone"),
+  smsConsent: boolean("sms_consent").notNull().default(false),
   conferenceYear: integer("conference_year").notNull().default(2026),
   volunteer: boolean("volunteer").notNull().default(false),
   volunteerRole: text("volunteer_role"),

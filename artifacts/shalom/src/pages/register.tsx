@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Link } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, CheckCircle2, MapPin, Sparkles, Upload, X } from "lucide-react";
+import { Calendar, CheckCircle2, MapPin, MessageSquare, Sparkles, Upload, X } from "lucide-react";
 import {
   useCreateRegistration,
   useRequestExistingRegistrationBadge,
@@ -25,6 +25,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 const VOLUNTEER_ROLES = [
   "Media",
@@ -43,6 +51,7 @@ const registrationSchema = z.object({
   lastName: z.string().min(1, "Last name is required"),
   email: z.string().email("Please enter a valid email"),
   phone: z.string().optional(),
+  smsConsent: z.boolean().default(false),
   conferenceYear: z.number().default(2026),
   volunteer: z.boolean().default(false),
   volunteerRole: z.string().optional(),
@@ -529,6 +538,9 @@ function RegistrationForm() {
   const [badgeDelivered, setBadgeDelivered] = useState(false);
   const [registeredPlusOne, setRegisteredPlusOne] = useState(false);
   const [submitStage, setSubmitStage] = useState<SubmitStage>("idle");
+  const [showTextConsent, setShowTextConsent] = useState(false);
+  const [pendingRegistration, setPendingRegistration] = useState<RegistrationInput | null>(null);
+  const [textConsentPhone, setTextConsentPhone] = useState<string | null>(null);
 
   const { toast } = useToast();
 
@@ -544,6 +556,7 @@ function RegistrationForm() {
       lastName: "",
       email: "",
       phone: "",
+      smsConsent: false,
       conferenceYear: 2026,
       volunteer: false,
       volunteerRole: "",
@@ -559,7 +572,7 @@ function RegistrationForm() {
   const wantsBadge = form.watch("wantsAttendeeBadge");
   const isLoading = submitStage !== "idle";
 
-  const onSubmit = async (data: RegistrationInput) => {
+  const submitRegistration = async (data: RegistrationInput) => {
     try {
       setSubmitStage("registering");
 
@@ -568,6 +581,7 @@ function RegistrationForm() {
         lastName: data.lastName,
         email: data.email,
         phone: data.phone || undefined,
+        smsConsent: Boolean(data.smsConsent && data.phone?.trim()),
         conferenceYear: data.conferenceYear,
         volunteer: data.volunteer,
         volunteerRole: data.volunteerRole || undefined,
@@ -658,6 +672,27 @@ function RegistrationForm() {
     }
   };
 
+  const onSubmit = async (data: RegistrationInput) => {
+    const phone = data.phone?.trim();
+    if (phone && textConsentPhone !== phone) {
+      setPendingRegistration(data);
+      setShowTextConsent(true);
+      return;
+    }
+
+    await submitRegistration(data);
+  };
+
+  const resolveTextConsent = async (consent: boolean) => {
+    if (!pendingRegistration) return;
+
+    const data = pendingRegistration;
+    setTextConsentPhone(data.phone?.trim() || null);
+    setPendingRegistration(null);
+    setShowTextConsent(false);
+    await submitRegistration({ ...data, smsConsent: consent });
+  };
+
   if (isSuccess) {
     return (
       <div className="min-h-screen bg-background text-foreground flex flex-col">
@@ -706,6 +741,44 @@ function RegistrationForm() {
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-white selection:text-black flex flex-col pb-20">
       <SiteHeader />
+
+      <Dialog open={showTextConsent} onOpenChange={setShowTextConsent}>
+        <DialogContent className="border-white/10 bg-background text-white sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-xl uppercase tracking-wide">
+              <MessageSquare className="h-5 w-5 text-primary" />
+              Stay Updated by Text
+            </DialogTitle>
+            <DialogDescription className="pt-3 text-left leading-relaxed text-white/60">
+              Would you like to receive occasional text messages from Shalom about
+              conference updates and reminders?
+              <br />
+              <br />
+              By choosing “Yes, text me,” you agree to receive recurring automated
+              text messages at the phone number you provided. Message frequency
+              varies. Message and data rates may apply. Reply STOP to unsubscribe
+              and HELP for help. Consent is not a condition of registration.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-3 sm:justify-start">
+            <Button
+              type="button"
+              variant="outline"
+              className="rounded-none border-white/20 uppercase tracking-wider"
+              onClick={() => void resolveTextConsent(false)}
+            >
+              No Thanks
+            </Button>
+            <Button
+              type="button"
+              className="rounded-none bg-primary text-white uppercase tracking-wider hover:bg-primary/90"
+              onClick={() => void resolveTextConsent(true)}
+            >
+              Yes, Text Me
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <main className="flex-1 container mx-auto max-w-3xl px-6 py-16 sm:py-24">
         <div className="mb-16">
