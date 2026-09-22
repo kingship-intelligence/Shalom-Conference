@@ -23,7 +23,8 @@ export default function About() {
             <p className="mx-auto mt-6 max-w-4xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl">
               We aim to create an atmosphere that will foster genuine worship,
               spiritual awakening, and deliverance in the lives of those who are
-              earnestly seeking Christ with an extreme thirst after righteousness.
+              earnestly seeking Christ with an extreme thirst after
+              righteousness.
             </p>
           </div>
         </section>
@@ -40,34 +41,6 @@ export default function About() {
             </div>
           </div>
         </section>
-
-        <section className="border-y border-white/10 bg-card px-4 py-16 sm:px-6 sm:py-20">
-          <div className="container mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
-            {[
-              {
-                title: "Pure Worship",
-                titleClass: "text-primary",
-                text: "We make room for undistracted worship that turns hearts toward Jesus.",
-              },
-              {
-                title: "Deliverance",
-                titleClass: "text-secondary",
-                text: "We believe God still breaks chains, restores lives, and meets people with freedom.",
-              },
-              {
-                title: "Spiritual Renewal",
-                titleClass: "text-primary",
-                text: "We gather with expectation for fresh hunger, healing, courage, and peace.",
-              },
-            ].map((item) => (
-              <article key={item.title} className="rounded-2xl border border-white/10 bg-background/60 p-8 text-center md:text-left">
-                <h2 className={`mb-4 text-2xl font-bold ${item.titleClass}`}>{item.title}</h2>
-                <p className="leading-relaxed text-muted-foreground">{item.text}</p>
-              </article>
-            ))}
-          </div>
-        </section>
-
         <section className="px-4 py-20 sm:px-6 sm:py-24">
           <div className="container mx-auto max-w-4xl">
             <div className="text-center lg:text-left">
@@ -89,8 +62,16 @@ export default function About() {
               </div>
 
               <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row lg:justify-start">
-                <Button asChild size="lg" className="w-full max-w-xs rounded-none uppercase tracking-wider sm:w-auto">
-                  <a href={currentConference.registrationUrl} target="_blank" rel="noreferrer">
+                <Button
+                  asChild
+                  size="lg"
+                  className="w-full max-w-xs rounded-none uppercase tracking-wider sm:w-auto"
+                >
+                  <a
+                    href={currentConference.registrationUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                  >
                     Register for 2026 <ArrowRight className="h-5 w-5" />
                   </a>
                 </Button>
