@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   getListRegistrationsQueryKey,
   getListMerchOrdersQueryKey,
+  getListPrayerChainSignupsQueryKey,
   useConfirmMerchOrderPayment,
   useDeleteRegistration,
   useListMerchOrders,
@@ -119,16 +120,53 @@ function exportPrayerChainCSV(signups: any[]) {
 }
 
 function useAdminAuth() {
-  const [authed, setAuthed] = useState(() => sessionStorage.getItem(SESSION_KEY) === "1");
+  const [authed, setAuthed] = useState(false);
+  const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function login(username: string, password: string) {
+  useEffect(() => {
+    const hasStoredSession = sessionStorage.getItem(SESSION_KEY) === "1";
+    if (!hasStoredSession) {
+      setChecking(false);
+      return;
+    }
+
+    const controller = new AbortController();
+
+    void fetch("/api/admin/session", {
+      credentials: "include",
+      signal: controller.signal,
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Admin session is no longer valid.");
+        }
+        setAuthed(true);
+      })
+      .catch((sessionError) => {
+        if (sessionError instanceof DOMException && sessionError.name === "AbortError") {
+          return;
+        }
+        sessionStorage.removeItem(SESSION_KEY);
+        setError("Your admin session expired. Please sign in again.");
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setChecking(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, []);
+
+  const login = useCallback(async (username: string, password: string) => {
     setLoading(true);
     setError("");
     try {
       const res = await fetch("/api/admin/login", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
@@ -143,14 +181,15 @@ function useAdminAuth() {
     } finally {
       setLoading(false);
     }
-  }
+  }, []);
 
-  function logout() {
+  const logout = useCallback((message = "") => {
     sessionStorage.removeItem(SESSION_KEY);
     setAuthed(false);
-  }
+    setError(message);
+  }, []);
 
-  return { authed, login, logout, loading, error };
+  return { authed, checking, login, logout, loading, error };
 }
 
 function LoginScreen({ onLogin, loading, error }: { onLogin: (u: string, p: string) => void; loading: boolean; error: string }) {
@@ -241,7 +280,7 @@ function LoginScreen({ onLogin, loading, error }: { onLogin: (u: string, p: stri
 }
 
 export default function Admin() {
-  const { authed, login, logout, loading, error } = useAdminAuth();
+  const { authed, checking, login, logout, loading, error } = useAdminAuth();
   const queryClient = useQueryClient();
   const [registrationSearch, setRegistrationSearch] = useState("");
   const [prayerChainSearch, setPrayerChainSearch] = useState("");
@@ -251,10 +290,22 @@ export default function Admin() {
   const registrationsQuery = useListRegistrations();
   const testimoniesQuery = useListTestimonies();
   const merchOrdersQuery = useListMerchOrders({
-    query: { enabled: authed, queryKey: ["/api/merch-orders"] },
+    query: {
+      enabled: authed,
+      queryKey: getListMerchOrdersQueryKey(),
+      retry: 2,
+      refetchOnWindowFocus: true,
+    },
+    request: { credentials: "include" },
   });
   const prayerChainQuery = useListPrayerChainSignups({
-    query: { enabled: authed, queryKey: ["/api/prayer-chain-signups"] },
+    query: {
+      enabled: authed,
+      queryKey: getListPrayerChainSignupsQueryKey(),
+      retry: 2,
+      refetchOnWindowFocus: true,
+    },
+    request: { credentials: "include" },
   });
   const verifyPaymentMutation = useConfirmMerchOrderPayment({
     mutation: {
@@ -316,6 +367,29 @@ export default function Admin() {
   const awaitingVerificationCount = merchOrders.filter((order) => order.status === "awaiting_verification").length;
   const verifiedCount = merchOrders.filter((order) => order.status === "verified").length;
 
+  useEffect(() => {
+    const protectedQueryErrors = [merchOrdersQuery.error, prayerChainQuery.error];
+    const sessionExpired = protectedQueryErrors.some(
+      (queryError) =>
+        typeof queryError === "object" &&
+        queryError !== null &&
+        "status" in queryError &&
+        queryError.status === 401,
+    );
+
+    if (authed && sessionExpired) {
+      logout("Your admin session expired. Please sign in again.");
+    }
+  }, [authed, logout, merchOrdersQuery.error, prayerChainQuery.error]);
+
+  if (checking) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background text-sm font-bold uppercase tracking-widest text-white/50">
+        Checking admin session…
+      </div>
+    );
+  }
+
   if (!authed) {
     return <LoginScreen onLogin={login} loading={loading} error={error} />;
   }
@@ -339,7 +413,7 @@ export default function Admin() {
               Home
             </Link>
             <button
-              onClick={logout}
+              onClick={() => logout()}
               className="text-white/50 hover:text-white transition-colors font-bold uppercase tracking-widest text-sm flex items-center gap-2"
             >
               <LogOut className="h-4 w-4" />
@@ -616,6 +690,22 @@ export default function Admin() {
                 {[1, 2].map((item) => (
                   <Skeleton key={item} className="h-48 w-full rounded-xl bg-white/5" />
                 ))}
+              </div>
+            ) : prayerChainQuery.isError ? (
+              <div className="rounded-2xl border border-red-400/20 bg-red-400/5 px-6 py-12 text-center">
+                <p className="font-bold text-red-300">Unable to load prayer-chain registrations.</p>
+                <p className="mt-2 text-sm text-white/45">
+                  Your registrations are still saved. Check your connection and try again.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-6 border-white/20 text-white hover:bg-white/10"
+                  onClick={() => prayerChainQuery.refetch()}
+                  data-testid="button-retry-prayer-chain"
+                >
+                  Try Again
+                </Button>
               </div>
             ) : prayerChainSignups.length === 0 ? (
               <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center text-white/30">

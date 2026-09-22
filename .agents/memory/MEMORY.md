@@ -2,3 +2,4 @@
 - [Attendee badge template validation](attendee-badge-template-validation.md) — render a real portrait sample after template swaps; visual frame estimates and indexed PNG output can mislead.
 - [Merch payment confirmation](merch-payment-confirmation.md) — Cash App orders are received first, then manually verified; never claim payment is confirmed on submission.
 - [Image asset editing](image-asset-editing.md) — use ImageMagick for precise raster text edits when Python imaging libraries are unavailable.
+- [Admin session failures](admin-session-failures.md) — protected admin query failures must never be rendered as empty registration lists.

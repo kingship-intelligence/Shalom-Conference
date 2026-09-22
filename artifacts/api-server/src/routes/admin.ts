@@ -1,7 +1,17 @@
 import { Router, type IRouter } from "express";
-import { establishAdminSession } from "../lib/admin-session";
+import { establishAdminSession, getAdminIdentity } from "../lib/admin-session";
 
 const router: IRouter = Router();
+
+router.get("/admin/session", (req, res): void => {
+  const username = getAdminIdentity(req);
+  if (!username) {
+    res.status(401).json({ error: "Admin session required" });
+    return;
+  }
+
+  res.json({ ok: true, username });
+});
 
 router.post("/admin/login", (req, res): void => {
   const { username, password } = req.body as { username?: string; password?: string };
