@@ -570,6 +570,8 @@ function RegistrationForm() {
   const isVolunteer = form.watch("volunteer");
   const hasPlusOne = form.watch("hasPlusOne");
   const wantsBadge = form.watch("wantsAttendeeBadge");
+  const phoneValue = form.watch("phone");
+  const hasPhone = Boolean(phoneValue?.trim());
   const isLoading = submitStage !== "idle";
 
   const submitRegistration = async (data: RegistrationInput) => {
@@ -674,7 +676,7 @@ function RegistrationForm() {
 
   const onSubmit = async (data: RegistrationInput) => {
     const phone = data.phone?.trim();
-    if (phone && textConsentPhone !== phone) {
+    if (phone && data.smsConsent && textConsentPhone !== phone) {
       setPendingRegistration(data);
       setShowTextConsent(true);
       return;
@@ -747,11 +749,11 @@ function RegistrationForm() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3 text-xl uppercase tracking-wide">
               <MessageSquare className="h-5 w-5 text-primary" />
-              Stay Updated by Text
+              Confirm Text Updates
             </DialogTitle>
             <DialogDescription className="pt-3 text-left leading-relaxed text-white/60">
-              Would you like to receive occasional text messages from Shalom about
-              conference updates and reminders?
+              Please confirm that you want to receive occasional text messages from
+              Shalom about conference updates and reminders.
               <br />
               <br />
               By choosing “Yes, text me,” you agree to receive recurring automated
@@ -879,12 +881,53 @@ function RegistrationForm() {
                       <FormItem>
                         <FormLabel className={labelClass}>Phone Number (Optional)</FormLabel>
                         <FormControl>
-                          <Input type="tel" placeholder="+1 (555) 000-0000" {...field} className={inputClass} data-testid="input-phone" />
+                          <Input
+                            type="tel"
+                            placeholder="+1 (555) 000-0000"
+                            {...field}
+                            onChange={(event) => {
+                              field.onChange(event);
+                              if (!event.target.value.trim()) {
+                                form.setValue("smsConsent", false);
+                              }
+                            }}
+                            className={inputClass}
+                            data-testid="input-phone"
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                  <div className="sm:col-span-2">
+                    <FormField
+                      control={form.control}
+                      name="smsConsent"
+                      render={({ field }) => (
+                        <FormItem className="flex flex-row items-start space-x-4 space-y-0 border border-white/10 p-4">
+                          <FormControl>
+                            <Checkbox
+                              checked={field.value}
+                              disabled={!hasPhone}
+                              onCheckedChange={field.onChange}
+                              className="mt-1 rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
+                              data-testid="checkbox-sms-consent"
+                            />
+                          </FormControl>
+                          <div className="space-y-2">
+                            <FormLabel className="block cursor-pointer text-sm font-medium text-white">
+                              Send me Shalom updates by text
+                            </FormLabel>
+                            <p className="text-sm leading-relaxed text-white/50">
+                              {hasPhone
+                                ? "I agree to receive recurring automated text messages at the phone number above. Message frequency varies. Message and data rates may apply. Reply STOP to unsubscribe and HELP for help. Consent is not required to register."
+                                : "Enter a phone number to opt in to Shalom text updates. Consent is not required to register."}
+                            </p>
+                          </div>
+                        </FormItem>
+                      )}
+                    />
+                  </div>
                 </div>
               </div>
 
