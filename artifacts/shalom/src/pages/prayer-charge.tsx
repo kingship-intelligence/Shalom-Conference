@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { ArrowRight, CalendarDays, Check, CheckCircle2, ChevronDown, Clock3 } from "lucide-react";
+import {
+  ArrowRight,
+  Check,
+  CheckCircle2,
+  ChevronDown,
+  Clock3,
+} from "lucide-react";
 import { motion } from "framer-motion";
 import { useCreatePrayerChainSignup } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
@@ -74,9 +80,9 @@ export default function PrayerCharge() {
     setSelectedSlots((current) =>
       current.includes(value)
         ? current.filter((slot) => slot !== value)
-        : PRAYER_CHAIN_SLOTS
-            .map((slot) => slot.value)
-            .filter((slot) => [...current, value].includes(slot)),
+        : PRAYER_CHAIN_SLOTS.map((slot) => slot.value).filter((slot) =>
+            [...current, value].includes(slot),
+          ),
     );
   }
 
@@ -85,7 +91,8 @@ export default function PrayerCharge() {
     if (selectedSlots.length === 0) {
       toast({
         title: "Choose a time",
-        description: "Select at least one hour when you can join the prayer chain.",
+        description:
+          "Select at least one hour when you can join the prayer chain.",
         variant: "destructive",
       });
       return;
@@ -97,7 +104,9 @@ export default function PrayerCharge() {
           name: name.trim(),
           email: email.trim(),
           phone: phone.trim(),
-          timeSlots: selectedSlots as Array<(typeof PRAYER_CHAIN_SLOTS)[number]["value"]>,
+          timeSlots: selectedSlots as Array<
+            (typeof PRAYER_CHAIN_SLOTS)[number]["value"]
+          >,
         },
       },
       {
@@ -139,23 +148,30 @@ export default function PrayerCharge() {
               </h1>
 
               <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/65 lg:mx-0">
-                Before we gather for Shalom Conference 2026, we gather in prayer.
-                Join us for twelve intentional hours of seeking God together.
+                Before we gather for Shalom Conference 2026, we gather in
+                prayer. Join us for twelve intentional hours of seeking God
+                together.
               </p>
 
               <div className="mt-8 grid gap-3 text-left sm:grid-cols-2 lg:max-w-lg">
                 <div className="flex items-center gap-3 border border-white/10 bg-white/[0.03] px-4 py-4">
-                  <CalendarDays className="h-5 w-5 shrink-0 text-primary" />
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-white/45">Date</p>
-                    <p className="mt-1 font-semibold text-white">September 26, 2026</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/45">
+                      Date
+                    </p>
+                    <p className="mt-1 font-semibold text-white">
+                      September 26, 2026
+                    </p>
                   </div>
                 </div>
                 <div className="flex items-center gap-3 border border-white/10 bg-white/[0.03] px-4 py-4">
-                  <Clock3 className="h-5 w-5 shrink-0 text-primary" />
                   <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-white/45">Time</p>
-                    <p className="mt-1 font-semibold text-white">12 AM – 12 PM</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/45">
+                      Time
+                    </p>
+                    <p className="mt-1 font-semibold text-white">
+                      12 AM – 12 PM
+                    </p>
                   </div>
                 </div>
               </div>
@@ -207,7 +223,10 @@ export default function PrayerCharge() {
           </div>
         </section>
 
-        <section id="prayer-chain-signup" className="px-4 py-16 sm:px-6 sm:py-24">
+        <section
+          id="prayer-chain-signup"
+          className="px-4 py-16 sm:px-6 sm:py-24"
+        >
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
             <div>
               <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary">
@@ -217,15 +236,17 @@ export default function PrayerCharge() {
                 Join the prayer chain
               </h2>
               <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
-                Choose one or more hours when you can pray with us between midnight and noon.
-                Your availability helps us build continuous prayer coverage for all twelve hours.
+                Choose one or more hours when you can pray with us between
+                midnight and noon. Your availability helps us build continuous
+                prayer coverage for all twelve hours.
               </p>
               <div className="mt-8 border-l-2 border-primary pl-5">
                 <p className="text-sm font-bold uppercase tracking-widest text-white">
                   Select every hour that works for you
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-white/45">
-                  The Shalom team will use your contact information only to coordinate the Prayer Charge.
+                  The Shalom team will use your contact information only to
+                  coordinate the Prayer Charge.
                 </p>
               </div>
             </div>
@@ -236,9 +257,12 @@ export default function PrayerCharge() {
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/15 text-primary">
                     <CheckCircle2 className="h-9 w-9" />
                   </div>
-                  <h3 className="mt-6 text-3xl font-bold text-white">You’re on the prayer chain.</h3>
+                  <h3 className="mt-6 text-3xl font-bold text-white">
+                    You’re on the prayer chain.
+                  </h3>
                   <p className="mt-3 max-w-md text-white/55">
-                    Thank you for committing time to pray with us on September 26. We sent your selected prayer times to your email.
+                    Thank you for committing time to pray with us on September
+                    26. We sent your selected prayer times to your email.
                   </p>
                   <Button
                     type="button"
@@ -256,7 +280,10 @@ export default function PrayerCharge() {
                 <form onSubmit={handleSubmit} className="space-y-7">
                   <div className="grid gap-5 sm:grid-cols-2">
                     <div className="sm:col-span-2">
-                      <label htmlFor="prayer-name" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/50">
+                      <label
+                        htmlFor="prayer-name"
+                        className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/50"
+                      >
                         Full name
                       </label>
                       <Input
@@ -271,7 +298,10 @@ export default function PrayerCharge() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="prayer-email" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/50">
+                      <label
+                        htmlFor="prayer-email"
+                        className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/50"
+                      >
                         Email
                       </label>
                       <Input
@@ -286,7 +316,10 @@ export default function PrayerCharge() {
                       />
                     </div>
                     <div>
-                      <label htmlFor="prayer-phone" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/50">
+                      <label
+                        htmlFor="prayer-phone"
+                        className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/50"
+                      >
                         Phone
                       </label>
                       <Input
@@ -308,7 +341,9 @@ export default function PrayerCharge() {
                     <legend className="text-xs font-bold uppercase tracking-widest text-white/50">
                       Available prayer times
                     </legend>
-                    <p className="mt-2 text-sm text-white/35">Select one or more one-hour slots.</p>
+                    <p className="mt-2 text-sm text-white/35">
+                      Select one or more one-hour slots.
+                    </p>
                     <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
                       {PRAYER_CHAIN_SLOTS.map((slot) => {
                         const selected = selectedSlots.includes(slot.value);
@@ -337,7 +372,9 @@ export default function PrayerCharge() {
                     disabled={createSignup.isPending}
                     className="h-14 w-full rounded-full bg-primary text-base font-bold uppercase tracking-widest text-white hover:bg-primary/90"
                   >
-                    {createSignup.isPending ? "Saving your time…" : `Join ${selectedSlots.length || ""} ${selectedSlots.length === 1 ? "hour" : "hours"}`.trim()}
+                    {createSignup.isPending
+                      ? "Saving your time…"
+                      : `Join ${selectedSlots.length || ""} ${selectedSlots.length === 1 ? "hour" : "hours"}`.trim()}
                   </Button>
                 </form>
               )}
