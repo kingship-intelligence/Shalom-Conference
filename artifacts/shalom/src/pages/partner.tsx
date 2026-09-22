@@ -5,21 +5,6 @@ import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
-const partnerPaths = [
-  {
-    title: "Sponsor The Gathering",
-    text: "Help make space for students and young adults to encounter God through worship, ministry, and community.",
-  },
-  {
-    title: "Serve With Us",
-    text: "Join the volunteer team that welcomes guests, supports prayer moments, and helps the day run with excellence.",
-  },
-  {
-    title: "Spread The Word",
-    text: "Invite your church, youth group, campus ministry, and community into what God is doing through Shalom.",
-  },
-];
-
 const CASH_APP_URL = "https://cash.app/$HGAReveille";
 const ZEFFY_URL =
   "https://www.zeffy.com/en-US/donation-form/donate-towards-shalom-conference";
@@ -42,24 +27,6 @@ export default function Partner() {
               faith. Partner with us as we prepare a place for pure worship,
               deliverance, and spiritual renewal.
             </p>
-          </div>
-        </section>
-
-        <section className="border-y border-white/10 bg-card px-4 py-16 sm:px-6 sm:py-20">
-          <div className="container mx-auto grid max-w-7xl gap-8 md:grid-cols-3">
-            {partnerPaths.map((path) => (
-              <article
-                key={path.title}
-                className="rounded-2xl border border-white/10 bg-background/60 p-8 text-center md:text-left"
-              >
-                <h2 className="mb-4 text-2xl font-bold text-white">
-                  {path.title}
-                </h2>
-                <p className="leading-relaxed text-muted-foreground">
-                  {path.text}
-                </p>
-              </article>
-            ))}
           </div>
         </section>
 
