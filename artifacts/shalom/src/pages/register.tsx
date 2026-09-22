@@ -757,9 +757,14 @@ function RegistrationForm() {
               <br />
               <br />
               By choosing “Yes, text me,” you agree to receive recurring automated
-              text messages at the phone number you provided. Message frequency
-              varies. Message and data rates may apply. Reply STOP to unsubscribe
-              and HELP for help. Consent is not a condition of registration.
+              text messages from Shalom Youth Conference at the phone number you
+              provided. Message frequency varies. Message and data rates may apply.
+              Reply STOP to unsubscribe and HELP for help. Consent is not a
+              condition of registration.{" "}
+              <Link href="/terms" className="font-semibold text-primary underline underline-offset-4">
+                View Terms &amp; Conditions
+              </Link>
+              .
             </DialogDescription>
           </DialogHeader>
           <DialogFooter className="gap-3 sm:justify-start">
@@ -920,7 +925,15 @@ function RegistrationForm() {
                             </FormLabel>
                             <p className="text-sm leading-relaxed text-white/50">
                               {hasPhone
-                                ? "I agree to receive recurring automated text messages at the phone number above. Message frequency varies. Message and data rates may apply. Reply STOP to unsubscribe and HELP for help. Consent is not required to register."
+                                ? (
+                                  <>
+                                    I agree to receive recurring automated text messages from Shalom Youth Conference at the phone number above. Message frequency varies. Message and data rates may apply. Reply STOP to unsubscribe and HELP for help. Consent is not required to register.{" "}
+                                    <Link href="/terms" className="font-semibold text-primary underline underline-offset-4">
+                                      View Terms &amp; Conditions
+                                    </Link>
+                                    .
+                                  </>
+                                )
                                 : "Enter a phone number to opt in to Shalom text updates. Consent is not required to register."}
                             </p>
                           </div>

@@ -16,6 +16,7 @@ const Admin = lazy(() => import("@/pages/admin"));
 const Shop = lazy(() => import("@/pages/shop"));
 const PrayerCharge = lazy(() => import("@/pages/prayer-charge"));
 const Privacy = lazy(() => import("@/pages/privacy"));
+const Terms = lazy(() => import("@/pages/terms"));
 
 const queryClient = new QueryClient();
 
@@ -26,6 +27,7 @@ function Router() {
       <Route path="/register" component={Register} />
       <Route path="/prayer-charge" component={PrayerCharge} />
       <Route path="/privacy" component={Privacy} />
+      <Route path="/terms" component={Terms} />
       <Route path="/2026">
         <ConferenceYear year="2026" />
       </Route>

@@ -65,6 +65,13 @@ export default function SiteFooter() {
               <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
               Privacy & Alert Policy
             </Link>
+            <Link
+              href="/terms"
+              className="mt-3 flex items-center justify-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-white"
+            >
+              <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
+              Terms & Conditions
+            </Link>
           </div>
         </div>
 
@@ -79,6 +86,12 @@ export default function SiteFooter() {
             className="text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-primary"
           >
             Privacy Policy
+          </Link>
+          <Link
+            href="/terms"
+            className="text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-primary"
+          >
+            Terms & Conditions
           </Link>
           <a
             href="https://www.instagram.com/shalomconference/"
