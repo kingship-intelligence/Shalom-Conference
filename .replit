@@ -61,3 +61,6 @@ SITE_URL = "https://shalomconference.com"
 
 [nix]
 channel = "stable-25_05"
+
+[objectStorage]
+defaultBucketID = "replit-objstore-0712bba1-1081-4de1-a093-b1d62698da65"
