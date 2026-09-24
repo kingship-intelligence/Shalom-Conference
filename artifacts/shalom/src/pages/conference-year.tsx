@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { useCreateFirstTimerResponse } from "@workspace/api-client-react";
 import { Link } from "wouter";
-import { ArrowRight, Calendar, Mail, MapPin, MessageSquare, Sparkles, Users, Zap } from "lucide-react";
+import { ArrowRight, Calendar, CheckCircle2, Mail, MapPin, MessageSquare, Users, Zap } from "lucide-react";
 import { SiInstagram, SiYoutube } from "react-icons/si";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { currentConference, getConferenceByYear, type Conference } from "@/data/conferences";
 import NotFound from "@/pages/not-found";
 import SiteHeader from "@/components/SiteHeader";
@@ -13,6 +15,144 @@ type ConferenceYearProps = {
 };
 
 const SPEAKER_AUTO_FLIP_DELAY_MS = 5000;
+
+function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [isFirstTime, setIsFirstTime] = useState<boolean | null>(null);
+  const [feedback, setFeedback] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const createResponse = useCreateFirstTimerResponse();
+
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setFeedback("");
+
+    if (!name.trim() || !email.trim() || isFirstTime === null) {
+      setFeedback("Enter your name and email, then choose Yes or No.");
+      return;
+    }
+
+    createResponse.mutate(
+      {
+        data: {
+          name: name.trim(),
+          email: email.trim(),
+          isFirstTime,
+          conferenceYear,
+        },
+      },
+      {
+        onSuccess: () => {
+          setSubmitted(true);
+          setName("");
+          setEmail("");
+          setIsFirstTime(null);
+        },
+        onError: (error: any) => {
+          setFeedback(
+            error.data?.error ||
+              "We could not save your response. Check your connection and try again.",
+          );
+        },
+      },
+    );
+  }
+
+  if (submitted) {
+    return (
+      <div
+        role="status"
+        className="flex min-h-72 flex-col items-center justify-center border border-primary/30 bg-primary/5 p-8 text-center"
+      >
+        <CheckCircle2 className="h-12 w-12 text-primary" />
+        <h3 className="mt-5 text-2xl font-black uppercase text-white">Response received</h3>
+        <p className="mt-3 max-w-md text-white/60">
+          Thank you. Your first-timer response for Shalom {conferenceYear} has been saved.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+      <div>
+        <label htmlFor="first-timer-name" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/55">
+          Full name
+        </label>
+        <Input
+          id="first-timer-name"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          autoComplete="name"
+          required
+          maxLength={160}
+          className="h-12 border-white/15 bg-black/20 text-white placeholder:text-white/30"
+          placeholder="Your full name"
+        />
+      </div>
+      <div>
+        <label htmlFor="first-timer-email" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/55">
+          Email address
+        </label>
+        <Input
+          id="first-timer-email"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          autoComplete="email"
+          required
+          maxLength={254}
+          className="h-12 border-white/15 bg-black/20 text-white placeholder:text-white/30"
+          placeholder="you@example.com"
+        />
+      </div>
+      <fieldset>
+        <legend className="mb-3 text-xs font-bold uppercase tracking-widest text-white/55">
+          Is this your first time attending Shalom?
+        </legend>
+        <div className="grid grid-cols-2 gap-3">
+          {[
+            { label: "Yes", value: true },
+            { label: "No", value: false },
+          ].map((option) => (
+            <label
+              key={option.label}
+              className={`cursor-pointer border px-4 py-3 text-center text-sm font-bold uppercase tracking-wider transition-colors ${
+                isFirstTime === option.value
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-white/15 bg-black/20 text-white/65 hover:border-primary/60"
+              }`}
+            >
+              <input
+                type="radio"
+                name="isFirstTime"
+                value={String(option.value)}
+                checked={isFirstTime === option.value}
+                onChange={() => setIsFirstTime(option.value)}
+                required
+                className="sr-only"
+              />
+              {option.label}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+      {feedback && (
+        <p role="alert" className="border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+          {feedback}
+        </p>
+      )}
+      <Button
+        type="submit"
+        disabled={createResponse.isPending}
+        className="h-12 w-full rounded-full font-bold uppercase tracking-widest"
+      >
+        {createResponse.isPending ? "Saving…" : "Submit response"}
+      </Button>
+    </form>
+  );
+}
 
 function SpeakerCard({
   speaker,
@@ -281,6 +421,26 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
             </div>
           </div>
         </section>
+
+        {isCurrent && conference.year === "2026" ? (
+          <section id="first-timers" className="scroll-mt-24 border-t border-white/10 px-4 py-20 sm:px-6 sm:py-24">
+            <div className="container mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
+              <div className="text-center lg:text-left">
+                <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
+                  Help us welcome you
+                </p>
+                <h2 className="mt-4 text-4xl font-black uppercase tracking-tighter text-white sm:text-6xl">
+                  First time at Shalom?
+                </h2>
+                <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/60 lg:mx-0">
+                  Let our team know whether Shalom {conference.year} will be your first conference
+                  with us. This response is separate from conference registration.
+                </p>
+              </div>
+              <FirstTimerForm conferenceYear={Number(conference.year)} />
+            </div>
+          </section>
+        ) : null}
 
         <section className="bg-card px-4 py-20 sm:px-6 sm:py-24">
           <div

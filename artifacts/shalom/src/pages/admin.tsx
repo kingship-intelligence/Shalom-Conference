@@ -3,10 +3,12 @@ import {
   getListRegistrationsQueryKey,
   getListMerchOrdersQueryKey,
   getListPrayerChainSignupsQueryKey,
+  getListFirstTimerResponsesQueryKey,
   useConfirmMerchOrderPayment,
   useDeleteRegistration,
   useListMerchOrders,
   useListPrayerChainSignups,
+  useListFirstTimerResponses,
   useListRegistrations,
   useListTestimonies,
 } from "@workspace/api-client-react";
@@ -29,7 +31,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Check, User, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2, Clock3 } from "lucide-react";
+import { Check, User, UserCheck, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2, Clock3 } from "lucide-react";
 
 const SESSION_KEY = "shalom_admin_auth";
 const PRAYER_SLOT_LABELS: Record<string, string> = {
@@ -284,6 +286,7 @@ export default function Admin() {
   const queryClient = useQueryClient();
   const [registrationSearch, setRegistrationSearch] = useState("");
   const [prayerChainSearch, setPrayerChainSearch] = useState("");
+  const [firstTimerSearch, setFirstTimerSearch] = useState("");
   const [deletingRegistrationId, setDeletingRegistrationId] = useState<number | null>(null);
   const [deleteRegistrationError, setDeleteRegistrationError] = useState("");
 
@@ -302,6 +305,15 @@ export default function Admin() {
     query: {
       enabled: authed,
       queryKey: getListPrayerChainSignupsQueryKey(),
+      retry: 2,
+      refetchOnWindowFocus: true,
+    },
+    request: { credentials: "include" },
+  });
+  const firstTimerResponsesQuery = useListFirstTimerResponses({
+    query: {
+      enabled: authed,
+      queryKey: getListFirstTimerResponsesQueryKey(),
       retry: 2,
       refetchOnWindowFocus: true,
     },
@@ -364,11 +376,26 @@ export default function Admin() {
         ].some((value) => value?.toLowerCase().includes(normalizedPrayerChainSearch))
       )
     : prayerChainSignups;
+  const firstTimerResponses = [...(firstTimerResponsesQuery.data || [])].sort((a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  const normalizedFirstTimerSearch = firstTimerSearch.trim().toLowerCase();
+  const filteredFirstTimerResponses = normalizedFirstTimerSearch
+    ? firstTimerResponses.filter((response) =>
+        [response.name, response.email, response.isFirstTime ? "yes" : "no"].some((value) =>
+          value.toLowerCase().includes(normalizedFirstTimerSearch),
+        ),
+      )
+    : firstTimerResponses;
   const awaitingVerificationCount = merchOrders.filter((order) => order.status === "awaiting_verification").length;
   const verifiedCount = merchOrders.filter((order) => order.status === "verified").length;
 
   useEffect(() => {
-    const protectedQueryErrors = [merchOrdersQuery.error, prayerChainQuery.error];
+    const protectedQueryErrors = [
+      merchOrdersQuery.error,
+      prayerChainQuery.error,
+      firstTimerResponsesQuery.error,
+    ];
     const sessionExpired = protectedQueryErrors.some(
       (queryError) =>
         typeof queryError === "object" &&
@@ -380,7 +407,13 @@ export default function Admin() {
     if (authed && sessionExpired) {
       logout("Your admin session expired. Please sign in again.");
     }
-  }, [authed, logout, merchOrdersQuery.error, prayerChainQuery.error]);
+  }, [
+    authed,
+    logout,
+    merchOrdersQuery.error,
+    prayerChainQuery.error,
+    firstTimerResponsesQuery.error,
+  ]);
 
   if (checking) {
     return (
@@ -635,6 +668,99 @@ export default function Admin() {
                       {format(new Date(test.createdAt), "MMM d, h:mm a")}
                     </p>
                   </motion.div>
+                ))}
+              </div>
+            )}
+          </section>
+
+          <section data-testid="section-first-timers" className="space-y-6 lg:col-span-2">
+            <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-secondary pt-4">
+              <div className="flex items-center gap-3">
+                <UserCheck className="h-5 w-5 text-secondary" />
+                <h2 className="text-2xl font-bold uppercase tracking-wider text-white">First Timers</h2>
+              </div>
+              <Badge className="bg-secondary text-white">
+                {firstTimerResponsesQuery.isLoading
+                  ? "..."
+                  : normalizedFirstTimerSearch
+                    ? `${filteredFirstTimerResponses.length}/${firstTimerResponses.length}`
+                    : firstTimerResponses.length}
+              </Badge>
+            </div>
+
+            {firstTimerResponses.length > 0 && (
+              <div className="relative">
+                <Search
+                  aria-hidden="true"
+                  className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35"
+                />
+                <Input
+                  type="search"
+                  value={firstTimerSearch}
+                  onChange={(event) => setFirstTimerSearch(event.target.value)}
+                  placeholder="Search by name, email, Yes, or No"
+                  aria-label="Search first-timer responses"
+                  className="h-12 border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/35 focus-visible:border-secondary focus-visible:ring-secondary/20"
+                />
+              </div>
+            )}
+
+            {firstTimerResponsesQuery.isLoading ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {[1, 2].map((item) => (
+                  <Skeleton key={item} className="h-36 w-full rounded-xl bg-white/5" />
+                ))}
+              </div>
+            ) : firstTimerResponsesQuery.isError ? (
+              <div className="rounded-2xl border border-red-400/20 bg-red-400/5 px-6 py-12 text-center">
+                <p className="font-bold text-red-300">Unable to load first-timer responses.</p>
+                <p className="mt-2 text-sm text-white/45">
+                  Submitted responses are still saved. Check your connection and try again.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-6 border-white/20 text-white hover:bg-white/10"
+                  onClick={() => firstTimerResponsesQuery.refetch()}
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : firstTimerResponses.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center text-white/30">
+                No first-timer responses yet
+              </div>
+            ) : filteredFirstTimerResponses.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center text-white/30">
+                No first-timer responses match “{firstTimerSearch.trim()}”
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {filteredFirstTimerResponses.map((response) => (
+                  <article key={response.id} className="rounded-xl border border-white/10 bg-white/5 p-5">
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div>
+                        <p className="font-bold text-white">{response.name}</p>
+                        <p className="mt-1 flex items-center gap-2 text-sm text-white/50">
+                          <Mail className="h-3.5 w-3.5" />
+                          {response.email}
+                        </p>
+                      </div>
+                      <Badge
+                        className={
+                          response.isFirstTime
+                            ? "border border-emerald-300/20 bg-emerald-500/20 text-emerald-300"
+                            : "border border-white/15 bg-white/5 text-white/60"
+                        }
+                      >
+                        First time: {response.isFirstTime ? "Yes" : "No"}
+                      </Badge>
+                    </div>
+                    <div className="mt-5 flex items-center justify-between text-[10px] uppercase tracking-wider text-white/25">
+                      <span>Shalom {response.conferenceYear}</span>
+                      <span>{format(new Date(response.createdAt), "MMM d, yyyy 'at' h:mm a")}</span>
+                    </div>
+                  </article>
                 ))}
               </div>
             )}
