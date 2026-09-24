@@ -183,6 +183,31 @@ export interface PrayerChainSignupInput {
   timeSlots: PrayerChainSignupInputTimeSlotsItem[];
 }
 
+export interface FirstTimerResponse {
+  id: number;
+  name: string;
+  email: string;
+  isFirstTime: boolean;
+  conferenceYear: number;
+  createdAt: string;
+}
+
+export interface FirstTimerResponseInput {
+  /**
+     * @minLength 1
+     * @maxLength 160
+     */
+  name: string;
+  /** @maxLength 254 */
+  email: string;
+  isFirstTime: boolean;
+  /**
+     * @minimum 2000
+     * @maximum 2100
+     */
+  conferenceYear: number;
+}
+
 export type MerchOrderItemSize = typeof MerchOrderItemSize[keyof typeof MerchOrderItemSize];
 
 

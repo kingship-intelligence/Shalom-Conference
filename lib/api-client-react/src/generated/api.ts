@@ -32,6 +32,8 @@ import type {
   BadgeUploadUrl,
   ErrorResponse,
   ExistingRegistrationBadgeInput,
+  FirstTimerResponse,
+  FirstTimerResponseInput,
   HealthStatus,
   MerchOrder,
   MerchOrderEmailError,
@@ -1158,6 +1160,195 @@ export function useListPrayerChainSignups<TData = Awaited<ReturnType<typeof list
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getListPrayerChainSignupsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateFirstTimerResponseUrl = () => {
+
+
+
+
+  return `/api/first-timer-responses`
+}
+
+/**
+ * @summary Submit a first-timer response for a conference
+ */
+export const createFirstTimerResponse = async (firstTimerResponseInput: FirstTimerResponseInput, options?: Parameters<typeof customFetch>[1]): Promise<FirstTimerResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<FirstTimerResponse>(getCreateFirstTimerResponseUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(firstTimerResponseInput)
+  }
+);}
+
+
+
+
+
+export const getCreateFirstTimerResponseMutationKey = () => ['createFirstTimerResponse'] as const;
+
+export const getCreateFirstTimerResponseMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createFirstTimerResponse>>, TError,CreateFirstTimerResponseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createFirstTimerResponse>>, TError,CreateFirstTimerResponseMutationVariables, TContext> => {
+
+const mutationKey = getCreateFirstTimerResponseMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createFirstTimerResponse>>, CreateFirstTimerResponseMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createFirstTimerResponse(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateFirstTimerResponseMutationResult = NonNullable<Awaited<ReturnType<typeof createFirstTimerResponse>>>
+    export type CreateFirstTimerResponseMutationBody = BodyType<FirstTimerResponseInput>
+    export type CreateFirstTimerResponseMutationError = ErrorType<ErrorResponse>
+    export type CreateFirstTimerResponseMutationVariables = {data: BodyType<FirstTimerResponseInput>}
+
+    /**
+ * @summary Submit a first-timer response for a conference
+ */
+export const useCreateFirstTimerResponse = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createFirstTimerResponse>>, TError,CreateFirstTimerResponseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createFirstTimerResponse>>,
+        TError,
+        CreateFirstTimerResponseMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateFirstTimerResponseMutationOptions(options), queryClient);
+    }
+
+export const getListFirstTimerResponsesUrl = () => {
+
+
+
+
+  return `/api/first-timer-responses`
+}
+
+/**
+ * @summary List first-timer responses for the admin area
+ */
+export const listFirstTimerResponses = async ( options?: Parameters<typeof customFetch>[1]): Promise<FirstTimerResponse[]> => {
+
+  return customFetch<FirstTimerResponse[]>(getListFirstTimerResponsesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListFirstTimerResponsesQueryKey = () => {
+    return [
+    `/api/first-timer-responses`
+    ] as const;
+    }
+
+
+export const getListFirstTimerResponsesQueryOptions = <TData = Awaited<ReturnType<typeof listFirstTimerResponses>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFirstTimerResponses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListFirstTimerResponsesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listFirstTimerResponses>>> = ({ signal }) => listFirstTimerResponses({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listFirstTimerResponses>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListFirstTimerResponsesQueryResult = NonNullable<Awaited<ReturnType<typeof listFirstTimerResponses>>>
+export type ListFirstTimerResponsesQueryError = ErrorType<ErrorResponse>
+
+
+export function useListFirstTimerResponses<TData = Awaited<ReturnType<typeof listFirstTimerResponses>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFirstTimerResponses>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listFirstTimerResponses>>,
+          TError,
+          Awaited<ReturnType<typeof listFirstTimerResponses>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListFirstTimerResponses<TData = Awaited<ReturnType<typeof listFirstTimerResponses>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFirstTimerResponses>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listFirstTimerResponses>>,
+          TError,
+          Awaited<ReturnType<typeof listFirstTimerResponses>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListFirstTimerResponses<TData = Awaited<ReturnType<typeof listFirstTimerResponses>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFirstTimerResponses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List first-timer responses for the admin area
+ */
+
+export function useListFirstTimerResponses<TData = Awaited<ReturnType<typeof listFirstTimerResponses>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listFirstTimerResponses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListFirstTimerResponsesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

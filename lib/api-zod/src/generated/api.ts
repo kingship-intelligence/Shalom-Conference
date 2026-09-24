@@ -280,6 +280,49 @@ export const ListPrayerChainSignupsResponse = zod.array(ListPrayerChainSignupsRe
 
 
 /**
+ * @summary Submit a first-timer response for a conference
+ */
+export const createFirstTimerResponseBodyNameMax = 160;
+
+export const createFirstTimerResponseBodyEmailMax = 254;
+
+export const createFirstTimerResponseBodyConferenceYearMin = 2000;
+export const createFirstTimerResponseBodyConferenceYearMax = 2100;
+
+
+
+export const CreateFirstTimerResponseBody = zod.object({
+  "name": zod.string().min(1).max(createFirstTimerResponseBodyNameMax),
+  "email": zod.string().email().max(createFirstTimerResponseBodyEmailMax),
+  "isFirstTime": zod.boolean(),
+  "conferenceYear": zod.number().int().min(createFirstTimerResponseBodyConferenceYearMin).max(createFirstTimerResponseBodyConferenceYearMax)
+})
+
+export const CreateFirstTimerResponseResponse = zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "email": zod.string().email(),
+  "isFirstTime": zod.boolean(),
+  "conferenceYear": zod.number().int(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List first-timer responses for the admin area
+ */
+export const ListFirstTimerResponsesResponseItem = zod.object({
+  "id": zod.number().int(),
+  "name": zod.string(),
+  "email": zod.string().email(),
+  "isFirstTime": zod.boolean(),
+  "conferenceYear": zod.number().int(),
+  "createdAt": zod.coerce.date()
+})
+export const ListFirstTimerResponsesResponse = zod.array(ListFirstTimerResponsesResponseItem)
+
+
+/**
  * @summary Submit a merch preorder after Cash App payment
  */
 export const createMerchOrderBodyNameMax = 160;

@@ -311,6 +311,55 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /first-timer-responses:
+    post:
+      operationId: createFirstTimerResponse
+      tags: [first-timers]
+      summary: Submit a first-timer response for a conference
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/FirstTimerResponseInput"
+      responses:
+        "201":
+          description: First-timer response created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/FirstTimerResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: A response already exists for this email and conference year
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listFirstTimerResponses
+      tags: [first-timers]
+      summary: List first-timer responses for the admin area
+      responses:
+        "200":
+          description: First-timer response list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/FirstTimerResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /merch-orders:
     post:
       operationId: createMerchOrder
@@ -531,6 +580,24 @@ components:
               - "09:00"
               - "10:00"
               - "11:00"
+    FirstTimerResponse:
+      type: object
+      required: [id, name, email, isFirstTime, conferenceYear, createdAt]
+      properties:
+        id:             { type: integer }
+        name:           { type: string }
+        email:          { type: string, format: email }
+        isFirstTime:    { type: boolean }
+        conferenceYear: { type: integer }
+        createdAt:      { type: string, format: date-time }
+    FirstTimerResponseInput:
+      type: object
+      required: [name, email, isFirstTime, conferenceYear]
+      properties:
+        name:           { type: string, minLength: 1, maxLength: 160 }
+        email:          { type: string, format: email, maxLength: 254 }
+        isFirstTime:    { type: boolean }
+        conferenceYear: { type: integer, minimum: 2000, maximum: 2100 }
     MerchOrderItem:
       type: object
       required: [productName, size, quantity]

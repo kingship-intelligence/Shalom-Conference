@@ -14,6 +14,8 @@ export * from './badgeUploadInputContentType';
 export * from './badgeUploadUrl';
 export * from './errorResponse';
 export * from './existingRegistrationBadgeInput';
+export * from './firstTimerResponse';
+export * from './firstTimerResponseInput';
 export * from './healthStatus';
 export * from './merchOrder';
 export * from './merchOrderEmailError';
