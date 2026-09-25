@@ -6,6 +6,8 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from './adminUser';
+export * from './adminUserInput';
 export * from './badgeAccess';
 export * from './badgeCompleteInput';
 export * from './badgeSkipInput';

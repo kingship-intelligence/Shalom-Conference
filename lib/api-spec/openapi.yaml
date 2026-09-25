@@ -360,6 +360,61 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /admin/users:
+    get:
+      operationId: listAdminUsers
+      tags: [admin]
+      summary: List configured admin accounts
+      responses:
+        "200":
+          description: Admin account list
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AdminUser"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createAdminUser
+      tags: [admin]
+      summary: Add another admin account
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AdminUserInput"
+      responses:
+        "201":
+          description: Admin account created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AdminUser"
+        "400":
+          description: Invalid account details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Username is already in use
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /merch-orders:
     post:
       operationId: createMerchOrder
@@ -598,6 +653,19 @@ components:
         email:          { type: string, format: email, maxLength: 254 }
         isFirstTime:    { type: boolean }
         conferenceYear: { type: integer, minimum: 2000, maximum: 2100 }
+    AdminUser:
+      type: object
+      required: [id, username, createdAt]
+      properties:
+        id:        { type: integer }
+        username:  { type: string }
+        createdAt: { type: string, format: date-time }
+    AdminUserInput:
+      type: object
+      required: [username, password]
+      properties:
+        username: { type: string, minLength: 3, maxLength: 254 }
+        password: { type: string, minLength: 12, maxLength: 200 }
     MerchOrderItem:
       type: object
       required: [productName, size, quantity]

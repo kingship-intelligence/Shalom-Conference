@@ -323,6 +323,40 @@ export const ListFirstTimerResponsesResponse = zod.array(ListFirstTimerResponses
 
 
 /**
+ * @summary List configured admin accounts
+ */
+export const ListAdminUsersResponseItem = zod.object({
+  "id": zod.number().int(),
+  "username": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListAdminUsersResponse = zod.array(ListAdminUsersResponseItem)
+
+
+/**
+ * @summary Add another admin account
+ */
+export const createAdminUserBodyUsernameMin = 3;
+export const createAdminUserBodyUsernameMax = 254;
+
+export const createAdminUserBodyPasswordMin = 12;
+export const createAdminUserBodyPasswordMax = 200;
+
+
+
+export const CreateAdminUserBody = zod.object({
+  "username": zod.string().min(createAdminUserBodyUsernameMin).max(createAdminUserBodyUsernameMax),
+  "password": zod.string().min(createAdminUserBodyPasswordMin).max(createAdminUserBodyPasswordMax)
+})
+
+export const CreateAdminUserResponse = zod.object({
+  "id": zod.number().int(),
+  "username": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
  * @summary Submit a merch preorder after Cash App payment
  */
 export const createMerchOrderBodyNameMax = 160;

@@ -208,6 +208,25 @@ export interface FirstTimerResponseInput {
   conferenceYear: number;
 }
 
+export interface AdminUser {
+  id: number;
+  username: string;
+  createdAt: string;
+}
+
+export interface AdminUserInput {
+  /**
+     * @minLength 3
+     * @maxLength 254
+     */
+  username: string;
+  /**
+     * @minLength 12
+     * @maxLength 200
+     */
+  password: string;
+}
+
 export type MerchOrderItemSize = typeof MerchOrderItemSize[keyof typeof MerchOrderItemSize];
 
 
