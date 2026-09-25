@@ -53,6 +53,15 @@ export function establishAdminSession(res: Response, username: string): boolean 
   return true;
 }
 
+export function clearAdminSession(res: Response): void {
+  res.clearCookie(COOKIE_NAME, {
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    path: "/api",
+  });
+}
+
 export function hasAdminSession(req: Request): boolean {
   return getAdminIdentity(req) !== null;
 }

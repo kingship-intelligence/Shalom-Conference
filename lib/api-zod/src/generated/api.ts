@@ -323,6 +323,43 @@ export const ListFirstTimerResponsesResponse = zod.array(ListFirstTimerResponses
 
 
 /**
+ * @summary Validate the current admin session
+ */
+export const GetAdminSessionResponse = zod.object({
+  "ok": zod.boolean(),
+  "username": zod.string()
+})
+
+
+/**
+ * @summary Clear the current admin session
+ */
+export const LogoutAdminResponse = zod.object({
+  "ok": zod.boolean()
+})
+
+
+/**
+ * @summary Sign in to the admin dashboard
+ */
+export const loginAdminBodyUsernameMin = 3;
+export const loginAdminBodyUsernameMax = 254;
+
+export const loginAdminBodyPasswordMax = 200;
+
+
+
+export const LoginAdminBody = zod.object({
+  "username": zod.string().min(loginAdminBodyUsernameMin).max(loginAdminBodyUsernameMax),
+  "password": zod.string().min(1).max(loginAdminBodyPasswordMax)
+})
+
+export const LoginAdminResponse = zod.object({
+  "ok": zod.boolean()
+})
+
+
+/**
  * @summary List configured admin accounts
  */
 export const ListAdminUsersResponseItem = zod.object({

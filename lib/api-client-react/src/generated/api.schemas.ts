@@ -227,6 +227,32 @@ export interface AdminUserInput {
   password: string;
 }
 
+export interface AdminLoginInput {
+  /**
+     * @minLength 3
+     * @maxLength 254
+     */
+  username: string;
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  password: string;
+}
+
+export interface AdminLoginResponse {
+  ok: boolean;
+}
+
+export interface AdminSession {
+  ok: boolean;
+  username: string;
+}
+
+export interface AdminLogoutResponse {
+  ok: boolean;
+}
+
 export type MerchOrderItemSize = typeof MerchOrderItemSize[keyof typeof MerchOrderItemSize];
 
 

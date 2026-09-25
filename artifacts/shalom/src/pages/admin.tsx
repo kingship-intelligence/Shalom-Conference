@@ -4,11 +4,14 @@ import {
   getListMerchOrdersQueryKey,
   getListPrayerChainSignupsQueryKey,
   getListFirstTimerResponsesQueryKey,
+  getListAdminUsersQueryKey,
   useConfirmMerchOrderPayment,
+  useCreateAdminUser,
   useDeleteRegistration,
   useListMerchOrders,
   useListPrayerChainSignups,
   useListFirstTimerResponses,
+  useListAdminUsers,
   useListRegistrations,
   useListTestimonies,
 } from "@workspace/api-client-react";
@@ -31,7 +34,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Check, User, UserCheck, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2, Clock3 } from "lucide-react";
+import { Check, User, UserCheck, Users, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2, Clock3 } from "lucide-react";
 
 const SESSION_KEY = "shalom_admin_auth";
 const PRAYER_SLOT_LABELS: Record<string, string> = {
@@ -189,6 +192,10 @@ function useAdminAuth() {
     sessionStorage.removeItem(SESSION_KEY);
     setAuthed(false);
     setError(message);
+    void fetch("/api/admin/session", {
+      method: "DELETE",
+      credentials: "include",
+    }).catch(() => {});
   }, []);
 
   return { authed, checking, login, logout, loading, error };
@@ -231,11 +238,11 @@ function LoginScreen({ onLogin, loading, error }: { onLogin: (u: string, p: stri
               Username
             </label>
             <Input
-              type="email"
+              type="text"
               autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              placeholder="admin@shalomconference.com"
+              placeholder="Admin username"
               required
               className="bg-white/5 border-white/10 text-white placeholder:text-white/20 focus:border-primary focus:ring-primary h-12"
             />
@@ -289,9 +296,22 @@ export default function Admin() {
   const [firstTimerSearch, setFirstTimerSearch] = useState("");
   const [deletingRegistrationId, setDeletingRegistrationId] = useState<number | null>(null);
   const [deleteRegistrationError, setDeleteRegistrationError] = useState("");
+  const [newAdminUsername, setNewAdminUsername] = useState("");
+  const [newAdminPassword, setNewAdminPassword] = useState("");
+  const [confirmAdminPassword, setConfirmAdminPassword] = useState("");
+  const [adminAccountFormError, setAdminAccountFormError] = useState("");
 
   const registrationsQuery = useListRegistrations();
   const testimoniesQuery = useListTestimonies();
+  const adminUsersQuery = useListAdminUsers({
+    query: {
+      enabled: authed,
+      queryKey: getListAdminUsersQueryKey(),
+      retry: 2,
+      refetchOnWindowFocus: true,
+    },
+    request: { credentials: "include" },
+  });
   const merchOrdersQuery = useListMerchOrders({
     query: {
       enabled: authed,
@@ -338,6 +358,33 @@ export default function Admin() {
       },
     },
   });
+  const createAdminUserMutation = useCreateAdminUser({
+    mutation: {
+      onSuccess: () => {
+        setNewAdminUsername("");
+        setNewAdminPassword("");
+        setConfirmAdminPassword("");
+        setAdminAccountFormError("");
+        queryClient.invalidateQueries({ queryKey: getListAdminUsersQueryKey() });
+      },
+    },
+    request: { credentials: "include" },
+  });
+
+  function submitAdminAccount(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setAdminAccountFormError("");
+    if (newAdminPassword !== confirmAdminPassword) {
+      setAdminAccountFormError("The passwords do not match.");
+      return;
+    }
+    createAdminUserMutation.mutate({
+      data: {
+        username: newAdminUsername.trim(),
+        password: newAdminPassword,
+      },
+    });
+  }
 
   const registrations = [...(registrationsQuery.data || [])].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
@@ -389,12 +436,16 @@ export default function Admin() {
     : firstTimerResponses;
   const awaitingVerificationCount = merchOrders.filter((order) => order.status === "awaiting_verification").length;
   const verifiedCount = merchOrders.filter((order) => order.status === "verified").length;
+  const accountApiError = (
+    createAdminUserMutation.error as { data?: { error?: string } } | null
+  )?.data?.error;
 
   useEffect(() => {
     const protectedQueryErrors = [
       merchOrdersQuery.error,
       prayerChainQuery.error,
       firstTimerResponsesQuery.error,
+      adminUsersQuery.error,
     ];
     const sessionExpired = protectedQueryErrors.some(
       (queryError) =>
@@ -413,6 +464,7 @@ export default function Admin() {
     merchOrdersQuery.error,
     prayerChainQuery.error,
     firstTimerResponsesQuery.error,
+    adminUsersQuery.error,
   ]);
 
   if (checking) {
@@ -457,6 +509,136 @@ export default function Admin() {
       </header>
 
       <main className="container mx-auto max-w-7xl px-4 mt-8">
+        <section
+          data-testid="section-admin-accounts"
+          className="mb-12 rounded-2xl border border-white/10 bg-white/[0.03] p-5 sm:p-7"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-primary pt-4">
+            <div className="flex items-center gap-3">
+              <Users className="h-5 w-5 text-primary" />
+              <h2 className="text-2xl font-bold uppercase tracking-wider text-white">Admin Accounts</h2>
+            </div>
+            <Badge className="bg-primary text-white">
+              {adminUsersQuery.isLoading ? "..." : adminUsersQuery.data?.length ?? 0}
+            </Badge>
+          </div>
+
+          <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.8fr)]">
+            <div className="space-y-3">
+              <h3 className="text-sm font-bold uppercase tracking-widest text-white/55">Current accounts</h3>
+              {adminUsersQuery.isLoading ? (
+                <div className="space-y-3">
+                  {[1, 2].map((item) => (
+                    <Skeleton key={item} className="h-16 w-full rounded-xl bg-white/5" />
+                  ))}
+                </div>
+              ) : adminUsersQuery.isError ? (
+                <div className="rounded-xl border border-red-500/25 bg-red-500/5 p-4">
+                  <p role="alert" className="text-sm text-red-200">
+                    Could not load admin accounts. Your access is unchanged; please retry.
+                  </p>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="mt-3 border-white/20 text-white hover:bg-white/10"
+                    onClick={() => void adminUsersQuery.refetch()}
+                  >
+                    Retry
+                  </Button>
+                </div>
+              ) : adminUsersQuery.data?.length ? (
+                <ul className="space-y-3">
+                  {adminUsersQuery.data.map((adminUser) => (
+                    <li
+                      key={adminUser.id}
+                      className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
+                    >
+                      <span className="font-semibold text-white">{adminUser.username}</span>
+                      <span className="text-xs text-white/40">
+                        Added {format(new Date(adminUser.createdAt), "MMM d, yyyy")}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p className="rounded-xl border border-dashed border-white/10 p-4 text-sm text-white/45">
+                  No admin accounts were returned. Refresh the list before making changes.
+                </p>
+              )}
+            </div>
+
+            <form onSubmit={submitAdminAccount} className="space-y-4">
+              <div>
+                <h3 className="text-sm font-bold uppercase tracking-widest text-white/55">Add an admin</h3>
+                <p className="mt-1 text-xs leading-relaxed text-white/40">
+                  New accounts can sign in to this dashboard. Use a unique username and a password of at least 12 characters.
+                </p>
+              </div>
+              <div>
+                <label htmlFor="new-admin-username" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/45">
+                  Username
+                </label>
+                <Input
+                  id="new-admin-username"
+                  type="text"
+                  autoComplete="username"
+                  value={newAdminUsername}
+                  onChange={(event) => setNewAdminUsername(event.target.value)}
+                  minLength={3}
+                  maxLength={254}
+                  required
+                  placeholder="admin@example.com"
+                  className="h-11 border-white/10 bg-white/5 text-white placeholder:text-white/25"
+                />
+              </div>
+              <div>
+                <label htmlFor="new-admin-password" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/45">
+                  Password
+                </label>
+                <Input
+                  id="new-admin-password"
+                  type="password"
+                  autoComplete="new-password"
+                  value={newAdminPassword}
+                  onChange={(event) => setNewAdminPassword(event.target.value)}
+                  minLength={12}
+                  maxLength={200}
+                  required
+                  className="h-11 border-white/10 bg-white/5 text-white"
+                />
+              </div>
+              <div>
+                <label htmlFor="confirm-admin-password" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/45">
+                  Confirm password
+                </label>
+                <Input
+                  id="confirm-admin-password"
+                  type="password"
+                  autoComplete="new-password"
+                  value={confirmAdminPassword}
+                  onChange={(event) => setConfirmAdminPassword(event.target.value)}
+                  minLength={12}
+                  maxLength={200}
+                  required
+                  className="h-11 border-white/10 bg-white/5 text-white"
+                />
+              </div>
+              {(adminAccountFormError || accountApiError) && (
+                <p role="alert" className="text-sm text-red-300">
+                  {adminAccountFormError || accountApiError}
+                </p>
+              )}
+              <Button
+                type="submit"
+                disabled={createAdminUserMutation.isPending}
+                className="w-full rounded-full bg-primary font-bold uppercase tracking-widest text-white hover:bg-primary/90"
+              >
+                {createAdminUserMutation.isPending ? "Creating account…" : "Create admin account"}
+              </Button>
+            </form>
+          </div>
+        </section>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Registrations Section */}
           <section data-testid="section-registrations" className="space-y-6">
