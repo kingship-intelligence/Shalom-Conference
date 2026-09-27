@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { useForm } from "react-hook-form";
 import {
   useCreatePrayerChargeSurveyResponse,
@@ -55,9 +55,25 @@ type SurveyFormValues = {
   wouldAttendAgain: AttendanceChoice | "";
 };
 
+const CELEBRATION_PARTICLES = Array.from({ length: 28 }, (_, index) => {
+  const angle = (index / 28) * Math.PI * 2;
+  const distance = 72 + (index % 4) * 17;
+  const colors = ["#ff5a1f", "#f7be51", "#ffffff", "#c92d22", "#f18a33"];
+
+  return {
+    x: Math.cos(angle) * distance,
+    y: Math.sin(angle) * distance * 0.72,
+    rotation: 180 + index * 41,
+    color: colors[index % colors.length],
+  };
+});
+
 export default function PrayerCharge() {
   const [formError, setFormError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [countdownHours, setCountdownHours] = useState(0);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
   const form = useForm<SurveyFormValues>({
     defaultValues: {
       rating: null,
@@ -71,6 +87,41 @@ export default function PrayerCharge() {
   });
   const meaningfulMoment = form.watch("meaningfulMoment");
   const suggestion = form.watch("suggestion");
+
+  useEffect(() => {
+    let confettiTimeout: number | undefined;
+
+    if (prefersReducedMotion) {
+      setCountdownHours(12);
+      setShowConfetti(true);
+      confettiTimeout = window.setTimeout(() => setShowConfetti(false), 1500);
+
+      return () => {
+        if (confettiTimeout !== undefined) {
+          window.clearTimeout(confettiTimeout);
+        }
+      };
+    }
+
+    let currentHour = 0;
+    const countdownInterval = window.setInterval(() => {
+      currentHour += 1;
+      setCountdownHours(currentHour);
+
+      if (currentHour === 12) {
+        window.clearInterval(countdownInterval);
+        setShowConfetti(true);
+        confettiTimeout = window.setTimeout(() => setShowConfetti(false), 1500);
+      }
+    }, 170);
+
+    return () => {
+      window.clearInterval(countdownInterval);
+      if (confettiTimeout !== undefined) {
+        window.clearTimeout(confettiTimeout);
+      }
+    };
+  }, [prefersReducedMotion]);
 
   useEffect(() => {
     const title = "Thank You for Joining the Prayer Charge | Shalom Conference";
@@ -167,18 +218,79 @@ export default function PrayerCharge() {
                   <Link href="/2026">Visit Shalom 2026</Link>
                 </Button>
               </div>
-              <div className="mt-12 grid max-w-lg grid-cols-2 gap-3 border-t border-white/10 pt-5">
-                <div>
-                  <p className="text-2xl font-bold text-white">12 hours</p>
-                  <p className="mt-1 text-xs uppercase tracking-widest text-white/40">
-                    Of prayer and worship
-                  </p>
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-white">One family</p>
-                  <p className="mt-1 text-xs uppercase tracking-widest text-white/40">
-                    Gathered in faith
-                  </p>
+              <div className="mt-12 max-w-lg border-t border-white/10 pt-5">
+                <div
+                  className="relative isolate border border-primary/25 bg-white/[0.035] p-5 sm:p-6"
+                  data-testid="status-prayer-charge-countdown"
+                >
+                  {showConfetti && (
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 z-20 overflow-visible"
+                    >
+                      {CELEBRATION_PARTICLES.map((particle, index) => (
+                        <motion.span
+                          key={`celebration-${index}`}
+                          className="absolute left-[24%] top-[36%] h-2.5 w-1.5 rounded-[1px]"
+                          initial={{ opacity: 0, x: 0, y: 0, rotate: 0 }}
+                          animate={{
+                            opacity: prefersReducedMotion ? 0.85 : [0, 1, 1, 0],
+                            x: prefersReducedMotion ? particle.x * 0.6 : particle.x,
+                            y: prefersReducedMotion ? particle.y * 0.6 : particle.y,
+                            rotate: particle.rotation,
+                          }}
+                          transition={{
+                            duration: prefersReducedMotion ? 0 : 1.4,
+                            delay: prefersReducedMotion ? 0 : index * 0.008,
+                            ease: "easeOut",
+                          }}
+                          style={{ backgroundColor: particle.color }}
+                        />
+                      ))}
+                    </div>
+                  )}
+                  <div className="relative z-10">
+                    <div className="flex items-baseline gap-3">
+                      <motion.span
+                        key={countdownHours}
+                        initial={{ opacity: 0.5, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.14 }}
+                        className="text-5xl font-black tabular-nums text-white sm:text-6xl"
+                      >
+                        {countdownHours}
+                      </motion.span>
+                      <span className="text-sm font-bold uppercase tracking-widest text-primary">
+                        {countdownHours === 1 ? "hour" : "hours"}
+                      </span>
+                      <span className="ml-auto text-xs uppercase tracking-widest text-white/50">
+                        of prayer and worship
+                      </span>
+                    </div>
+                    <div
+                      role="progressbar"
+                      aria-label="Prayer Charge hours"
+                      aria-valuemin={0}
+                      aria-valuemax={12}
+                      aria-valuenow={countdownHours}
+                      className="mt-5 h-2 overflow-hidden bg-white/10"
+                    >
+                      <motion.div
+                        className="h-full bg-primary"
+                        animate={{ width: `${(countdownHours / 12) * 100}%` }}
+                        transition={{ duration: 0.16, ease: "linear" }}
+                      />
+                    </div>
+                    <div className="mt-2 flex justify-between text-xs font-semibold tabular-nums text-white/40">
+                      <span>0</span>
+                      <span>12</span>
+                    </div>
+                    {countdownHours === 12 && (
+                      <span role="status" className="sr-only">
+                        The 12-hour prayer celebration is complete.
+                      </span>
+                    )}
+                  </div>
                 </div>
               </div>
             </motion.div>
