@@ -56,4 +56,5 @@ export type MerchOrder = typeof merchOrdersTable.$inferSelect;
 
 export * from "./prayer-chain-signups";
 export * from "./first-timer-responses";
+export * from "./prayer-charge-survey-responses";
 export * from "./admin-users";

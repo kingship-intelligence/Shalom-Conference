@@ -45,7 +45,8 @@ import type {
   MerchOrderEmailError,
   MerchOrderInput,
   PrayerChainSignup,
-  PrayerChainSignupInput,
+  PrayerChargeSurveyResponse,
+  PrayerChargeSurveyResponseInput,
   Registration,
   RegistrationCreated,
   RegistrationInput,
@@ -998,30 +999,17 @@ export const getCreatePrayerChainSignupUrl = () => {
 }
 
 /**
- * @summary Join one or more Prayer Charge time slots
+ * @deprecated
+ * @summary Prayer Charge sign-ups are closed
  */
-export const createPrayerChainSignup = async (prayerChainSignupInput: PrayerChainSignupInput, options?: Parameters<typeof customFetch>[1]): Promise<PrayerChainSignup> => {
+export const createPrayerChainSignup = async ( options?: Parameters<typeof customFetch>[1]): Promise<unknown> => {
 
-    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
-    if (!h) return {};
-    if (h instanceof Headers) return Object.fromEntries(h.entries());
-    if (Symbol.iterator in h) {
-      return Object.fromEntries(
-        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
-      );
-    }
-    const headers: Record<string, string | readonly string[]> = {};
-    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
-      if (value !== undefined) headers[name] = value;
-    }
-    return headers;
-  };
-return customFetch<PrayerChainSignup>(getCreatePrayerChainSignupUrl(),
+  return customFetch<unknown>(getCreatePrayerChainSignupUrl(),
   {
     ...options,
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
-    body: JSON.stringify(prayerChainSignupInput)
+    method: 'POST'
+
+
   }
 );}
 
@@ -1032,8 +1020,8 @@ return customFetch<PrayerChainSignup>(getCreatePrayerChainSignupUrl(),
 export const getCreatePrayerChainSignupMutationKey = () => ['createPrayerChainSignup'] as const;
 
 export const getCreatePrayerChainSignupMutationOptions = <TError = ErrorType<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrayerChainSignup>>, TError,CreatePrayerChainSignupMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
-): UseMutationOptions<Awaited<ReturnType<typeof createPrayerChainSignup>>, TError,CreatePrayerChainSignupMutationVariables, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrayerChainSignup>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPrayerChainSignup>>, TError,void, TContext> => {
 
 const mutationKey = getCreatePrayerChainSignupMutationKey();
 const {mutation: mutationOptions, request: requestOptions} = options ?
@@ -1045,10 +1033,10 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
 
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPrayerChainSignup>>, CreatePrayerChainSignupMutationVariables> = (props) => {
-          const {data} = props ?? {};
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPrayerChainSignup>>, void> = () => {
 
-          return  createPrayerChainSignup(data,requestOptions)
+
+          return  createPrayerChainSignup(requestOptions)
         }
 
 
@@ -1059,19 +1047,20 @@ const {mutation: mutationOptions, request: requestOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type CreatePrayerChainSignupMutationResult = NonNullable<Awaited<ReturnType<typeof createPrayerChainSignup>>>
-    export type CreatePrayerChainSignupMutationBody = BodyType<PrayerChainSignupInput>
+
     export type CreatePrayerChainSignupMutationError = ErrorType<ErrorResponse>
-    export type CreatePrayerChainSignupMutationVariables = {data: BodyType<PrayerChainSignupInput>}
+
 
     /**
- * @summary Join one or more Prayer Charge time slots
+ * @deprecated
+ * @summary Prayer Charge sign-ups are closed
  */
 export const useCreatePrayerChainSignup = <TError = ErrorType<ErrorResponse>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrayerChainSignup>>, TError,CreatePrayerChainSignupMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrayerChainSignup>>, TError,void, TContext>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createPrayerChainSignup>>,
         TError,
-        CreatePrayerChainSignupMutationVariables,
+        void,
         TContext
       > => {
       return useMutation(getCreatePrayerChainSignupMutationOptions(options), queryClient);
@@ -1166,6 +1155,195 @@ export function useListPrayerChainSignups<TData = Awaited<ReturnType<typeof list
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getListPrayerChainSignupsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreatePrayerChargeSurveyResponseUrl = () => {
+
+
+
+
+  return `/api/prayer-charge-survey-responses`
+}
+
+/**
+ * @summary Submit anonymous Prayer Charge feedback
+ */
+export const createPrayerChargeSurveyResponse = async (prayerChargeSurveyResponseInput: PrayerChargeSurveyResponseInput, options?: Parameters<typeof customFetch>[1]): Promise<PrayerChargeSurveyResponse> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<PrayerChargeSurveyResponse>(getCreatePrayerChargeSurveyResponseUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(prayerChargeSurveyResponseInput)
+  }
+);}
+
+
+
+
+
+export const getCreatePrayerChargeSurveyResponseMutationKey = () => ['createPrayerChargeSurveyResponse'] as const;
+
+export const getCreatePrayerChargeSurveyResponseMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrayerChargeSurveyResponse>>, TError,CreatePrayerChargeSurveyResponseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createPrayerChargeSurveyResponse>>, TError,CreatePrayerChargeSurveyResponseMutationVariables, TContext> => {
+
+const mutationKey = getCreatePrayerChargeSurveyResponseMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createPrayerChargeSurveyResponse>>, CreatePrayerChargeSurveyResponseMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createPrayerChargeSurveyResponse(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreatePrayerChargeSurveyResponseMutationResult = NonNullable<Awaited<ReturnType<typeof createPrayerChargeSurveyResponse>>>
+    export type CreatePrayerChargeSurveyResponseMutationBody = BodyType<PrayerChargeSurveyResponseInput>
+    export type CreatePrayerChargeSurveyResponseMutationError = ErrorType<ErrorResponse>
+    export type CreatePrayerChargeSurveyResponseMutationVariables = {data: BodyType<PrayerChargeSurveyResponseInput>}
+
+    /**
+ * @summary Submit anonymous Prayer Charge feedback
+ */
+export const useCreatePrayerChargeSurveyResponse = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createPrayerChargeSurveyResponse>>, TError,CreatePrayerChargeSurveyResponseMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createPrayerChargeSurveyResponse>>,
+        TError,
+        CreatePrayerChargeSurveyResponseMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreatePrayerChargeSurveyResponseMutationOptions(options), queryClient);
+    }
+
+export const getListPrayerChargeSurveyResponsesUrl = () => {
+
+
+
+
+  return `/api/prayer-charge-survey-responses`
+}
+
+/**
+ * @summary List survey responses for the admin area
+ */
+export const listPrayerChargeSurveyResponses = async ( options?: Parameters<typeof customFetch>[1]): Promise<PrayerChargeSurveyResponse[]> => {
+
+  return customFetch<PrayerChargeSurveyResponse[]>(getListPrayerChargeSurveyResponsesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListPrayerChargeSurveyResponsesQueryKey = () => {
+    return [
+    `/api/prayer-charge-survey-responses`
+    ] as const;
+    }
+
+
+export const getListPrayerChargeSurveyResponsesQueryOptions = <TData = Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListPrayerChargeSurveyResponsesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>> = ({ signal }) => listPrayerChargeSurveyResponses({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListPrayerChargeSurveyResponsesQueryResult = NonNullable<Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>>
+export type ListPrayerChargeSurveyResponsesQueryError = ErrorType<ErrorResponse>
+
+
+export function useListPrayerChargeSurveyResponses<TData = Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>,
+          TError,
+          Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPrayerChargeSurveyResponses<TData = Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>,
+          TError,
+          Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListPrayerChargeSurveyResponses<TData = Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List survey responses for the admin area
+ */
+
+export function useListPrayerChargeSurveyResponses<TData = Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listPrayerChargeSurveyResponses>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListPrayerChargeSurveyResponsesQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

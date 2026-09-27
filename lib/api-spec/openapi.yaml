@@ -18,6 +18,8 @@ tags:
     description: Testimony operations
   - name: prayer-chain
     description: Prayer Charge prayer-chain signup operations
+  - name: prayer-charge-survey
+    description: Post-event Prayer Charge survey responses
   - name: merch
     description: Merch preorder operations
   - name: admin
@@ -274,22 +276,11 @@ paths:
     post:
       operationId: createPrayerChainSignup
       tags: [prayer-chain]
-      summary: Join one or more Prayer Charge time slots
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/PrayerChainSignupInput"
+      deprecated: true
+      summary: Prayer Charge sign-ups are closed
       responses:
-        "201":
-          description: Prayer-chain signup created
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/PrayerChainSignup"
-        "400":
-          description: Validation error
+        "410":
+          description: Prayer Charge sign-ups are closed
           content:
             application/json:
               schema:
@@ -307,6 +298,49 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/PrayerChainSignup"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /prayer-charge-survey-responses:
+    post:
+      operationId: createPrayerChargeSurveyResponse
+      tags: [prayer-charge-survey]
+      summary: Submit anonymous Prayer Charge feedback
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/PrayerChargeSurveyResponseInput"
+      responses:
+        "201":
+          description: Survey response saved
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/PrayerChargeSurveyResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listPrayerChargeSurveyResponses
+      tags: [prayer-charge-survey]
+      summary: List survey responses for the admin area
+      responses:
+        "200":
+          description: Prayer Charge survey responses
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/PrayerChargeSurveyResponse"
         "401":
           description: Admin sign-in required
           content:
@@ -696,6 +730,24 @@ components:
               - "09:00"
               - "10:00"
               - "11:00"
+    PrayerChargeSurveyResponse:
+      type: object
+      required: [id, rating, meaningfulMoment, suggestion, wouldAttendAgain, createdAt]
+      properties:
+        id:                { type: integer }
+        rating:            { type: integer, minimum: 1, maximum: 5 }
+        meaningfulMoment:  { type: string }
+        suggestion:        { type: string }
+        wouldAttendAgain:  { type: string, enum: [yes, maybe, no] }
+        createdAt:         { type: string, format: date-time }
+    PrayerChargeSurveyResponseInput:
+      type: object
+      required: [rating, wouldAttendAgain]
+      properties:
+        rating:           { type: integer, minimum: 1, maximum: 5 }
+        meaningfulMoment: { type: string, maxLength: 1200 }
+        suggestion:       { type: string, maxLength: 1200 }
+        wouldAttendAgain: { type: string, enum: [yes, maybe, no] }
     FirstTimerResponse:
       type: object
       required: [id, name, email, isFirstTime, conferenceYear, createdAt]

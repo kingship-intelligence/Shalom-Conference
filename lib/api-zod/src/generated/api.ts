@@ -237,32 +237,10 @@ export const ListTestimoniesResponse = zod.array(ListTestimoniesResponseItem)
 
 
 /**
- * @summary Join one or more Prayer Charge time slots
+ * @deprecated
+ * @summary Prayer Charge sign-ups are closed
  */
-export const createPrayerChainSignupBodyNameMax = 160;
-
-export const createPrayerChainSignupBodyPhoneMin = 7;
-export const createPrayerChainSignupBodyPhoneMax = 40;
-
-export const createPrayerChainSignupBodyTimeSlotsMax = 12;
-
-
-
-export const CreatePrayerChainSignupBody = zod.object({
-  "name": zod.string().min(1).max(createPrayerChainSignupBodyNameMax),
-  "email": zod.string().email(),
-  "phone": zod.string().min(createPrayerChainSignupBodyPhoneMin).max(createPrayerChainSignupBodyPhoneMax),
-  "timeSlots": zod.array(zod.enum(['00:00', '01:00', '02:00', '03:00', '04:00', '05:00', '06:00', '07:00', '08:00', '09:00', '10:00', '11:00'])).min(1).max(createPrayerChainSignupBodyTimeSlotsMax)
-})
-
-export const CreatePrayerChainSignupResponse = zod.object({
-  "id": zod.number().int(),
-  "name": zod.string(),
-  "email": zod.string().email(),
-  "phone": zod.string(),
-  "timeSlots": zod.array(zod.string()),
-  "createdAt": zod.coerce.date()
-})
+export const CreatePrayerChainSignupResponse = zod.void()
 
 
 /**
@@ -277,6 +255,56 @@ export const ListPrayerChainSignupsResponseItem = zod.object({
   "createdAt": zod.coerce.date()
 })
 export const ListPrayerChainSignupsResponse = zod.array(ListPrayerChainSignupsResponseItem)
+
+
+/**
+ * @summary Submit anonymous Prayer Charge feedback
+ */
+export const createPrayerChargeSurveyResponseBodyRatingMax = 5;
+
+export const createPrayerChargeSurveyResponseBodyMeaningfulMomentMax = 1200;
+
+export const createPrayerChargeSurveyResponseBodySuggestionMax = 1200;
+
+
+
+export const CreatePrayerChargeSurveyResponseBody = zod.object({
+  "rating": zod.number().int().min(1).max(createPrayerChargeSurveyResponseBodyRatingMax),
+  "meaningfulMoment": zod.string().max(createPrayerChargeSurveyResponseBodyMeaningfulMomentMax).optional(),
+  "suggestion": zod.string().max(createPrayerChargeSurveyResponseBodySuggestionMax).optional(),
+  "wouldAttendAgain": zod.enum(['yes', 'maybe', 'no'])
+})
+
+export const createPrayerChargeSurveyResponseResponseRatingMax = 5;
+
+
+
+export const CreatePrayerChargeSurveyResponseResponse = zod.object({
+  "id": zod.number().int(),
+  "rating": zod.number().int().min(1).max(createPrayerChargeSurveyResponseResponseRatingMax),
+  "meaningfulMoment": zod.string(),
+  "suggestion": zod.string(),
+  "wouldAttendAgain": zod.enum(['yes', 'maybe', 'no']),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary List survey responses for the admin area
+ */
+export const listPrayerChargeSurveyResponsesResponseRatingMax = 5;
+
+
+
+export const ListPrayerChargeSurveyResponsesResponseItem = zod.object({
+  "id": zod.number().int(),
+  "rating": zod.number().int().min(1).max(listPrayerChargeSurveyResponsesResponseRatingMax),
+  "meaningfulMoment": zod.string(),
+  "suggestion": zod.string(),
+  "wouldAttendAgain": zod.enum(['yes', 'maybe', 'no']),
+  "createdAt": zod.coerce.date()
+})
+export const ListPrayerChargeSurveyResponsesResponse = zod.array(ListPrayerChargeSurveyResponsesResponseItem)
 
 
 /**

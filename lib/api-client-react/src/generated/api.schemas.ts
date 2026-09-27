@@ -183,6 +183,50 @@ export interface PrayerChainSignupInput {
   timeSlots: PrayerChainSignupInputTimeSlotsItem[];
 }
 
+export type PrayerChargeSurveyResponseWouldAttendAgain = typeof PrayerChargeSurveyResponseWouldAttendAgain[keyof typeof PrayerChargeSurveyResponseWouldAttendAgain];
+
+
+export const PrayerChargeSurveyResponseWouldAttendAgain = {
+  yes: 'yes',
+  maybe: 'maybe',
+  no: 'no',
+} as const;
+
+export interface PrayerChargeSurveyResponse {
+  id: number;
+  /**
+     * @minimum 1
+     * @maximum 5
+     */
+  rating: number;
+  meaningfulMoment: string;
+  suggestion: string;
+  wouldAttendAgain: PrayerChargeSurveyResponseWouldAttendAgain;
+  createdAt: string;
+}
+
+export type PrayerChargeSurveyResponseInputWouldAttendAgain = typeof PrayerChargeSurveyResponseInputWouldAttendAgain[keyof typeof PrayerChargeSurveyResponseInputWouldAttendAgain];
+
+
+export const PrayerChargeSurveyResponseInputWouldAttendAgain = {
+  yes: 'yes',
+  maybe: 'maybe',
+  no: 'no',
+} as const;
+
+export interface PrayerChargeSurveyResponseInput {
+  /**
+     * @minimum 1
+     * @maximum 5
+     */
+  rating: number;
+  /** @maxLength 1200 */
+  meaningfulMoment?: string;
+  /** @maxLength 1200 */
+  suggestion?: string;
+  wouldAttendAgain: PrayerChargeSurveyResponseInputWouldAttendAgain;
+}
+
 export interface FirstTimerResponse {
   id: number;
   name: string;

@@ -1,35 +1,32 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
-  Check,
   CheckCircle2,
-  ChevronDown,
-  Clock3,
+  HeartHandshake,
+  MessageCircle,
+  RefreshCw,
+  Star,
 } from "lucide-react";
-import { motion } from "framer-motion";
-import { useCreatePrayerChainSignup } from "@workspace/api-client-react";
+import { useForm } from "react-hook-form";
+import {
+  useCreatePrayerChargeSurveyResponse,
+} from "@workspace/api-client-react";
+import thankYouArtwork from "@assets/B7342044-B25D-43CA-A29D-7DACA0E28D48_1790469794325.PNG?url";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Textarea } from "@/components/ui/textarea";
 import SiteFooter from "@/components/SiteFooter";
 import SiteHeader from "@/components/SiteHeader";
-import { useToast } from "@/hooks/use-toast";
-const prayerChargeFlyer = "/images/2026/prayer-charge.webp";
-
-const PRAYER_CHAIN_SLOTS = [
-  { value: "00:00", label: "12 AM – 1 AM" },
-  { value: "01:00", label: "1 AM – 2 AM" },
-  { value: "02:00", label: "2 AM – 3 AM" },
-  { value: "03:00", label: "3 AM – 4 AM" },
-  { value: "04:00", label: "4 AM – 5 AM" },
-  { value: "05:00", label: "5 AM – 6 AM" },
-  { value: "06:00", label: "6 AM – 7 AM" },
-  { value: "07:00", label: "7 AM – 8 AM" },
-  { value: "08:00", label: "8 AM – 9 AM" },
-  { value: "09:00", label: "9 AM – 10 AM" },
-  { value: "10:00", label: "10 AM – 11 AM" },
-  { value: "11:00", label: "11 AM – 12 PM" },
-] as const;
 
 function upsertMeta(name: string, content: string) {
   let tag = document.querySelector(`meta[name="${name}"]`);
@@ -51,20 +48,42 @@ function upsertProperty(property: string, content: string) {
   tag.setAttribute("content", content);
 }
 
+const ATTENDANCE_OPTIONS = [
+  { value: "yes", label: "Yes, gladly" },
+  { value: "maybe", label: "I’m not sure yet" },
+  { value: "no", label: "Not this time" },
+] as const;
+
+type AttendanceChoice = (typeof ATTENDANCE_OPTIONS)[number]["value"];
+
+type SurveyFormValues = {
+  rating: number | null;
+  meaningfulMoment: string;
+  suggestion: string;
+  wouldAttendAgain: AttendanceChoice | "";
+};
+
 export default function PrayerCharge() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [selectedSlots, setSelectedSlots] = useState<string[]>([]);
+  const [formError, setFormError] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const { toast } = useToast();
-  const createSignup = useCreatePrayerChainSignup();
+  const form = useForm<SurveyFormValues>({
+    defaultValues: {
+      rating: null,
+      meaningfulMoment: "",
+      suggestion: "",
+      wouldAttendAgain: "",
+    },
+  });
+  const createSurvey = useCreatePrayerChargeSurveyResponse({
+    request: { credentials: "include" },
+  });
+  const meaningfulMoment = form.watch("meaningfulMoment");
+  const suggestion = form.watch("suggestion");
 
   useEffect(() => {
-    const title = "Prayer Charge | Shalom Conference";
+    const title = "Thank You for Joining the Prayer Charge | Shalom Conference";
     const description =
-      "Join Shalom for a 12-hour prayer charge on September 26, 2026, as we spiritually prepare for Shalom Conference 2026.";
-
+      "Thank you for sharing the Prayer Charge with the Shalom Conference community.";
     document.title = title;
     upsertMeta("description", description);
     upsertProperty("og:title", title);
@@ -76,307 +95,372 @@ export default function PrayerCharge() {
     };
   }, []);
 
-  function toggleSlot(value: string) {
-    setSelectedSlots((current) =>
-      current.includes(value)
-        ? current.filter((slot) => slot !== value)
-        : PRAYER_CHAIN_SLOTS.map((slot) => slot.value).filter((slot) =>
-            [...current, value].includes(slot),
-          ),
-    );
-  }
+  function handleSubmit(values: SurveyFormValues) {
+    setFormError("");
 
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    if (selectedSlots.length === 0) {
-      toast({
-        title: "Choose a time",
-        description:
-          "Select at least one hour when you can join the prayer chain.",
-        variant: "destructive",
-      });
+    if (values.rating === null || values.wouldAttendAgain === "") {
+      setFormError(
+        "Please share a rating and let us know if you would join us again.",
+      );
       return;
     }
 
-    createSignup.mutate(
+    createSurvey.mutate(
       {
         data: {
-          name: name.trim(),
-          email: email.trim(),
-          phone: phone.trim(),
-          timeSlots: selectedSlots as Array<
-            (typeof PRAYER_CHAIN_SLOTS)[number]["value"]
-          >,
+          rating: values.rating,
+          meaningfulMoment: values.meaningfulMoment.trim(),
+          suggestion: values.suggestion.trim(),
+          wouldAttendAgain: values.wouldAttendAgain,
         },
       },
       {
         onSuccess: () => {
           setSubmitted(true);
-          setName("");
-          setEmail("");
-          setPhone("");
+          setFormError("");
         },
         onError: (error: any) => {
-          toast({
-            title: "Unable to save your time",
-            description: error.data?.error || "Please try again.",
-            variant: "destructive",
-          });
+          setFormError(
+            error?.data?.error ||
+              "We could not save your response just now. Your answers are still here; please try sending them again.",
+          );
         },
       },
     );
   }
 
+  function resetForm() {
+    setSubmitted(false);
+    form.reset();
+    setFormError("");
+  }
+
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen overflow-hidden bg-background text-foreground">
       <SiteHeader />
 
       <main>
-        <section className="relative overflow-hidden border-b border-white/10 px-4 pb-20 pt-16 sm:px-6 sm:pb-28 sm:pt-24">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,hsl(var(--primary)/0.16),transparent_34%),radial-gradient(circle_at_82%_70%,hsl(var(--secondary)/0.12),transparent_32%)]" />
-
-          <div className="container relative z-10 mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:gap-20">
+        <section className="relative border-b border-white/10 px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16">
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_8%,hsl(var(--primary)/0.2),transparent_31%),radial-gradient(circle_at_88%_30%,hsl(var(--secondary)/0.13),transparent_28%)]" />
+          <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1fr_0.82fr] lg:gap-20">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 18 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className="order-2 text-center lg:order-1 lg:text-left"
+              className="order-2 lg:order-1"
             >
-              <h1 className="text-5xl font-black uppercase leading-[0.92] tracking-tight text-white sm:text-7xl">
-                Prayer
-                <span className="block text-primary">Charge</span>
-              </h1>
-
-              <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/65 lg:mx-0">
-                Before we gather for Shalom Conference 2026, we gather in
-                prayer. Join us for twelve intentional hours of seeking God
-                together.
+              <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.28em] text-primary">
+                <span className="h-px w-10 bg-primary" />
+                After the gathering
               </p>
-
-              <div className="mt-8 grid gap-3 text-left sm:grid-cols-2 lg:max-w-lg">
-                <div className="flex items-center gap-3 border border-white/10 bg-white/[0.03] px-4 py-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-white/45">
-                      Date
-                    </p>
-                    <p className="mt-1 font-semibold text-white">
-                      September 26, 2026
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-3 border border-white/10 bg-white/[0.03] px-4 py-4">
-                  <div>
-                    <p className="text-xs font-bold uppercase tracking-widest text-white/45">
-                      Time
-                    </p>
-                    <p className="mt-1 font-semibold text-white">
-                      12 AM – 12 PM
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row lg:items-start">
+              <h1 className="mt-6 max-w-2xl text-5xl font-black uppercase leading-[0.92] tracking-tight text-white sm:text-7xl">
+                Thank you for
+                <span className="block text-primary">praying with us.</span>
+              </h1>
+              <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/65 sm:text-xl">
+                The Prayer Charge was made meaningful by every voice, every
+                quiet moment, and every heart that showed up. We are grateful
+                you were part of it.
+              </p>
+              <div className="mt-9 flex flex-wrap gap-3">
                 <Button
                   asChild
                   className="h-12 rounded-full bg-primary px-7 font-bold uppercase tracking-widest text-white hover:bg-primary/90"
+                  data-testid="button-share-feedback"
                 >
-                  <a href="#prayer-chain-signup">
-                    Register for Prayer Chain
-                    <ChevronDown className="ml-2 h-4 w-4" />
-                  </a>
+                  <a href="#share-feedback">Share your reflection</a>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
                   className="h-12 rounded-full border-white/20 bg-transparent px-7 font-bold uppercase tracking-widest text-white hover:bg-white/10 hover:text-white"
+                  data-testid="link-see-2026"
                 >
                   <Link href="/2026">
-                    See Shalom 2026
+                    Visit Shalom 2026
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </Link>
                 </Button>
               </div>
-
-              <a
-                href="#prayer-chain-signup"
-                className="mt-8 inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.22em] text-white/45 transition-colors hover:text-primary"
-                aria-label="Scroll down to the Prayer Chain registration form"
-              >
-                Scroll to sign up
-                <ChevronDown className="h-4 w-4 animate-bounce" />
-              </a>
+              <div className="mt-12 grid max-w-lg grid-cols-2 gap-3 border-t border-white/10 pt-5">
+                <div>
+                  <p className="text-2xl font-bold text-white">12 hours</p>
+                  <p className="mt-1 text-xs uppercase tracking-widest text-white/40">
+                    Of prayer and worship
+                  </p>
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-white">One family</p>
+                  <p className="mt-1 text-xs uppercase tracking-widest text-white/40">
+                    Gathered in faith
+                  </p>
+                </div>
+              </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, scale: 0.97 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7, delay: 0.1 }}
-              className="order-1 mx-auto w-full max-w-md lg:order-2"
+              className="order-1 mx-auto w-full max-w-[430px] lg:order-2"
             >
-              <img
-                src={prayerChargeFlyer}
-                alt="12-Hour Prayer Charge, September 26, 2026, from 12 AM to 12 PM"
-                className="h-auto w-full shadow-2xl shadow-black/40"
-              />
+              <div className="relative">
+                <div className="absolute -inset-3 -z-10 bg-primary/10 blur-2xl" />
+                <img
+                  src={thankYouArtwork}
+                  alt="Thank you message from the Shalom Conference team to Prayer Charge guests"
+                  className="h-auto w-full border border-white/15 shadow-2xl shadow-black/40"
+                  data-testid="img-prayer-charge-thank-you"
+                />
+              </div>
             </motion.div>
           </div>
         </section>
 
         <section
-          id="prayer-chain-signup"
-          className="px-4 py-16 sm:px-6 sm:py-24"
+          id="share-feedback"
+          className="scroll-mt-8 px-4 py-16 sm:px-6 sm:py-24"
         >
-          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.75fr_1.25fr] lg:gap-20">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary">
-                September 26, 2026
+          <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:gap-20">
+            <div className="lg:pt-5">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary">
+                <HeartHandshake className="h-6 w-6" />
+              </div>
+              <p className="mt-7 text-xs font-bold uppercase tracking-[0.28em] text-primary">
+                A little reflection
               </p>
               <h2 className="mt-4 text-4xl font-black uppercase leading-tight text-white sm:text-5xl">
-                Join the prayer chain
+                Help us carry it forward.
               </h2>
-              <p className="mt-5 max-w-lg leading-relaxed text-muted-foreground">
-                Choose one or more hours when you can pray with us between
-                midnight and noon. Your availability helps us build continuous
-                prayer coverage for all twelve hours.
+              <p className="mt-5 max-w-md leading-relaxed text-muted-foreground">
+                Your anonymous response helps the Shalom team listen well and
+                make space for more prayer, worship, and welcome at the next
+                gathering.
               </p>
               <div className="mt-8 border-l-2 border-primary pl-5">
                 <p className="text-sm font-bold uppercase tracking-widest text-white">
-                  Select every hour that works for you
+                  This takes about two minutes
                 </p>
                 <p className="mt-2 text-sm leading-relaxed text-white/45">
-                  The Shalom team will use your contact information only to
-                  coordinate the Prayer Charge.
+                  No name or contact information is requested.
                 </p>
               </div>
             </div>
 
-            <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-8">
+            <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-9">
               {submitted ? (
-                <div className="flex min-h-[520px] flex-col items-center justify-center text-center">
+                <motion.div
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex min-h-[520px] flex-col items-center justify-center text-center"
+                  data-testid="status-survey-thank-you"
+                >
                   <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/15 text-primary">
                     <CheckCircle2 className="h-9 w-9" />
                   </div>
-                  <h3 className="mt-6 text-3xl font-bold text-white">
-                    You’re on the prayer chain.
+                  <p className="mt-7 text-xs font-bold uppercase tracking-[0.25em] text-primary">
+                    Response received
+                  </p>
+                  <h3 className="mt-3 text-3xl font-bold text-white">
+                    Thank you for sharing.
                   </h3>
-                  <p className="mt-3 max-w-md text-white/55">
-                    Thank you for committing time to pray with us on September
-                    26. We sent your selected prayer times to your email.
+                  <p className="mt-3 max-w-md leading-relaxed text-white/55">
+                    We are grateful for your honesty and for the part you
+                    played in making the Prayer Charge a day of seeking God
+                    together.
                   </p>
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => {
-                      setSubmitted(false);
-                      setSelectedSlots([]);
-                    }}
+                    onClick={resetForm}
                     className="mt-8 rounded-full border-white/20 bg-transparent px-7 text-white hover:bg-white/10 hover:text-white"
+                    data-testid="button-submit-another-survey"
                   >
-                    Add another signup
+                    Share another response
                   </Button>
-                </div>
+                </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-7">
-                  <div className="grid gap-5 sm:grid-cols-2">
-                    <div className="sm:col-span-2">
-                      <label
-                        htmlFor="prayer-name"
-                        className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/50"
-                      >
-                        Full name
-                      </label>
-                      <Input
-                        id="prayer-name"
-                        value={name}
-                        onChange={(event) => setName(event.target.value)}
-                        required
-                        maxLength={160}
-                        autoComplete="name"
-                        className="h-12 border-white/10 bg-white/5 text-white placeholder:text-white/25"
-                        placeholder="Your full name"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="prayer-email"
-                        className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/50"
-                      >
-                        Email
-                      </label>
-                      <Input
-                        id="prayer-email"
-                        type="email"
-                        value={email}
-                        onChange={(event) => setEmail(event.target.value)}
-                        required
-                        autoComplete="email"
-                        className="h-12 border-white/10 bg-white/5 text-white placeholder:text-white/25"
-                        placeholder="you@example.com"
-                      />
-                    </div>
-                    <div>
-                      <label
-                        htmlFor="prayer-phone"
-                        className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/50"
-                      >
-                        Phone
-                      </label>
-                      <Input
-                        id="prayer-phone"
-                        type="tel"
-                        value={phone}
-                        onChange={(event) => setPhone(event.target.value)}
-                        required
-                        minLength={7}
-                        maxLength={40}
-                        autoComplete="tel"
-                        className="h-12 border-white/10 bg-white/5 text-white placeholder:text-white/25"
-                        placeholder="Your phone number"
-                      />
-                    </div>
-                  </div>
-
-                  <fieldset>
-                    <legend className="text-xs font-bold uppercase tracking-widest text-white/50">
-                      Available prayer times
-                    </legend>
-                    <p className="mt-2 text-sm text-white/35">
-                      Select one or more one-hour slots.
-                    </p>
-                    <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
-                      {PRAYER_CHAIN_SLOTS.map((slot) => {
-                        const selected = selectedSlots.includes(slot.value);
-                        return (
-                          <button
-                            key={slot.value}
-                            type="button"
-                            aria-pressed={selected}
-                            onClick={() => toggleSlot(slot.value)}
-                            className={`flex min-h-14 items-center justify-between border px-3 py-3 text-left text-sm font-semibold transition-colors ${
-                              selected
-                                ? "border-primary bg-primary text-white"
-                                : "border-white/10 bg-white/[0.025] text-white/65 hover:border-primary/50 hover:text-white"
-                            }`}
-                          >
-                            <span>{slot.label}</span>
-                            {selected && <Check className="h-4 w-4 shrink-0" />}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </fieldset>
-
-                  <Button
-                    type="submit"
-                    disabled={createSignup.isPending}
-                    className="h-14 w-full rounded-full bg-primary text-base font-bold uppercase tracking-widest text-white hover:bg-primary/90"
+                <Form {...form}>
+                  <form
+                    onSubmit={form.handleSubmit(handleSubmit)}
+                    className="space-y-9"
+                    noValidate
                   >
-                    {createSignup.isPending
-                      ? "Saving your time…"
-                      : `Join ${selectedSlots.length || ""} ${selectedSlots.length === 1 ? "hour" : "hours"}`.trim()}
-                  </Button>
-                </form>
+                    <FormField
+                      control={form.control}
+                      name="rating"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center gap-3">
+                            <Star className="h-5 w-5 text-primary" />
+                            <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
+                              How would you rate the Prayer Charge?
+                            </FormLabel>
+                          </div>
+                          <FormControl>
+                            <RadioGroup
+                              value={field.value === null ? "" : String(field.value)}
+                              onValueChange={(value) => {
+                                field.onChange(Number(value));
+                                setFormError("");
+                              }}
+                              className="mt-4 grid grid-cols-5 gap-2 sm:max-w-md"
+                              aria-label="Prayer Charge rating"
+                            >
+                              {[1, 2, 3, 4, 5].map((value) => (
+                                <div key={value}>
+                                  <RadioGroupItem
+                                    id={`prayer-charge-rating-${value}`}
+                                    value={String(value)}
+                                    className="peer sr-only"
+                                    data-testid={`button-rating-${value}`}
+                                  />
+                                  <label
+                                    htmlFor={`prayer-charge-rating-${value}`}
+                                    className="flex h-14 cursor-pointer items-center justify-center border border-white/10 bg-white/[0.025] text-lg font-bold text-white/55 transition-colors hover:border-primary/60 hover:text-white peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary"
+                                  >
+                                    {value}
+                                  </label>
+                                </div>
+                              ))}
+                            </RadioGroup>
+                          </FormControl>
+                          <div className="flex max-w-md justify-between text-[11px] uppercase tracking-wider text-white/35">
+                            <span>Needs work</span>
+                            <span>Life-giving</span>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="meaningfulMoment"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-white">
+                            <MessageCircle className="h-5 w-5 text-primary" />
+                            What moment stayed with you?
+                            <span className="text-xs font-normal normal-case tracking-normal text-white/35">
+                              Optional
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              maxLength={1200}
+                              rows={4}
+                              placeholder="A song, a prayer, a conversation, or a quiet moment..."
+                              className="mt-2 w-full resize-y border-white/10 bg-white/5 px-4 py-3 text-sm leading-relaxed text-white placeholder:text-white/25 focus:border-primary focus:ring-primary"
+                              data-testid="textarea-meaningful-moment"
+                            />
+                          </FormControl>
+                          <p className="text-right text-xs text-white/35">
+                            {meaningfulMoment.length}/1200
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="suggestion"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
+                            Is there anything you would love to see next time?
+                            <span className="ml-2 text-xs font-normal normal-case tracking-normal text-white/35">
+                              Optional
+                            </span>
+                          </FormLabel>
+                          <FormControl>
+                            <Textarea
+                              {...field}
+                              maxLength={1200}
+                              rows={3}
+                              placeholder="Tell us what would serve you and the community well..."
+                              className="mt-2 w-full resize-y border-white/10 bg-white/5 px-4 py-3 text-sm leading-relaxed text-white placeholder:text-white/25 focus:border-primary focus:ring-primary"
+                              data-testid="textarea-suggestion"
+                            />
+                          </FormControl>
+                          <p className="text-right text-xs text-white/35">
+                            {suggestion.length}/1200
+                          </p>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="wouldAttendAgain"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
+                            Would you attend another Prayer Charge?
+                          </FormLabel>
+                          <FormControl>
+                            <RadioGroup
+                              value={field.value}
+                              onValueChange={(value) => {
+                                field.onChange(value);
+                                setFormError("");
+                              }}
+                              className="mt-2 grid gap-2 sm:grid-cols-3"
+                              aria-label="Would you attend another Prayer Charge?"
+                            >
+                              {ATTENDANCE_OPTIONS.map((option) => (
+                                <div key={option.value}>
+                                  <RadioGroupItem
+                                    id={`attend-again-${option.value}`}
+                                    value={option.value}
+                                    className="peer sr-only"
+                                    data-testid={`button-attend-again-${option.value}`}
+                                  />
+                                  <label
+                                    htmlFor={`attend-again-${option.value}`}
+                                    className="flex min-h-12 cursor-pointer items-center border border-white/10 bg-white/[0.025] px-3 py-3 text-left text-sm font-semibold text-white/65 transition-colors hover:border-primary/60 hover:text-white peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary"
+                                  >
+                                    {option.label}
+                                  </label>
+                                </div>
+                              ))}
+                            </RadioGroup>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {formError && (
+                      <div
+                        className="border border-red-400/25 bg-red-400/5 px-4 py-3 text-sm leading-relaxed text-red-200"
+                        role="alert"
+                        data-testid="status-survey-error"
+                      >
+                        {formError}
+                      </div>
+                    )}
+
+                    <Button
+                      type="submit"
+                      disabled={createSurvey.isPending}
+                      className="h-14 w-full rounded-full bg-primary text-base font-bold uppercase tracking-widest text-white hover:bg-primary/90"
+                      data-testid="button-submit-survey"
+                    >
+                      {createSurvey.isPending ? (
+                        <>
+                          <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
+                          Sending your response
+                        </>
+                      ) : (
+                        "Send anonymous response"
+                      )}
+                    </Button>
+                  </form>
+                </Form>
               )}
             </div>
           </div>

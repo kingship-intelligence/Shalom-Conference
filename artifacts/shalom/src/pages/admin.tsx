@@ -4,6 +4,7 @@ import {
   getListMerchOrdersQueryKey,
   getListPrayerChainSignupsQueryKey,
   getListFirstTimerResponsesQueryKey,
+  getListPrayerChargeSurveyResponsesQueryKey,
   getListAdminUsersQueryKey,
   useConfirmMerchOrderPayment,
   useCreateAdminUser,
@@ -11,6 +12,7 @@ import {
   useListMerchOrders,
   useListPrayerChainSignups,
   useListFirstTimerResponses,
+  useListPrayerChargeSurveyResponses,
   useListAdminUsers,
   useListRegistrations,
   useListTestimonies,
@@ -34,7 +36,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { Check, User, UserCheck, Users, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2, Clock3 } from "lucide-react";
+import { Check, User, UserCheck, Users, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2, Clock3, Star } from "lucide-react";
 
 const SESSION_KEY = "shalom_admin_auth";
 const PRAYER_SLOT_LABELS: Record<string, string> = {
@@ -339,6 +341,15 @@ export default function Admin() {
     },
     request: { credentials: "include" },
   });
+  const prayerChargeSurveyQuery = useListPrayerChargeSurveyResponses({
+    query: {
+      enabled: authed,
+      queryKey: getListPrayerChargeSurveyResponsesQueryKey(),
+      retry: 2,
+      refetchOnWindowFocus: true,
+    },
+    request: { credentials: "include" },
+  });
   const verifyPaymentMutation = useConfirmMerchOrderPayment({
     mutation: {
       onSuccess: () => {
@@ -426,6 +437,18 @@ export default function Admin() {
   const firstTimerResponses = [...(firstTimerResponsesQuery.data || [])].sort((a, b) =>
     new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
   );
+  const prayerChargeSurveyResponses = [...(prayerChargeSurveyQuery.data || [])].sort((a, b) =>
+    new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
+  const averagePrayerChargeRating = prayerChargeSurveyResponses.length
+    ? (
+        prayerChargeSurveyResponses.reduce((total, response) => total + response.rating, 0) /
+        prayerChargeSurveyResponses.length
+      ).toFixed(1)
+    : "—";
+  const wouldAttendAgainCount = prayerChargeSurveyResponses.filter(
+    (response) => response.wouldAttendAgain === "yes",
+  ).length;
   const normalizedFirstTimerSearch = firstTimerSearch.trim().toLowerCase();
   const filteredFirstTimerResponses = normalizedFirstTimerSearch
     ? firstTimerResponses.filter((response) =>
@@ -445,6 +468,7 @@ export default function Admin() {
       merchOrdersQuery.error,
       prayerChainQuery.error,
       firstTimerResponsesQuery.error,
+      prayerChargeSurveyQuery.error,
       adminUsersQuery.error,
     ];
     const sessionExpired = protectedQueryErrors.some(
@@ -464,6 +488,7 @@ export default function Admin() {
     merchOrdersQuery.error,
     prayerChainQuery.error,
     firstTimerResponsesQuery.error,
+    prayerChargeSurveyQuery.error,
     adminUsersQuery.error,
   ]);
 
@@ -945,6 +970,174 @@ export default function Admin() {
                   </article>
                 ))}
               </div>
+            )}
+          </section>
+
+          <section data-testid="section-prayer-charge-survey" className="space-y-6 lg:col-span-2">
+            <div className="flex flex-wrap items-end justify-between gap-4 border-t-2 border-secondary pt-4">
+              <div>
+                <div className="flex items-center gap-3">
+                  <MessageSquare className="h-5 w-5 text-secondary" />
+                  <h2 className="text-2xl font-bold uppercase tracking-wider text-white">
+                    Prayer Charge reflections
+                  </h2>
+                </div>
+                <p className="mt-2 max-w-xl text-sm leading-relaxed text-white/45">
+                  Anonymous feedback from the completed Prayer Charge gathering.
+                </p>
+              </div>
+              <Badge className="bg-secondary text-white">
+                {prayerChargeSurveyQuery.isLoading
+                  ? "..."
+                  : prayerChargeSurveyResponses.length}
+              </Badge>
+            </div>
+
+            {prayerChargeSurveyQuery.isLoading ? (
+              <div className="grid gap-4 md:grid-cols-2">
+                {[1, 2, 3].map((item) => (
+                  <Skeleton
+                    key={item}
+                    className="h-44 w-full rounded-xl bg-white/5"
+                  />
+                ))}
+              </div>
+            ) : prayerChargeSurveyQuery.isError ? (
+              <div className="rounded-2xl border border-red-400/20 bg-red-400/5 px-6 py-12 text-center">
+                <p className="font-bold text-red-300">
+                  Unable to load Prayer Charge feedback.
+                </p>
+                <p className="mt-2 text-sm text-white/45">
+                  The responses are still saved. Check your connection and try
+                  again.
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="mt-6 border-white/20 text-white hover:bg-white/10"
+                  onClick={() => prayerChargeSurveyQuery.refetch()}
+                  data-testid="button-retry-prayer-charge-survey"
+                >
+                  Try Again
+                </Button>
+              </div>
+            ) : prayerChargeSurveyResponses.length === 0 ? (
+              <div className="rounded-2xl border border-dashed border-white/10 py-16 text-center">
+                <p className="font-semibold text-white/55">
+                  No Prayer Charge responses yet
+                </p>
+                <p className="mt-2 text-sm text-white/30">
+                  Anonymous reflections will appear here after attendees share
+                  them.
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div className="border border-white/10 bg-white/[0.03] px-5 py-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/35">
+                      Responses
+                    </p>
+                    <p className="mt-2 text-3xl font-black text-white">
+                      {prayerChargeSurveyResponses.length}
+                    </p>
+                  </div>
+                  <div className="border border-white/10 bg-white/[0.03] px-5 py-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/35">
+                      Average rating
+                    </p>
+                    <p className="mt-2 text-3xl font-black text-secondary">
+                      {averagePrayerChargeRating}
+                      <span className="ml-1 text-base font-semibold text-white/35">
+                        / 5
+                      </span>
+                    </p>
+                  </div>
+                  <div className="border border-white/10 bg-white/[0.03] px-5 py-4">
+                    <p className="text-xs font-bold uppercase tracking-widest text-white/35">
+                      Would return
+                    </p>
+                    <p className="mt-2 text-3xl font-black text-secondary">
+                      {wouldAttendAgainCount}
+                      <span className="ml-1 text-base font-semibold text-white/35">
+                        yes
+                      </span>
+                    </p>
+                  </div>
+                </div>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {prayerChargeSurveyResponses.map((response) => (
+                    <article
+                      key={response.id}
+                      className="rounded-xl border border-white/10 bg-white/5 p-5"
+                      data-testid={`card-prayer-charge-response-${response.id}`}
+                    >
+                      <div className="flex flex-wrap items-start justify-between gap-3">
+                        <div>
+                          <p className="text-xs font-bold uppercase tracking-widest text-white/35">
+                            Rating
+                          </p>
+                          <div className="mt-2 flex items-center gap-1">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                              <span
+                                key={star}
+                                className={
+                                  star <= response.rating
+                                    ? "text-secondary"
+                                    : "text-white/15"
+                                }
+                                aria-hidden="true"
+                              >
+                                <Star
+                                  className="h-4 w-4"
+                                  fill="currentColor"
+                                />
+                              </span>
+                            ))}
+                            <span className="ml-2 text-sm font-semibold text-white/60">
+                              {response.rating}/5
+                            </span>
+                          </div>
+                        </div>
+                        <Badge
+                          className={
+                            response.wouldAttendAgain === "yes"
+                              ? "border border-emerald-300/20 bg-emerald-500/20 text-emerald-300"
+                              : response.wouldAttendAgain === "maybe"
+                                ? "border border-amber-300/20 bg-amber-500/15 text-amber-200"
+                                : "border border-white/15 bg-white/5 text-white/55"
+                          }
+                        >
+                          Attend again: {response.wouldAttendAgain}
+                        </Badge>
+                      </div>
+                      {response.meaningfulMoment && (
+                        <div className="mt-5 border-l-2 border-secondary/60 pl-4">
+                          <p className="text-xs font-bold uppercase tracking-widest text-white/35">
+                            Meaningful moment
+                          </p>
+                          <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-white/75">
+                            {response.meaningfulMoment}
+                          </p>
+                        </div>
+                      )}
+                      {response.suggestion && (
+                        <div className="mt-5 border-t border-white/10 pt-4">
+                          <p className="text-xs font-bold uppercase tracking-widest text-white/35">
+                            Suggestion
+                          </p>
+                          <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-white/65">
+                            {response.suggestion}
+                          </p>
+                        </div>
+                      )}
+                      <p className="mt-5 text-right text-[10px] uppercase tracking-wider text-white/25">
+                        {format(new Date(response.createdAt), "MMM d, yyyy 'at' h:mm a")}
+                      </p>
+                    </article>
+                  ))}
+                </div>
+              </>
             )}
           </section>
 
