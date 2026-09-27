@@ -1,14 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
-import {
-  ArrowRight,
-  CheckCircle2,
-  HeartHandshake,
-  MessageCircle,
-  RefreshCw,
-  Star,
-} from "lucide-react";
 import { useForm } from "react-hook-form";
 import {
   useCreatePrayerChargeSurveyResponse,
@@ -149,11 +141,7 @@ export default function PrayerCharge() {
               transition={{ duration: 0.6 }}
               className="order-2 lg:order-1"
             >
-              <p className="flex items-center gap-3 text-xs font-bold uppercase tracking-[0.28em] text-primary">
-                <span className="h-px w-10 bg-primary" />
-                After the gathering
-              </p>
-              <h1 className="mt-6 max-w-2xl text-5xl font-black uppercase leading-[0.92] tracking-tight text-white sm:text-7xl">
+              <h1 className="max-w-2xl text-5xl font-black uppercase leading-[0.92] tracking-tight text-white sm:text-7xl">
                 Thank you for
                 <span className="block text-primary">praying with us.</span>
               </h1>
@@ -176,10 +164,7 @@ export default function PrayerCharge() {
                   className="h-12 rounded-full border-white/20 bg-transparent px-7 font-bold uppercase tracking-widest text-white hover:bg-white/10 hover:text-white"
                   data-testid="link-see-2026"
                 >
-                  <Link href="/2026">
-                    Visit Shalom 2026
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Link>
+                  <Link href="/2026">Visit Shalom 2026</Link>
                 </Button>
               </div>
               <div className="mt-12 grid max-w-lg grid-cols-2 gap-3 border-t border-white/10 pt-5">
@@ -223,13 +208,7 @@ export default function PrayerCharge() {
         >
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:gap-20">
             <div className="lg:pt-5">
-              <div className="flex h-12 w-12 items-center justify-center rounded-full border border-primary/30 bg-primary/10 text-primary">
-                <HeartHandshake className="h-6 w-6" />
-              </div>
-              <p className="mt-7 text-xs font-bold uppercase tracking-[0.28em] text-primary">
-                A little reflection
-              </p>
-              <h2 className="mt-4 text-4xl font-black uppercase leading-tight text-white sm:text-5xl">
+              <h2 className="text-4xl font-black uppercase leading-tight text-white sm:text-5xl">
                 Help us carry it forward.
               </h2>
               <p className="mt-5 max-w-md leading-relaxed text-muted-foreground">
@@ -255,13 +234,7 @@ export default function PrayerCharge() {
                   className="flex min-h-[520px] flex-col items-center justify-center text-center"
                   data-testid="status-survey-thank-you"
                 >
-                  <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/15 text-primary">
-                    <CheckCircle2 className="h-9 w-9" />
-                  </div>
-                  <p className="mt-7 text-xs font-bold uppercase tracking-[0.25em] text-primary">
-                    Response received
-                  </p>
-                  <h3 className="mt-3 text-3xl font-bold text-white">
+                  <h3 className="text-3xl font-bold text-white">
                     Thank you for sharing.
                   </h3>
                   <p className="mt-3 max-w-md leading-relaxed text-white/55">
@@ -291,12 +264,9 @@ export default function PrayerCharge() {
                       name="rating"
                       render={({ field }) => (
                         <FormItem>
-                          <div className="flex items-center gap-3">
-                            <Star className="h-5 w-5 text-primary" />
-                            <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
-                              How would you rate the Prayer Charge?
-                            </FormLabel>
-                          </div>
+                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
+                            How would you rate the Prayer Charge?
+                          </FormLabel>
                           <FormControl>
                             <RadioGroup
                               value={field.value === null ? "" : String(field.value)}
@@ -339,8 +309,7 @@ export default function PrayerCharge() {
                       name="meaningfulMoment"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="flex items-center gap-3 text-sm font-bold uppercase tracking-widest text-white">
-                            <MessageCircle className="h-5 w-5 text-primary" />
+                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
                             What moment stayed with you?
                             <span className="text-xs font-normal normal-case tracking-normal text-white/35">
                               Optional
@@ -451,10 +420,7 @@ export default function PrayerCharge() {
                       data-testid="button-submit-survey"
                     >
                       {createSurvey.isPending ? (
-                        <>
-                          <RefreshCw className="mr-2 h-4 w-4 animate-spin" />
-                          Sending your response
-                        </>
+                        "Sending your response"
                       ) : (
                         "Send anonymous response"
                       )}
