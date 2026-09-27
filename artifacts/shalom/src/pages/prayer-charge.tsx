@@ -328,7 +328,7 @@ export default function PrayerCharge() {
             </h2>
             <div className="relative mt-8 aspect-video overflow-hidden border border-white/10 bg-black shadow-2xl shadow-black/30">
               <iframe
-                src="https://www.youtube-nocookie.com/embed/ElvIbJXp9Ls?start=10930"
+                src="https://www.youtube-nocookie.com/embed/ElvIbJXp9Ls"
                 title="Shalom Prayer Charge recording"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 referrerPolicy="strict-origin-when-cross-origin"
@@ -339,7 +339,7 @@ export default function PrayerCharge() {
               />
             </div>
             <a
-              href="https://www.youtube.com/watch?v=ElvIbJXp9Ls&t=10930s"
+              href="https://www.youtube.com/watch?v=ElvIbJXp9Ls"
               target="_blank"
               rel="noreferrer"
               className="mt-4 inline-block text-sm font-semibold text-primary underline-offset-4 hover:underline"
