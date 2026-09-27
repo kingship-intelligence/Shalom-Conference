@@ -326,9 +326,6 @@ export default function PrayerCharge() {
             >
               Watch the Prayer Charge
             </h2>
-            <p className="mt-3 text-sm leading-relaxed text-white/50">
-              The recording starts at 3:02:10.
-            </p>
             <div className="relative mt-8 aspect-video overflow-hidden border border-white/10 bg-black shadow-2xl shadow-black/30">
               <iframe
                 src="https://www.youtube-nocookie.com/embed/ElvIbJXp9Ls?start=10930"
