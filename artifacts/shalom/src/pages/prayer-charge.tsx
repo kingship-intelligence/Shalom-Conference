@@ -315,6 +315,45 @@ export default function PrayerCharge() {
         </section>
 
         <section
+          id="prayer-charge-video"
+          aria-labelledby="prayer-charge-video-heading"
+          className="border-b border-white/10 px-4 py-16 sm:px-6 sm:py-20"
+        >
+          <div className="mx-auto max-w-6xl">
+            <h2
+              id="prayer-charge-video-heading"
+              className="text-3xl font-black uppercase leading-tight text-white sm:text-4xl"
+            >
+              Watch the Prayer Charge
+            </h2>
+            <p className="mt-3 text-sm leading-relaxed text-white/50">
+              The recording starts at 3:02:10.
+            </p>
+            <div className="relative mt-8 aspect-video overflow-hidden border border-white/10 bg-black shadow-2xl shadow-black/30">
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/ElvIbJXp9Ls?start=10930"
+                title="Shalom Prayer Charge recording"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                referrerPolicy="strict-origin-when-cross-origin"
+                allowFullScreen
+                loading="lazy"
+                className="absolute inset-0 h-full w-full"
+                data-testid="video-prayer-charge"
+              />
+            </div>
+            <a
+              href="https://www.youtube.com/watch?v=ElvIbJXp9Ls&t=10930s"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-4 inline-block text-sm font-semibold text-primary underline-offset-4 hover:underline"
+              data-testid="link-watch-prayer-charge-youtube"
+            >
+              Open video on YouTube
+            </a>
+          </div>
+        </section>
+
+        <section
           id="share-feedback"
           className="scroll-mt-8 px-4 py-16 sm:px-6 sm:py-24"
         >
