@@ -94,7 +94,7 @@ export default function PrayerCharge() {
     if (prefersReducedMotion) {
       setCountdownHours(12);
       setShowConfetti(true);
-      confettiTimeout = window.setTimeout(() => setShowConfetti(false), 1500);
+      confettiTimeout = window.setTimeout(() => setShowConfetti(false), 1900);
 
       return () => {
         if (confettiTimeout !== undefined) {
@@ -111,7 +111,7 @@ export default function PrayerCharge() {
       if (currentHour === 12) {
         window.clearInterval(countdownInterval);
         setShowConfetti(true);
-        confettiTimeout = window.setTimeout(() => setShowConfetti(false), 1500);
+        confettiTimeout = window.setTimeout(() => setShowConfetti(false), 1900);
       }
     }, 170);
 
