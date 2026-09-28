@@ -20,6 +20,7 @@ import { createAttendeeBadge } from "../lib/attendee-badge";
 import { hasAdminSession } from "../lib/admin-session";
 import { badgeStorage } from "../lib/badge-storage";
 import { sendRegistrationConfirmation } from "../lib/email";
+import { createCheckInQrCredential } from "../lib/check-in-qr";
 
 const router: IRouter = Router();
 const MAX_PORTRAIT_BYTES = 5 * 1024 * 1024;
@@ -43,7 +44,10 @@ function toRegistrationResponse(registration: typeof registrationsTable.$inferSe
   return ListRegistrationsResponseItem.parse(registration);
 }
 
-async function sendStandardConfirmation(registration: typeof registrationsTable.$inferSelect): Promise<void> {
+async function sendStandardConfirmation(
+  registration: typeof registrationsTable.$inferSelect,
+  checkInQrPayload: string,
+): Promise<void> {
   await sendRegistrationConfirmation({
     firstName: registration.firstName,
     lastName: registration.lastName,
@@ -51,6 +55,7 @@ async function sendStandardConfirmation(registration: typeof registrationsTable.
     conferenceYear: String(registration.conferenceYear),
     isVolunteer: registration.volunteer,
     volunteerRole: registration.volunteerRole,
+    checkInQrPayload,
   });
 }
 
@@ -92,6 +97,8 @@ router.post("/registrations", async (req, res): Promise<void> => {
   };
   const badgeUploadToken = wantsAttendeeBadge ? createUploadToken() : undefined;
   const badgeUploadExpiresAt = badgeUploadToken ? getBadgeUploadExpiry() : null;
+  const registrationQr = createCheckInQrCredential();
+  const plusOneQr = plusOne ? createCheckInQrCredential() : undefined;
 
   try {
     const created = await db.transaction(async (tx) => {
@@ -121,6 +128,7 @@ router.post("/registrations", async (req, res): Promise<void> => {
           ...registrationInput,
           badgeUploadTokenHash: badgeUploadToken ? hashUploadToken(badgeUploadToken) : null,
           badgeUploadExpiresAt,
+          checkInTokenHash: registrationQr.tokenHash,
         })
         .returning();
 
@@ -135,6 +143,7 @@ router.post("/registrations", async (req, res): Promise<void> => {
               conferenceYear: registrationInput.conferenceYear,
               volunteer: false,
               volunteerRole: null,
+              checkInTokenHash: plusOneQr?.tokenHash ?? null,
             })
             .returning()
         : [undefined];
@@ -142,11 +151,17 @@ router.post("/registrations", async (req, res): Promise<void> => {
       return { registration, plusOneRegistration };
     });
 
-    for (const attendee of [created.registration, created.plusOneRegistration]) {
-      if (!attendee) continue;
-      sendStandardConfirmation(attendee).catch((err: unknown) => {
+    const confirmations = [
+      created.registration ? { attendee: created.registration, qrPayload: registrationQr.payload } : undefined,
+      created.plusOneRegistration && plusOneQr
+        ? { attendee: created.plusOneRegistration, qrPayload: plusOneQr.payload }
+        : undefined,
+    ];
+    for (const confirmation of confirmations) {
+      if (!confirmation) continue;
+      sendStandardConfirmation(confirmation.attendee, confirmation.qrPayload).catch((err: unknown) => {
         req.log.error(
-          { err, registrationId: attendee.id },
+          { err, registrationId: confirmation.attendee.id },
           "Failed to send registration confirmation email",
         );
       });

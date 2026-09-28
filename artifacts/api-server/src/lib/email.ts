@@ -1,6 +1,7 @@
 // Uses Replit Gmail connector (google-mail) — handles OAuth2 automatically.
 // Sends via Gmail API: POST /gmail/v1/users/me/messages/send
 import { ReplitConnectors } from "@replit/connectors-sdk";
+import QRCode from "qrcode";
 
 const FROM = "Shalom Conference <media@shalomconference.com>";
 const FINANCE_EMAIL = "finance@shalomconference.com";
@@ -26,11 +27,11 @@ export function buildRawMessage(opts: {
   to: string;
   subject: string;
   html: string;
-  attachment?: {
+  attachments?: {
     filename: string;
     contentType: string;
     content: Buffer;
-  };
+  }[];
 }): string {
   const outerBoundary = `outer_shalom_${Date.now()}`;
   const innerBoundary = `inner_shalom_${Date.now()}`;
@@ -58,15 +59,15 @@ export function buildRawMessage(opts: {
     `--${innerBoundary}--`,
   ];
 
-  if (opts.attachment) {
+  for (const attachment of opts.attachments ?? []) {
     message.push(
       ``,
       `--${outerBoundary}`,
-      `Content-Type: ${opts.attachment.contentType}; name="${opts.attachment.filename}"`,
+      `Content-Type: ${attachment.contentType}; name="${attachment.filename}"`,
       `Content-Transfer-Encoding: base64`,
-      `Content-Disposition: attachment; filename="${opts.attachment.filename}"`,
+      `Content-Disposition: attachment; filename="${attachment.filename}"`,
       ``,
-      toBase64Lines(opts.attachment.content),
+      toBase64Lines(attachment.content),
     );
   }
 
@@ -79,6 +80,39 @@ export function buildRawMessage(opts: {
     .replace(/=+$/, "");
 }
 
+async function makeCheckInQrAttachment(payload: string, conferenceYear: string) {
+  return {
+    filename: `shalom-${conferenceYear}-check-in-qr.png`,
+    contentType: "image/png",
+    content: await QRCode.toBuffer(payload, {
+      type: "png",
+      errorCorrectionLevel: "H",
+      width: 360,
+      margin: 2,
+    }),
+  };
+}
+
+async function sendHtmlEmail(opts: {
+  to: string;
+  subject: string;
+  html: string;
+  attachments?: { filename: string; contentType: string; content: Buffer }[];
+}): Promise<void> {
+  const connectors = new ReplitConnectors();
+  const raw = buildRawMessage(opts);
+  const response = await connectors.proxy(
+    "google-mail",
+    "/gmail/v1/users/me/messages/send",
+    { method: "POST", body: JSON.stringify({ raw }) },
+  );
+
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Gmail API error ${response.status}: ${text}`);
+  }
+}
+
 export async function sendRegistrationConfirmation(opts: {
   firstName: string;
   lastName: string;
@@ -87,6 +121,7 @@ export async function sendRegistrationConfirmation(opts: {
   isVolunteer: boolean;
   volunteerRole?: string | null;
   attendeeBadge?: Buffer;
+  checkInQrPayload?: string;
 }): Promise<void> {
   const siteUrl = getSiteUrl();
   const logoUrl = `${siteUrl}/logo.png`;
@@ -117,6 +152,14 @@ export async function sendRegistrationConfirmation(opts: {
         </table>`
         : "";
 
+  const checkInQrNotice = opts.checkInQrPayload
+    ? `<table width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 24px;">
+         <tr><td style="background:#23120a;border:1px solid #f97316;border-radius:10px;padding:16px 20px;">
+           <p style="margin:0;font-size:14px;font-weight:800;color:#ffffff;">Your check-in QR code is attached.</p>
+           <p style="margin:7px 0 0;font-size:13px;line-height:1.6;color:#c0c0c0;">Show it to staff when you arrive for a conference session. You can also be checked in by name.</p>
+         </td></tr>
+       </table>`
+    : "";
   const html = `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,6 +208,7 @@ export async function sendRegistrationConfirmation(opts: {
                  </td>
                </tr>
              </table>` : ""}
+             ${checkInQrNotice}
 
             <table width="100%" cellpadding="0" cellspacing="0">
               <tr>
@@ -211,35 +255,64 @@ export async function sendRegistrationConfirmation(opts: {
 </body>
 </html>`;
 
-  const connectors = new ReplitConnectors();
-  const raw = buildRawMessage({
+  const attachments = [
+    ...(opts.attendeeBadge
+      ? [{
+          filename: `shalom-${opts.conferenceYear}-attendee-badge.png`,
+          contentType: "image/png",
+          content: opts.attendeeBadge,
+        }]
+      : []),
+    ...(opts.checkInQrPayload
+      ? [await makeCheckInQrAttachment(opts.checkInQrPayload, opts.conferenceYear)]
+      : []),
+  ];
+
+  await sendHtmlEmail({
     to: opts.email,
     subject: opts.attendeeBadge
       ? `Your Shalom ${opts.conferenceYear} attendee badge`
       : `You're registered for Shalom ${opts.conferenceYear}!`,
     html,
-    attachment: opts.attendeeBadge
-      ? {
-          filename: `shalom-${opts.conferenceYear}-attendee-badge.png`,
-          contentType: "image/png",
-          content: opts.attendeeBadge,
-        }
-      : undefined,
+    attachments,
   });
+}
 
-  const response = await connectors.proxy(
-    "google-mail",
-    "/gmail/v1/users/me/messages/send",
-    {
-      method: "POST",
-      body: JSON.stringify({ raw }),
-    }
-  );
+export async function sendCheckInQrEmail(opts: {
+  firstName: string;
+  email: string;
+  conferenceYear: string;
+  payload: string;
+}): Promise<void> {
+  const qrAttachment = await makeCheckInQrAttachment(opts.payload, opts.conferenceYear);
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" /><title>Your Shalom check-in QR code</title></head>
+<body style="margin:0;padding:0;background-color:#0d0d0d;font-family:'Helvetica Neue',Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0d0d0d;padding:32px 16px;"><tr><td align="center">
+    <table width="580" cellpadding="0" cellspacing="0" style="max-width:580px;width:100%;border-radius:16px;overflow:hidden;">
+      <tr><td style="background:#1a0a00;padding:30px 32px;text-align:center;border-bottom:2px solid #f97316;">
+        <p style="margin:0;font-size:12px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:#f97316;">Shalom ${escapeHtml(opts.conferenceYear)}</p>
+        <h1 style="margin:10px 0 0;font-size:28px;font-weight:900;color:#ffffff;">Your check-in QR</h1>
+      </td></tr>
+      <tr><td style="background:#141414;padding:32px;">
+        <p style="margin:0 0 16px;font-size:16px;font-weight:700;color:#ffffff;">Hi ${escapeHtml(opts.firstName)},</p>
+        <p style="margin:0;font-size:15px;line-height:1.7;color:#c0c0c0;">Your replacement check-in QR code is attached as a PNG. Show it to staff when you arrive for a conference session. If you cannot use the code, staff can find you by name.</p>
+      </td></tr>
+      <tr><td style="background:#0d0d0d;border-top:1px solid #222;padding:22px 32px;text-align:center;">
+        <p style="margin:0;font-size:12px;color:#555;">Questions? Email media@shalomconference.com</p>
+      </td></tr>
+    </table>
+  </td></tr></table>
+</body>
+</html>`;
 
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Gmail API error ${response.status}: ${text}`);
-  }
+  await sendHtmlEmail({
+    to: opts.email,
+    subject: `Your Shalom ${opts.conferenceYear} check-in QR code`,
+    html,
+    attachments: [qrAttachment],
+  });
 }
 
 const PRAYER_SLOT_LABELS: Record<string, string> = {

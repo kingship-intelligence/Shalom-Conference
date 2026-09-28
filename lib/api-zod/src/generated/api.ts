@@ -281,6 +281,46 @@ export const ListSessionCheckInsResponse = zod.array(ListSessionCheckInsResponse
 
 
 /**
+ * @summary Check an attendee in by scanning their QR code (admin)
+ */
+
+
+
+export const ScanCheckInQrParams = zod.object({
+  "sessionId": zod.coerce.number().int().min(1)
+})
+
+export const scanCheckInQrBodyPayloadRegExp = new RegExp('^shalom-checkin:v1:[A-Za-z0-9_-]{43}$');
+
+
+export const ScanCheckInQrBody = zod.object({
+  "payload": zod.string().regex(scanCheckInQrBodyPayloadRegExp).describe('Opaque attendee QR payload; contains no attendee details or database identifiers.')
+})
+
+export const ScanCheckInQrResponse = zod.object({
+  "id": zod.number().int(),
+  "sessionId": zod.number().int(),
+  "registrationId": zod.number().int(),
+  "checkedInAt": zod.coerce.date(),
+  "checkedInBy": zod.string()
+})
+
+
+/**
+ * @summary Email a replacement attendee QR code (admin)
+ */
+
+
+
+export const SendRegistrationCheckInQrParams = zod.object({
+  "sessionId": zod.coerce.number().int().min(1),
+  "registrationId": zod.coerce.number().int()
+})
+
+export const SendRegistrationCheckInQrResponse = zod.void()
+
+
+/**
  * @summary Check a registered attendee into a session (admin)
  */
 

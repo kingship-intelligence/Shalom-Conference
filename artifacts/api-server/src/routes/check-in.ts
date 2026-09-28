@@ -9,6 +9,9 @@ import {
   ListCheckInSessionsResponse,
   ListSessionCheckInsParams,
   ListSessionCheckInsResponse,
+  ScanCheckInQrBody,
+  ScanCheckInQrParams,
+  SendRegistrationCheckInQrParams,
   UndoRegistrationCheckInParams,
 } from "@workspace/api-zod";
 import {
@@ -18,6 +21,8 @@ import {
   registrationsTable,
 } from "@workspace/db";
 import { getAdminIdentity } from "../lib/admin-session";
+import { createCheckInQrCredential, hashCheckInQrPayload, isValidCheckInQrPayload } from "../lib/check-in-qr";
+import { sendCheckInQrEmail } from "../lib/email";
 
 const router: IRouter = Router();
 
@@ -173,6 +178,165 @@ router.get("/check-in-sessions/:sessionId/check-ins", async (req, res): Promise<
     .orderBy(asc(registrationCheckInsTable.checkedInAt));
   res.json(ListSessionCheckInsResponse.parse(checkIns));
 });
+
+router.post(
+  "/check-in-sessions/:sessionId/scan",
+  async (req, res): Promise<void> => {
+    const adminIdentity = requireAdmin(req, res);
+    if (!adminIdentity) return;
+
+    const parsedParams = ScanCheckInQrParams.safeParse(req.params);
+    const parsedBody = ScanCheckInQrBody.safeParse(req.body);
+    if (
+      !parsedParams.success ||
+      parsedParams.data.sessionId < 1 ||
+      !parsedBody.success ||
+      !isValidCheckInQrPayload(parsedBody.data.payload)
+    ) {
+      res.status(400).json({ error: "Invalid session ID or QR code." });
+      return;
+    }
+
+    const tokenHash = hashCheckInQrPayload(parsedBody.data.payload);
+    const result = await db.transaction(async (tx) => {
+      const [session] = await tx
+        .select({
+          id: checkInSessionsTable.id,
+          conferenceYear: checkInSessionsTable.conferenceYear,
+        })
+        .from(checkInSessionsTable)
+        .where(eq(checkInSessionsTable.id, parsedParams.data.sessionId))
+        .for("update");
+
+      if (!session) return { kind: "session-not-found" as const };
+
+      const [registration] = await tx
+        .select({
+          id: registrationsTable.id,
+          conferenceYear: registrationsTable.conferenceYear,
+        })
+        .from(registrationsTable)
+        .where(eq(registrationsTable.checkInTokenHash, tokenHash))
+        .for("update");
+
+      if (!registration || registration.conferenceYear !== session.conferenceYear) {
+        return { kind: "registration-not-found" as const };
+      }
+
+      const [checkIn] = await tx
+        .insert(registrationCheckInsTable)
+        .values({
+          sessionId: session.id,
+          registrationId: registration.id,
+          checkedInBy: adminIdentity,
+        })
+        .onConflictDoNothing({
+          target: [
+            registrationCheckInsTable.sessionId,
+            registrationCheckInsTable.registrationId,
+          ],
+        })
+        .returning();
+
+      return checkIn ? { kind: "created" as const, checkIn } : { kind: "duplicate" as const };
+    });
+
+    if (result.kind === "session-not-found") {
+      res.status(404).json({ error: "Check-in session not found." });
+      return;
+    }
+    if (result.kind === "registration-not-found") {
+      res.status(404).json({ error: "This QR code is not valid for the selected session." });
+      return;
+    }
+    if (result.kind === "duplicate") {
+      res.status(409).json({ error: "This attendee is already checked in to this session." });
+      return;
+    }
+
+    res.status(201).json(CheckInRegistrationResponse.parse(result.checkIn));
+  },
+);
+
+router.post(
+  "/check-in-sessions/:sessionId/registrations/:registrationId/qr-email",
+  async (req, res): Promise<void> => {
+    if (!requireAdmin(req, res)) return;
+
+    const parsed = SendRegistrationCheckInQrParams.safeParse(req.params);
+    if (
+      !parsed.success ||
+      parsed.data.sessionId < 1 ||
+      parsed.data.registrationId < 1
+    ) {
+      res.status(400).json({ error: "Invalid session or registration ID." });
+      return;
+    }
+
+    const result = await db.transaction(async (tx) => {
+      const [session] = await tx
+        .select({
+          id: checkInSessionsTable.id,
+          conferenceYear: checkInSessionsTable.conferenceYear,
+        })
+        .from(checkInSessionsTable)
+        .where(eq(checkInSessionsTable.id, parsed.data.sessionId))
+        .for("update");
+
+      if (!session) return { kind: "session-not-found" as const };
+
+      const [registration] = await tx
+        .select({
+          id: registrationsTable.id,
+          firstName: registrationsTable.firstName,
+          email: registrationsTable.email,
+          conferenceYear: registrationsTable.conferenceYear,
+        })
+        .from(registrationsTable)
+        .where(eq(registrationsTable.id, parsed.data.registrationId))
+        .for("update");
+
+      if (!registration || registration.conferenceYear !== session.conferenceYear) {
+        return { kind: "registration-not-found" as const };
+      }
+
+      const credential = createCheckInQrCredential();
+      await tx
+        .update(registrationsTable)
+        .set({ checkInTokenHash: credential.tokenHash })
+        .where(eq(registrationsTable.id, registration.id));
+
+      return {
+        kind: "ready" as const,
+        registration,
+        payload: credential.payload,
+      };
+    });
+
+    if (result.kind === "session-not-found" || result.kind === "registration-not-found") {
+      res.status(404).json({ error: "Registration not found for this session." });
+      return;
+    }
+
+    try {
+      await sendCheckInQrEmail({
+        firstName: result.registration.firstName,
+        email: result.registration.email,
+        conferenceYear: String(result.registration.conferenceYear),
+        payload: result.payload,
+      });
+    } catch (err) {
+      req.log.error(
+        { err, registrationId: result.registration.id },
+        "Failed to send attendee check-in QR email",
+      );
+      res.status(502).json({ error: "The QR email could not be sent. Try sending a new code." });
+      return;
+    }
+
+    res.sendStatus(204);
+  },
+);
 
 router.post(
   "/check-in-sessions/:sessionId/registrations/:registrationId/check-in",

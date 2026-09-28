@@ -15,7 +15,11 @@ mock.module("@replit/connectors-sdk", {
   },
 });
 
-const { sendPrayerChainConfirmation, sendRegistrationConfirmation } = await import("../src/lib/email.ts");
+const {
+  sendCheckInQrEmail,
+  sendPrayerChainConfirmation,
+  sendRegistrationConfirmation,
+} = await import("../src/lib/email.ts");
 
 describe("badge confirmation email", () => {
   it("sends a PNG attachment with a plain subject", async () => {
@@ -26,14 +30,36 @@ describe("badge confirmation email", () => {
       conferenceYear: "2026",
       isVolunteer: false,
       attendeeBadge: Buffer.from("badge-png"),
+      checkInQrPayload: `shalom-checkin:v1:${"A".repeat(43)}`,
     });
 
     const raw = Buffer.from(calls.at(-1).raw.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString();
+    const encodedHtml = raw.split("Content-Transfer-Encoding: base64\r\n\r\n")[1].split("\r\n\r\n--inner_")[0];
+    const html = Buffer.from(encodedHtml.replace(/\r\n/g, ""), "base64").toString();
     assert.match(raw, /Subject: Your Shalom 2026 attendee badge\r\n/);
     assert.doesNotMatch(raw.match(/Subject: ([^\r\n]+)/)[1], /[^\x00-\x7F]/);
     assert.match(raw, /Content-Type: image\/png; name="shalom-2026-attendee-badge\.png"/);
     assert.match(raw, /Content-Disposition: attachment; filename="shalom-2026-attendee-badge\.png"/);
+    assert.match(raw, /Content-Type: image\/png; name="shalom-2026-check-in-qr\.png"/);
+    assert.match(raw, /Content-Disposition: attachment; filename="shalom-2026-check-in-qr\.png"/);
+    assert.match(html, /Your check-in QR code is attached/);
+    assert.doesNotMatch(raw, /shalom-checkin:v1:/);
     assert.ok(raw.includes(Buffer.from("badge-png").toString("base64")));
+  });
+
+  it("sends an attendee QR as a separate PNG without putting its payload in the email text", async () => {
+    const payload = `shalom-checkin:v1:${"B".repeat(43)}`;
+    await sendCheckInQrEmail({
+      firstName: "Ada",
+      email: "ada@example.com",
+      conferenceYear: "2026",
+      payload,
+    });
+
+    const raw = Buffer.from(calls.at(-1).raw.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString();
+    assert.match(raw, /Subject: Your Shalom 2026 check-in QR code\r\n/);
+    assert.match(raw, /Content-Disposition: attachment; filename="shalom-2026-check-in-qr\.png"/);
+    assert.doesNotMatch(raw, /shalom-checkin:v1:/);
   });
 });
 

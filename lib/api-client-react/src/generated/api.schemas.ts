@@ -105,6 +105,14 @@ export interface RegistrationCheckIn {
   checkedInBy: string;
 }
 
+export interface CheckInQrScanInput {
+  /**
+     * Opaque attendee QR payload; contains no attendee details or database identifiers.
+     * @pattern ^shalom-checkin:v1:[A-Za-z0-9_-]{43}$
+     */
+  payload: string;
+}
+
 export interface ExistingRegistrationBadgeInput {
   /** @minLength 1 */
   firstName: string;

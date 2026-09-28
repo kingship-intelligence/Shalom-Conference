@@ -4,6 +4,7 @@ import { beforeEach, describe, it, mock } from "node:test";
 import express from "express";
 import { resolve } from "node:path";
 import { pathToFileURL } from "node:url";
+import { createCheckInQrCredential, hashCheckInQrPayload } from "../src/lib/check-in-qr.ts";
 
 const sessionColumn = (property) => ({ table: "sessions", property });
 const checkInColumn = (property) => ({ table: "checkIns", property });
@@ -27,15 +28,20 @@ const registrationCheckInsTable = {
 const registrationsTable = {
   id: registrationColumn("id"),
   conferenceYear: registrationColumn("conferenceYear"),
+  checkInTokenHash: registrationColumn("checkInTokenHash"),
+  firstName: registrationColumn("firstName"),
+  email: registrationColumn("email"),
 };
 
+const defaultRegistrations = [
+  { id: 101, firstName: "Ada", email: "ada@example.org", conferenceYear: 2026, checkInTokenHash: null },
+  { id: 102, firstName: "Grace", email: "grace@example.org", conferenceYear: 2025, checkInTokenHash: null },
+];
+const sentQrEmails = [];
 const state = {
   sessions: [],
   checkIns: [],
-  registrations: [
-    { id: 101, conferenceYear: 2026 },
-    { id: 102, conferenceYear: 2025 },
-  ],
+  registrations: defaultRegistrations.map((registration) => ({ ...registration })),
   nextSessionId: 1,
   nextCheckInId: 1,
 };
@@ -164,6 +170,20 @@ function fakeDb() {
       };
       return builder;
     },
+    update(table) {
+      let values;
+      return {
+        set(value) {
+          values = value;
+          return this;
+        },
+        async where(condition) {
+          const rows = rowsFor(table).filter((row) => matches(row, condition));
+          for (const row of rows) Object.assign(row, values);
+          return rows.map((row) => ({ ...row }));
+        },
+      };
+    },
     transaction(callback) {
       return callback(db);
     },
@@ -174,6 +194,7 @@ function fakeDb() {
 const db = fakeDb();
 const routePath = pathToFileURL(resolve("src/routes/check-in.ts")).href;
 const adminSessionPath = pathToFileURL(resolve("src/lib/admin-session.ts")).href;
+const emailPath = pathToFileURL(resolve("src/lib/email.ts")).href;
 
 mock.module("@workspace/db", {
   namedExports: {
@@ -195,6 +216,13 @@ mock.module(adminSessionPath, {
   namedExports: {
     getAdminIdentity: (req) =>
       req.headers["x-test-admin"] === "1" ? "staff@example.org" : null,
+  },
+});
+mock.module(emailPath, {
+  namedExports: {
+    sendCheckInQrEmail: async (email) => {
+      sentQrEmails.push(email);
+    },
   },
 });
 
@@ -234,17 +262,36 @@ async function request(method, path, body, admin = false) {
 beforeEach(() => {
   state.sessions.length = 0;
   state.checkIns.length = 0;
+  state.registrations.splice(
+    0,
+    state.registrations.length,
+    ...defaultRegistrations.map((registration) => ({ ...registration })),
+  );
+  sentQrEmails.length = 0;
   state.nextSessionId = 1;
   state.nextCheckInId = 1;
 });
 
 describe("admin check-in", () => {
+  it("creates unique opaque QR credentials", () => {
+    const first = createCheckInQrCredential();
+    const second = createCheckInQrCredential();
+
+    assert.match(first.payload, /^shalom-checkin:v1:[A-Za-z0-9_-]{43}$/);
+    assert.notEqual(first.payload, second.payload);
+    assert.equal(first.tokenHash, hashCheckInQrPayload(first.payload));
+    assert.notEqual(first.tokenHash, first.payload);
+    assert.doesNotMatch(first.payload, /ada@example\.org|101/);
+  });
+
   it("requires an admin session before accessing every check-in endpoint", async () => {
     const requests = [
       ["GET", "/check-in-sessions"],
       ["POST", "/check-in-sessions", { conferenceYear: 2026, sessionDate: "2026-09-28", name: "Opening" }],
       ["DELETE", "/check-in-sessions/1"],
       ["GET", "/check-in-sessions/1/check-ins"],
+      ["POST", "/check-in-sessions/1/scan", { payload: `shalom-checkin:v1:${"A".repeat(43)}` }],
+      ["POST", "/check-in-sessions/1/registrations/101/qr-email"],
       ["POST", "/check-in-sessions/1/registrations/101/check-in"],
       ["DELETE", "/check-in-sessions/1/registrations/101/check-in"],
     ];
@@ -364,5 +411,81 @@ describe("admin check-in", () => {
       true,
     );
     assert.equal(deletedSession.status, 204);
+  });
+
+  it("checks attendees in by QR, enforces conference year, and rejects duplicates", async () => {
+    const sessionResponse = await request(
+      "POST",
+      "/check-in-sessions",
+      { conferenceYear: 2026, sessionDate: "2026-09-28", name: "Opening gathering" },
+      true,
+    );
+    const session = await sessionResponse.json();
+    const credential = createCheckInQrCredential();
+    state.registrations[0].checkInTokenHash = credential.tokenHash;
+
+    const scanned = await request(
+      "POST",
+      `/check-in-sessions/${session.id}/scan`,
+      { payload: credential.payload },
+      true,
+    );
+    assert.equal(scanned.status, 201);
+    assert.equal((await scanned.json()).registrationId, 101);
+
+    const duplicate = await request(
+      "POST",
+      `/check-in-sessions/${session.id}/scan`,
+      { payload: credential.payload },
+      true,
+    );
+    assert.equal(duplicate.status, 409);
+
+    const wrongYearCredential = createCheckInQrCredential();
+    state.registrations[1].checkInTokenHash = wrongYearCredential.tokenHash;
+    const wrongYear = await request(
+      "POST",
+      `/check-in-sessions/${session.id}/scan`,
+      { payload: wrongYearCredential.payload },
+      true,
+    );
+    assert.equal(wrongYear.status, 404);
+
+    const malformed = await request(
+      "POST",
+      `/check-in-sessions/${session.id}/scan`,
+      { payload: "101" },
+      true,
+    );
+    assert.equal(malformed.status, 400);
+  });
+
+  it("emails an admin-requested replacement QR and stores only its hash", async () => {
+    const sessionResponse = await request(
+      "POST",
+      "/check-in-sessions",
+      { conferenceYear: 2026, sessionDate: "2026-09-28", name: "Opening gathering" },
+      true,
+    );
+    const session = await sessionResponse.json();
+    const previousCredential = createCheckInQrCredential();
+    state.registrations[0].checkInTokenHash = previousCredential.tokenHash;
+
+    const sent = await request(
+      "POST",
+      `/check-in-sessions/${session.id}/registrations/101/qr-email`,
+      undefined,
+      true,
+    );
+    assert.equal(sent.status, 204);
+    assert.equal(sentQrEmails.length, 1);
+    assert.equal(sentQrEmails[0].email, "ada@example.org");
+    assert.equal(sentQrEmails[0].firstName, "Ada");
+    assert.notEqual(state.registrations[0].checkInTokenHash, previousCredential.tokenHash);
+    assert.equal(
+      state.registrations[0].checkInTokenHash,
+      hashCheckInQrPayload(sentQrEmails[0].payload),
+    );
+    assert.notEqual(state.registrations[0].checkInTokenHash, sentQrEmails[0].payload);
   });
 });

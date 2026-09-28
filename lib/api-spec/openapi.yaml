@@ -366,6 +366,85 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /check-in-sessions/{sessionId}/scan:
+    post:
+      operationId: scanCheckInQr
+      tags: [check-in]
+      summary: Check an attendee in by scanning their QR code (admin)
+      parameters:
+        - $ref: "#/components/parameters/CheckInSessionId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckInQrScanInput"
+      responses:
+        "201":
+          description: Attendee checked in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationCheckIn"
+        "400":
+          description: Invalid session ID or QR payload
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: QR code is not valid for this conference session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Attendee is already checked in to this session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /check-in-sessions/{sessionId}/registrations/{registrationId}/qr-email:
+    post:
+      operationId: sendRegistrationCheckInQr
+      tags: [check-in]
+      summary: Email a replacement attendee QR code (admin)
+      parameters:
+        - $ref: "#/components/parameters/CheckInSessionId"
+        - $ref: "#/components/parameters/RegistrationId"
+      responses:
+        "204":
+          description: Replacement QR code emailed
+        "400":
+          description: Invalid session or registration ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Registration or matching session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: QR email could not be delivered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /check-in-sessions/{sessionId}/registrations/{registrationId}/check-in:
     post:
       operationId: checkInRegistration
@@ -857,6 +936,14 @@ components:
         registrationId: { type: integer }
         checkedInAt: { type: string, format: date-time }
         checkedInBy: { type: string }
+    CheckInQrScanInput:
+      type: object
+      required: [payload]
+      properties:
+        payload:
+          type: string
+          pattern: '^shalom-checkin:v1:[A-Za-z0-9_-]{43}$'
+          description: Opaque attendee QR payload; contains no attendee details or database identifiers.
     PlusOneInput:
       type: object
       description: An optional additional attendee registered with the primary attendee.

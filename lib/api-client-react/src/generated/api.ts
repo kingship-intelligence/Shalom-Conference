@@ -36,6 +36,7 @@ import type {
   BadgeSkipInput,
   BadgeUploadInput,
   BadgeUploadUrl,
+  CheckInQrScanInput,
   CheckInSession,
   CheckInSessionInput,
   ErrorResponse,
@@ -1167,6 +1168,171 @@ export function useListSessionCheckIns<TData = Awaited<ReturnType<typeof listSes
 
 
 
+
+export const getScanCheckInQrUrl = (sessionId: number,) => {
+
+
+
+
+  return `/api/check-in-sessions/${sessionId}/scan`
+}
+
+/**
+ * @summary Check an attendee in by scanning their QR code (admin)
+ */
+export const scanCheckInQr = async (sessionId: number,
+    checkInQrScanInput: CheckInQrScanInput, options?: Parameters<typeof customFetch>[1]): Promise<RegistrationCheckIn> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<RegistrationCheckIn>(getScanCheckInQrUrl(sessionId),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(checkInQrScanInput)
+  }
+);}
+
+
+
+
+
+export const getScanCheckInQrMutationKey = () => ['scanCheckInQr'] as const;
+
+export const getScanCheckInQrMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scanCheckInQr>>, TError,ScanCheckInQrMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof scanCheckInQr>>, TError,ScanCheckInQrMutationVariables, TContext> => {
+
+const mutationKey = getScanCheckInQrMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof scanCheckInQr>>, ScanCheckInQrMutationVariables> = (props) => {
+          const {sessionId,data} = props ?? {};
+
+          return  scanCheckInQr(sessionId,data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ScanCheckInQrMutationResult = NonNullable<Awaited<ReturnType<typeof scanCheckInQr>>>
+    export type ScanCheckInQrMutationBody = BodyType<CheckInQrScanInput>
+    export type ScanCheckInQrMutationError = ErrorType<ErrorResponse>
+    export type ScanCheckInQrMutationVariables = {sessionId: number;data: BodyType<CheckInQrScanInput>}
+
+    /**
+ * @summary Check an attendee in by scanning their QR code (admin)
+ */
+export const useScanCheckInQr = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof scanCheckInQr>>, TError,ScanCheckInQrMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof scanCheckInQr>>,
+        TError,
+        ScanCheckInQrMutationVariables,
+        TContext
+      > => {
+      return useMutation(getScanCheckInQrMutationOptions(options), queryClient);
+    }
+
+export const getSendRegistrationCheckInQrUrl = (sessionId: number,
+    registrationId: number,) => {
+
+
+
+
+  return `/api/check-in-sessions/${sessionId}/registrations/${registrationId}/qr-email`
+}
+
+/**
+ * @summary Email a replacement attendee QR code (admin)
+ */
+export const sendRegistrationCheckInQr = async (sessionId: number,
+    registrationId: number, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getSendRegistrationCheckInQrUrl(sessionId,registrationId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getSendRegistrationCheckInQrMutationKey = () => ['sendRegistrationCheckInQr'] as const;
+
+export const getSendRegistrationCheckInQrMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendRegistrationCheckInQr>>, TError,SendRegistrationCheckInQrMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof sendRegistrationCheckInQr>>, TError,SendRegistrationCheckInQrMutationVariables, TContext> => {
+
+const mutationKey = getSendRegistrationCheckInQrMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof sendRegistrationCheckInQr>>, SendRegistrationCheckInQrMutationVariables> = (props) => {
+          const {sessionId,registrationId} = props ?? {};
+
+          return  sendRegistrationCheckInQr(sessionId,registrationId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SendRegistrationCheckInQrMutationResult = NonNullable<Awaited<ReturnType<typeof sendRegistrationCheckInQr>>>
+
+    export type SendRegistrationCheckInQrMutationError = ErrorType<ErrorResponse>
+    export type SendRegistrationCheckInQrMutationVariables = {sessionId: number;registrationId: number}
+
+    /**
+ * @summary Email a replacement attendee QR code (admin)
+ */
+export const useSendRegistrationCheckInQr = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof sendRegistrationCheckInQr>>, TError,SendRegistrationCheckInQrMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof sendRegistrationCheckInQr>>,
+        TError,
+        SendRegistrationCheckInQrMutationVariables,
+        TContext
+      > => {
+      return useMutation(getSendRegistrationCheckInQrMutationOptions(options), queryClient);
+    }
 
 export const getCheckInRegistrationUrl = (sessionId: number,
     registrationId: number,) => {

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   getListCheckInSessionsQueryKey,
   getListSessionCheckInsQueryKey,
@@ -7,10 +7,13 @@ import {
   useDeleteCheckInSession,
   useListCheckInSessions,
   useListSessionCheckIns,
+  useScanCheckInQr,
+  useSendRegistrationCheckInQr,
   useUndoRegistrationCheckIn,
   type CheckInSession,
   type Registration,
 } from "@workspace/api-client-react";
+import { BrowserQRCodeReader } from "@zxing/browser";
 import { useQueryClient } from "@tanstack/react-query";
 import { format } from "date-fns";
 import {
@@ -20,7 +23,9 @@ import {
   CircleAlert,
   ClipboardCheck,
   Clock3,
+  Mail,
   Plus,
+  ScanLine,
   Search,
   Trash2,
   Undo2,
@@ -71,6 +76,12 @@ export function AdminCheckIn({
   const [sessionDate, setSessionDate] = useState("");
   const [sessionName, setSessionName] = useState("");
   const [formError, setFormError] = useState("");
+  const [scannerOpen, setScannerOpen] = useState(false);
+  const [scanMessage, setScanMessage] = useState("");
+  const [scanError, setScanError] = useState("");
+  const [qrEmailSentRegistrationId, setQrEmailSentRegistrationId] = useState<number | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const scannerControlsRef = useRef<{ stop: () => void } | null>(null);
 
   const sessionsQuery = useListCheckInSessions({
     query: {
@@ -170,6 +181,68 @@ export function AdminCheckIn({
     },
     request: { credentials: "include" },
   });
+  const scanMutation = useScanCheckInQr({
+    mutation: {
+      onSuccess: (checkIn, variables) => {
+        const attendee = registrations.find((registration) => registration.id === checkIn.registrationId);
+        setScanError("");
+        setScanMessage(attendee ? `Checked in ${attendee.firstName} ${attendee.lastName}.` : "Attendee checked in.");
+        void queryClient.invalidateQueries({
+          queryKey: getListSessionCheckInsQueryKey(variables.sessionId),
+        });
+      },
+      onError: (error) => {
+        setScanMessage("");
+        setScanError(errorMessage(error, "This QR code could not be checked in."));
+      },
+    },
+    request: { credentials: "include" },
+  });
+  const scanMutationRef = useRef(scanMutation.mutate);
+  scanMutationRef.current = scanMutation.mutate;
+
+  const sendQrMutation = useSendRegistrationCheckInQr({
+    mutation: {
+      onSuccess: (_data, variables) => {
+        setQrEmailSentRegistrationId(variables.registrationId);
+      },
+    },
+    request: { credentials: "include" },
+  });
+
+  useEffect(() => {
+    if (!scannerOpen || selectedSessionId === null || !videoRef.current) return;
+
+    let active = true;
+    const reader = new BrowserQRCodeReader();
+    void reader
+      .decodeFromVideoDevice(undefined, videoRef.current, (result) => {
+        if (!result || !active) return;
+        active = false;
+        scannerControlsRef.current?.stop();
+        scannerControlsRef.current = null;
+        setScannerOpen(false);
+        setScanMessage("");
+        setScanError("");
+        scanMutationRef.current({
+          sessionId: selectedSessionId,
+          data: { payload: result.getText() },
+        });
+      })
+      .then((controls) => {
+        if (active) scannerControlsRef.current = controls;
+        else controls.stop();
+      })
+      .catch((error: unknown) => {
+        if (active) setScanError(errorMessage(error, "Camera access is unavailable. Check browser permissions."));
+      });
+
+    return () => {
+      active = false;
+      scannerControlsRef.current?.stop();
+      scannerControlsRef.current = null;
+    };
+  }, [scannerOpen, selectedSessionId]);
 
   function submitSession(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -446,11 +519,70 @@ export function AdminCheckIn({
                         data-testid="input-check-in-search"
                       />
                     </div>
-                    <div className="flex items-center gap-2 text-xs text-white/45">
-                      <Users className="h-4 w-4" />
-                      {filteredRegistrations.length} shown
+                    <div className="flex flex-wrap items-center gap-2 sm:justify-end">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={!selectedSession || scanMutation.isPending}
+                        onClick={() => {
+                          setScanMessage("");
+                          setScanError("");
+                          setScannerOpen(true);
+                        }}
+                        className="h-11 border-primary/30 text-white hover:bg-primary/10"
+                        data-testid="button-open-qr-scanner"
+                      >
+                        <ScanLine className="h-4 w-4" />
+                        Scan QR
+                      </Button>
+                      <div className="flex items-center gap-2 px-1 text-xs text-white/45">
+                        <Users className="h-4 w-4" />
+                        {filteredRegistrations.length} shown
+                      </div>
                     </div>
                   </div>
+                  <p className="mt-2 text-xs text-white/35">
+                    Emailing a new QR code replaces and invalidates any older code for that attendee.
+                  </p>
+
+                  {scannerOpen && (
+                    <div className="mt-5 rounded-xl border border-primary/25 bg-black/30 p-4 sm:p-5" data-testid="panel-qr-scanner">
+                      <div className="flex items-start justify-between gap-4">
+                        <div>
+                          <h4 className="font-bold text-white">Scan attendee QR</h4>
+                          <p className="mt-1 text-sm text-white/50">Allow camera access and center the attendee’s code in the frame.</p>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => setScannerOpen(false)}
+                          className="shrink-0 border-white/15 text-white/75"
+                          data-testid="button-close-qr-scanner"
+                        >
+                          Close
+                        </Button>
+                      </div>
+                      <video
+                        ref={videoRef}
+                        autoPlay
+                        muted
+                        playsInline
+                        aria-label="Camera view for scanning an attendee QR code"
+                        className="mx-auto mt-4 max-h-[min(60vh,420px)] w-full max-w-xl rounded-lg bg-black object-cover"
+                        data-testid="video-qr-scanner"
+                      />
+                    </div>
+                  )}
+                  {scanMessage && (
+                    <p className="mt-3 rounded-lg border border-emerald-300/20 bg-emerald-300/5 px-4 py-3 text-sm text-emerald-200" role="status" data-testid="status-qr-scan">
+                      {scanMessage}
+                    </p>
+                  )}
+                  {scanError && (
+                    <p className="mt-3 rounded-lg border border-red-300/20 bg-red-300/5 px-4 py-3 text-sm text-red-200" role="alert" data-testid="error-qr-scan">
+                      {scanError}
+                    </p>
+                  )}
 
                   {eligibleRegistrations.length === 0 ? (
                     <div className="mt-6 rounded-xl border border-dashed border-white/10 px-6 py-14 text-center" data-testid="empty-session-roster">
@@ -471,6 +603,10 @@ export function AdminCheckIn({
                         const actionPending =
                           (checkInMutation.isPending && checkInMutation.variables?.registrationId === registration.id) ||
                           (undoMutation.isPending && undoMutation.variables?.registrationId === registration.id);
+                        const qrEmailPending =
+                          sendQrMutation.isPending && sendQrMutation.variables?.registrationId === registration.id;
+                        const qrEmailError =
+                          sendQrMutation.isError && sendQrMutation.variables?.registrationId === registration.id;
                         return (
                           <article
                             key={registration.id}
@@ -487,22 +623,51 @@ export function AdminCheckIn({
                                 <p className="mt-1 truncate text-sm text-white/45">{registration.email}</p>
                                 {registration.phone && <p className="mt-1 text-xs text-white/30">{registration.phone}</p>}
                               </div>
-                              <Button
-                                type="button"
-                                variant={isCheckedIn ? "outline" : "default"}
-                                disabled={actionPending}
-                                onClick={() => {
-                                  if (!selectedSession) return;
-                                  if (isCheckedIn) undoMutation.mutate({ sessionId: selectedSession.id, registrationId: registration.id });
-                                  else checkInMutation.mutate({ sessionId: selectedSession.id, registrationId: registration.id });
-                                }}
-                                className={isCheckedIn ? "w-full border-emerald-300/25 text-emerald-200 hover:bg-emerald-300/10 sm:w-auto" : "w-full rounded-full bg-primary text-white hover:bg-primary/90 sm:w-auto"}
-                                data-testid={`${isCheckedIn ? "button-undo" : "button-check-in"}-registration-${registration.id}`}
-                              >
-                                {isCheckedIn ? <Undo2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                                {actionPending ? "Updating…" : isCheckedIn ? "Undo check-in" : "Check in"}
-                              </Button>
+                              <div className="flex flex-col gap-2 sm:flex-row">
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  disabled={!selectedSession || qrEmailPending}
+                                  onClick={() => {
+                                    if (!selectedSession) return;
+                                    setQrEmailSentRegistrationId(null);
+                                    sendQrMutation.mutate({
+                                      sessionId: selectedSession.id,
+                                      registrationId: registration.id,
+                                    });
+                                  }}
+                                  aria-label={`Email a new QR code to ${registration.firstName} ${registration.lastName}; this replaces any previous code`}
+                                  className="w-full border-white/15 text-white/75 hover:bg-white/5 sm:w-auto"
+                                  data-testid={`button-email-qr-registration-${registration.id}`}
+                                >
+                                  <Mail className="h-4 w-4" />
+                                  {qrEmailPending ? "Sending…" : "Email new QR"}
+                                </Button>
+                                <Button
+                                  type="button"
+                                  variant={isCheckedIn ? "outline" : "default"}
+                                  disabled={actionPending}
+                                  onClick={() => {
+                                    if (!selectedSession) return;
+                                    if (isCheckedIn) undoMutation.mutate({ sessionId: selectedSession.id, registrationId: registration.id });
+                                    else checkInMutation.mutate({ sessionId: selectedSession.id, registrationId: registration.id });
+                                  }}
+                                  className={isCheckedIn ? "w-full border-emerald-300/25 text-emerald-200 hover:bg-emerald-300/10 sm:w-auto" : "w-full rounded-full bg-primary text-white hover:bg-primary/90 sm:w-auto"}
+                                  data-testid={`${isCheckedIn ? "button-undo" : "button-check-in"}-registration-${registration.id}`}
+                                >
+                                  {isCheckedIn ? <Undo2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                                  {actionPending ? "Updating…" : isCheckedIn ? "Undo check-in" : "Check in"}
+                                </Button>
+                              </div>
                             </div>
+                            {qrEmailSentRegistrationId === registration.id && (
+                              <p className="mt-3 text-sm text-emerald-200" role="status">A new QR code was emailed to this attendee.</p>
+                            )}
+                            {qrEmailError && (
+                              <p className="mt-3 text-sm text-red-300" role="alert">
+                                QR email failed: {errorMessage(sendQrMutation.error, "Please try again.")}
+                              </p>
+                            )}
                             {checkInError && <p className="mt-3 text-sm text-red-300" role="alert">Check-in failed: {errorMessage(checkInMutation.error, "Please try again.")}</p>}
                             {undoError && <p className="mt-3 text-sm text-red-300" role="alert">Undo failed: {errorMessage(undoMutation.error, "Please try again.")}</p>}
                           </article>

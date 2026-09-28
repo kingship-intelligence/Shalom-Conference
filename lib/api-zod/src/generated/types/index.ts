@@ -18,6 +18,7 @@ export * from './badgeSkipInput';
 export * from './badgeUploadInput';
 export * from './badgeUploadInputContentType';
 export * from './badgeUploadUrl';
+export * from './checkInQrScanInput';
 export * from './checkInSession';
 export * from './checkInSessionInput';
 export * from './errorResponse';
