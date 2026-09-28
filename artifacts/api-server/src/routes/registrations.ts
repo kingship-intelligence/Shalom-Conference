@@ -208,6 +208,11 @@ router.post("/registrations/badge-request", async (req, res): Promise<void> => {
 });
 
 router.get("/registrations", async (_req, res): Promise<void> => {
+  if (!hasAdminSession(_req)) {
+    res.status(401).json({ error: "Admin sign-in is required." });
+    return;
+  }
+
   const registrations = await db
     .select()
     .from(registrationsTable)

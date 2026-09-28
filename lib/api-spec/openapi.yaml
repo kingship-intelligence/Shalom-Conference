@@ -12,6 +12,8 @@ tags:
     description: Health operations
   - name: registrations
     description: Registration operations
+  - name: check-in
+    description: Admin-configured conference sessions and attendee check-ins
   - name: badges
     description: Attendee badge upload and delivery operations
   - name: testimonies
@@ -81,6 +83,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Registration"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /registrations/{registrationId}:
     delete:
       operationId: deleteRegistration
@@ -231,6 +239,196 @@ paths:
                 $ref: "#/components/schemas/Registration"
         "401":
           description: Invalid or expired badge authorization
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /check-in-sessions:
+    get:
+      operationId: listCheckInSessions
+      tags: [check-in]
+      summary: List conference check-in sessions (admin)
+      responses:
+        "200":
+          description: Configured check-in sessions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CheckInSession"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    post:
+      operationId: createCheckInSession
+      tags: [check-in]
+      summary: Create a conference check-in session (admin)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CheckInSessionInput"
+      responses:
+        "201":
+          description: Check-in session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CheckInSession"
+        "400":
+          description: Invalid check-in session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: A session with this name already exists for that date
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /check-in-sessions/{sessionId}:
+    delete:
+      operationId: deleteCheckInSession
+      tags: [check-in]
+      summary: Delete a check-in session that has no attendees checked in (admin)
+      parameters:
+        - $ref: "#/components/parameters/CheckInSessionId"
+      responses:
+        "204":
+          description: Check-in session deleted
+        "400":
+          description: Invalid session ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Check-in session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Session has active check-ins and cannot be deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /check-in-sessions/{sessionId}/check-ins:
+    get:
+      operationId: listSessionCheckIns
+      tags: [check-in]
+      summary: List attendees checked in to a session (admin)
+      parameters:
+        - $ref: "#/components/parameters/CheckInSessionId"
+      responses:
+        "200":
+          description: Attendees checked in to this session
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/RegistrationCheckIn"
+        "400":
+          description: Invalid session ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Check-in session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /check-in-sessions/{sessionId}/registrations/{registrationId}/check-in:
+    post:
+      operationId: checkInRegistration
+      tags: [check-in]
+      summary: Check a registered attendee into a session (admin)
+      parameters:
+        - $ref: "#/components/parameters/CheckInSessionId"
+        - $ref: "#/components/parameters/RegistrationId"
+      responses:
+        "201":
+          description: Attendee checked in
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RegistrationCheckIn"
+        "400":
+          description: Invalid session or registration ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Registration or matching session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: Attendee is already checked in to this session
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: undoRegistrationCheckIn
+      tags: [check-in]
+      summary: Undo an attendee check-in (admin)
+      parameters:
+        - $ref: "#/components/parameters/CheckInSessionId"
+        - $ref: "#/components/parameters/RegistrationId"
+      responses:
+        "204":
+          description: Check-in undone
+        "400":
+          description: Invalid session or registration ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Check-in not found
           content:
             application/json:
               schema:
@@ -627,6 +825,38 @@ components:
           description: Whether a portrait will be uploaded to create an attendee badge.
         plusOne:
           $ref: "#/components/schemas/PlusOneInput"
+    CheckInSession:
+      type: object
+      required: [id, conferenceYear, sessionDate, name, createdAt, createdBy]
+      properties:
+        id: { type: integer }
+        conferenceYear: { type: integer }
+        sessionDate:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+          description: Calendar date in YYYY-MM-DD format
+        name: { type: string }
+        createdAt: { type: string, format: date-time }
+        createdBy: { type: string }
+    CheckInSessionInput:
+      type: object
+      required: [conferenceYear, sessionDate, name]
+      properties:
+        conferenceYear: { type: integer, minimum: 2000, maximum: 2200 }
+        sessionDate:
+          type: string
+          pattern: '^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$'
+          description: Calendar date in YYYY-MM-DD format
+        name: { type: string, minLength: 1, maxLength: 100 }
+    RegistrationCheckIn:
+      type: object
+      required: [id, sessionId, registrationId, checkedInAt, checkedInBy]
+      properties:
+        id: { type: integer }
+        sessionId: { type: integer }
+        registrationId: { type: integer }
+        checkedInAt: { type: string, format: date-time }
+        checkedInBy: { type: string }
     PlusOneInput:
       type: object
       description: An optional additional attendee registered with the primary attendee.
@@ -853,6 +1083,11 @@ components:
       properties:
         error: { type: string }
   parameters:
+    CheckInSessionId:
+      name: sessionId
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
     MerchOrderId:
       name: id
       in: path

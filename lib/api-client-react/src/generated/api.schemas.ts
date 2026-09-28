@@ -66,6 +66,45 @@ export interface RegistrationInput {
   plusOne?: PlusOneInput;
 }
 
+export interface CheckInSession {
+  id: number;
+  conferenceYear: number;
+  /**
+     * Calendar date in YYYY-MM-DD format
+     * @pattern ^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$
+     */
+  sessionDate: string;
+  name: string;
+  createdAt: string;
+  createdBy: string;
+}
+
+export interface CheckInSessionInput {
+  /**
+     * @minimum 2000
+     * @maximum 2200
+     */
+  conferenceYear: number;
+  /**
+     * Calendar date in YYYY-MM-DD format
+     * @pattern ^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$
+     */
+  sessionDate: string;
+  /**
+     * @minLength 1
+     * @maxLength 100
+     */
+  name: string;
+}
+
+export interface RegistrationCheckIn {
+  id: number;
+  sessionId: number;
+  registrationId: number;
+  checkedInAt: string;
+  checkedInBy: string;
+}
+
 export interface ExistingRegistrationBadgeInput {
   /** @minLength 1 */
   firstName: string;

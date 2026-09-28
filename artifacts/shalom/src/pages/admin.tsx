@@ -37,6 +37,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Check, User, UserCheck, Users, Mail, Phone, Calendar, MessageSquare, ArrowLeft, Lock, LogOut, Eye, EyeOff, Download, Search, ShoppingBag, Trash2, Clock3, Star } from "lucide-react";
+import { AdminCheckIn } from "@/components/admin-check-in";
 
 const SESSION_KEY = "shalom_admin_auth";
 const PRAYER_SLOT_LABELS: Record<string, string> = {
@@ -303,7 +304,15 @@ export default function Admin() {
   const [confirmAdminPassword, setConfirmAdminPassword] = useState("");
   const [adminAccountFormError, setAdminAccountFormError] = useState("");
 
-  const registrationsQuery = useListRegistrations();
+  const registrationsQuery = useListRegistrations({
+    query: {
+      enabled: authed,
+      queryKey: getListRegistrationsQueryKey(),
+      retry: 2,
+      refetchOnWindowFocus: true,
+    },
+    request: { credentials: "include" },
+  });
   const testimoniesQuery = useListTestimonies();
   const adminUsersQuery = useListAdminUsers({
     query: {
@@ -363,11 +372,21 @@ export default function Admin() {
         setDeleteRegistrationError("");
         setDeletingRegistrationId(null);
         queryClient.invalidateQueries({ queryKey: getListRegistrationsQueryKey() });
+        queryClient.invalidateQueries({
+          predicate: (query) =>
+            query.queryKey.some(
+              (key) =>
+                typeof key === "string" &&
+                key.startsWith("/api/check-in-sessions/") &&
+                key.endsWith("/check-ins"),
+            ),
+        });
       },
       onError: () => {
         setDeleteRegistrationError("Unable to remove this registration. Please try again.");
       },
     },
+    request: { credentials: "include" },
   });
   const createAdminUserMutation = useCreateAdminUser({
     mutation: {
@@ -664,6 +683,13 @@ export default function Admin() {
           </div>
         </section>
 
+        <AdminCheckIn
+          authed={authed}
+          registrations={registrationsQuery.data ?? []}
+          registrationsLoading={registrationsQuery.isLoading}
+          registrationsError={registrationsQuery.error}
+        />
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Registrations Section */}
           <section data-testid="section-registrations" className="space-y-6">
@@ -673,11 +699,13 @@ export default function Admin() {
                 <Badge className="bg-primary text-white">
                   {registrationsQuery.isLoading
                     ? "..."
-                    : normalizedRegistrationSearch
-                      ? `${filteredRegistrations.length}/${registrations.length}`
-                      : registrations.length}
+                    : registrationsQuery.isError
+                      ? "Unavailable"
+                      : normalizedRegistrationSearch
+                        ? `${filteredRegistrations.length}/${registrations.length}`
+                        : registrations.length}
                 </Badge>
-                {registrations.length > 0 && (
+                {registrations.length > 0 && !registrationsQuery.isError && (
                   <button
                     onClick={() => exportCSV(filteredRegistrations)}
                     className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-white/50 hover:text-white transition-colors"
@@ -690,7 +718,7 @@ export default function Admin() {
               </div>
             </div>
 
-            {registrations.length > 0 && (
+            {registrations.length > 0 && !registrationsQuery.isError && (
               <div className="relative">
                 <Search
                   aria-hidden="true"
@@ -719,6 +747,28 @@ export default function Admin() {
                 {[1, 2, 3].map((i) => (
                   <Skeleton key={i} className="h-24 w-full rounded-xl bg-white/5" />
                 ))}
+              </div>
+            ) : registrationsQuery.isError ? (
+              <div
+                className="rounded-xl border border-red-400/20 bg-red-400/5 px-5 py-10 text-center"
+                role="alert"
+                data-testid="error-registration-list"
+              >
+                <p className="font-semibold text-red-200">Registrations could not be loaded.</p>
+                <p className="mt-2 text-sm text-red-200/65">
+                  {registrationsQuery.error instanceof Error
+                    ? registrationsQuery.error.message
+                    : "The private registrations request failed."}
+                </p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => void registrationsQuery.refetch()}
+                  className="mt-5 border-red-200/20 text-red-100 hover:bg-red-200/10"
+                  data-testid="button-retry-registration-list"
+                >
+                  Try again
+                </Button>
               </div>
             ) : registrations.length === 0 ? (
               <div className="text-center py-20 text-white/30 rounded-2xl border border-dashed border-white/10">

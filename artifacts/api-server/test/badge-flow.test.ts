@@ -379,6 +379,12 @@ describe("attendee badge delivery flow", () => {
     assert.equal(state.rows.length, 1);
   });
 
+  it("requires an admin session to list registrations", async () => {
+    const response = await request(makeApp(), "GET", "/registrations");
+
+    assert.equal(response.status, 401);
+  });
+
   it("deletes a registration and its private portrait for an admin", async () => {
     await request(makeApp(), "POST", "/registrations", {
       ...registration,

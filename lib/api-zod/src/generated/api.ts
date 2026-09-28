@@ -201,6 +201,120 @@ export const SkipRegistrationBadgeResponse = zod.object({
 
 
 /**
+ * @summary List conference check-in sessions (admin)
+ */
+export const listCheckInSessionsResponseSessionDateRegExp = new RegExp('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$');
+
+
+export const ListCheckInSessionsResponseItem = zod.object({
+  "id": zod.number().int(),
+  "conferenceYear": zod.number().int(),
+  "sessionDate": zod.string().regex(listCheckInSessionsResponseSessionDateRegExp).describe('Calendar date in YYYY-MM-DD format'),
+  "name": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "createdBy": zod.string()
+})
+export const ListCheckInSessionsResponse = zod.array(ListCheckInSessionsResponseItem)
+
+
+/**
+ * @summary Create a conference check-in session (admin)
+ */
+export const createCheckInSessionBodyConferenceYearMin = 2000;
+export const createCheckInSessionBodyConferenceYearMax = 2200;
+
+export const createCheckInSessionBodySessionDateRegExp = new RegExp('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$');
+export const createCheckInSessionBodyNameMax = 100;
+
+
+
+export const CreateCheckInSessionBody = zod.object({
+  "conferenceYear": zod.number().int().min(createCheckInSessionBodyConferenceYearMin).max(createCheckInSessionBodyConferenceYearMax),
+  "sessionDate": zod.string().regex(createCheckInSessionBodySessionDateRegExp).describe('Calendar date in YYYY-MM-DD format'),
+  "name": zod.string().min(1).max(createCheckInSessionBodyNameMax)
+})
+
+export const createCheckInSessionResponseSessionDateRegExp = new RegExp('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$');
+
+
+export const CreateCheckInSessionResponse = zod.object({
+  "id": zod.number().int(),
+  "conferenceYear": zod.number().int(),
+  "sessionDate": zod.string().regex(createCheckInSessionResponseSessionDateRegExp).describe('Calendar date in YYYY-MM-DD format'),
+  "name": zod.string(),
+  "createdAt": zod.coerce.date(),
+  "createdBy": zod.string()
+})
+
+
+/**
+ * @summary Delete a check-in session that has no attendees checked in (admin)
+ */
+
+
+
+export const DeleteCheckInSessionParams = zod.object({
+  "sessionId": zod.coerce.number().int().min(1)
+})
+
+export const DeleteCheckInSessionResponse = zod.void()
+
+
+/**
+ * @summary List attendees checked in to a session (admin)
+ */
+
+
+
+export const ListSessionCheckInsParams = zod.object({
+  "sessionId": zod.coerce.number().int().min(1)
+})
+
+export const ListSessionCheckInsResponseItem = zod.object({
+  "id": zod.number().int(),
+  "sessionId": zod.number().int(),
+  "registrationId": zod.number().int(),
+  "checkedInAt": zod.coerce.date(),
+  "checkedInBy": zod.string()
+})
+export const ListSessionCheckInsResponse = zod.array(ListSessionCheckInsResponseItem)
+
+
+/**
+ * @summary Check a registered attendee into a session (admin)
+ */
+
+
+
+export const CheckInRegistrationParams = zod.object({
+  "sessionId": zod.coerce.number().int().min(1),
+  "registrationId": zod.coerce.number().int()
+})
+
+export const CheckInRegistrationResponse = zod.object({
+  "id": zod.number().int(),
+  "sessionId": zod.number().int(),
+  "registrationId": zod.number().int(),
+  "checkedInAt": zod.coerce.date(),
+  "checkedInBy": zod.string()
+})
+
+
+/**
+ * @summary Undo an attendee check-in (admin)
+ */
+
+
+
+export const UndoRegistrationCheckInParams = zod.object({
+  "sessionId": zod.coerce.number().int().min(1),
+  "registrationId": zod.coerce.number().int()
+})
+
+export const UndoRegistrationCheckInResponse = zod.void()
+
+
+/**
  * @summary Submit a testimony
  */
 export const createTestimonyBodyTestimonyMin = 10;

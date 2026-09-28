@@ -36,6 +36,8 @@ import type {
   BadgeSkipInput,
   BadgeUploadInput,
   BadgeUploadUrl,
+  CheckInSession,
+  CheckInSessionInput,
   ErrorResponse,
   ExistingRegistrationBadgeInput,
   FirstTimerResponse,
@@ -48,6 +50,7 @@ import type {
   PrayerChargeSurveyResponse,
   PrayerChargeSurveyResponseInput,
   Registration,
+  RegistrationCheckIn,
   RegistrationCreated,
   RegistrationInput,
   Testimony,
@@ -304,7 +307,7 @@ export const getListRegistrationsQueryKey = () => {
     }
 
 
-export const getListRegistrationsQueryOptions = <TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRegistrations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+export const getListRegistrationsQueryOptions = <TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRegistrations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
 ) => {
 
 const {query: queryOptions, request: requestOptions} = options ?? {};
@@ -323,10 +326,10 @@ const {query: queryOptions, request: requestOptions} = options ?? {};
 }
 
 export type ListRegistrationsQueryResult = NonNullable<Awaited<ReturnType<typeof listRegistrations>>>
-export type ListRegistrationsQueryError = ErrorType<unknown>
+export type ListRegistrationsQueryError = ErrorType<ErrorResponse>
 
 
-export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<unknown>>(
+export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<ErrorResponse>>(
   options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRegistrations>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof listRegistrations>>,
@@ -336,7 +339,7 @@ export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegis
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<unknown>>(
+export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<ErrorResponse>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRegistrations>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof listRegistrations>>,
@@ -346,7 +349,7 @@ export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegis
       >, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
-export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<unknown>>(
+export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<ErrorResponse>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRegistrations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
@@ -354,7 +357,7 @@ export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegis
  * @summary List all registrations (admin)
  */
 
-export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<unknown>>(
+export function useListRegistrations<TData = Awaited<ReturnType<typeof listRegistrations>>, TError = ErrorType<ErrorResponse>>(
   options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listRegistrations>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
  , queryClient?: QueryClient
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
@@ -799,6 +802,522 @@ export const useSkipRegistrationBadge = <TError = ErrorType<ErrorResponse>,
         TContext
       > => {
       return useMutation(getSkipRegistrationBadgeMutationOptions(options), queryClient);
+    }
+
+export const getListCheckInSessionsUrl = () => {
+
+
+
+
+  return `/api/check-in-sessions`
+}
+
+/**
+ * @summary List conference check-in sessions (admin)
+ */
+export const listCheckInSessions = async ( options?: Parameters<typeof customFetch>[1]): Promise<CheckInSession[]> => {
+
+  return customFetch<CheckInSession[]>(getListCheckInSessionsUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListCheckInSessionsQueryKey = () => {
+    return [
+    `/api/check-in-sessions`
+    ] as const;
+    }
+
+
+export const getListCheckInSessionsQueryOptions = <TData = Awaited<ReturnType<typeof listCheckInSessions>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCheckInSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListCheckInSessionsQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listCheckInSessions>>> = ({ signal }) => listCheckInSessions({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listCheckInSessions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListCheckInSessionsQueryResult = NonNullable<Awaited<ReturnType<typeof listCheckInSessions>>>
+export type ListCheckInSessionsQueryError = ErrorType<ErrorResponse>
+
+
+export function useListCheckInSessions<TData = Awaited<ReturnType<typeof listCheckInSessions>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCheckInSessions>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listCheckInSessions>>,
+          TError,
+          Awaited<ReturnType<typeof listCheckInSessions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListCheckInSessions<TData = Awaited<ReturnType<typeof listCheckInSessions>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCheckInSessions>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listCheckInSessions>>,
+          TError,
+          Awaited<ReturnType<typeof listCheckInSessions>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListCheckInSessions<TData = Awaited<ReturnType<typeof listCheckInSessions>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCheckInSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List conference check-in sessions (admin)
+ */
+
+export function useListCheckInSessions<TData = Awaited<ReturnType<typeof listCheckInSessions>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listCheckInSessions>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListCheckInSessionsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateCheckInSessionUrl = () => {
+
+
+
+
+  return `/api/check-in-sessions`
+}
+
+/**
+ * @summary Create a conference check-in session (admin)
+ */
+export const createCheckInSession = async (checkInSessionInput: CheckInSessionInput, options?: Parameters<typeof customFetch>[1]): Promise<CheckInSession> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<CheckInSession>(getCreateCheckInSessionUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(checkInSessionInput)
+  }
+);}
+
+
+
+
+
+export const getCreateCheckInSessionMutationKey = () => ['createCheckInSession'] as const;
+
+export const getCreateCheckInSessionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCheckInSession>>, TError,CreateCheckInSessionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createCheckInSession>>, TError,CreateCheckInSessionMutationVariables, TContext> => {
+
+const mutationKey = getCreateCheckInSessionMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCheckInSession>>, CreateCheckInSessionMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCheckInSession(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCheckInSessionMutationResult = NonNullable<Awaited<ReturnType<typeof createCheckInSession>>>
+    export type CreateCheckInSessionMutationBody = BodyType<CheckInSessionInput>
+    export type CreateCheckInSessionMutationError = ErrorType<ErrorResponse>
+    export type CreateCheckInSessionMutationVariables = {data: BodyType<CheckInSessionInput>}
+
+    /**
+ * @summary Create a conference check-in session (admin)
+ */
+export const useCreateCheckInSession = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCheckInSession>>, TError,CreateCheckInSessionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createCheckInSession>>,
+        TError,
+        CreateCheckInSessionMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateCheckInSessionMutationOptions(options), queryClient);
+    }
+
+export const getDeleteCheckInSessionUrl = (sessionId: number,) => {
+
+
+
+
+  return `/api/check-in-sessions/${sessionId}`
+}
+
+/**
+ * @summary Delete a check-in session that has no attendees checked in (admin)
+ */
+export const deleteCheckInSession = async (sessionId: number, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteCheckInSessionUrl(sessionId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteCheckInSessionMutationKey = () => ['deleteCheckInSession'] as const;
+
+export const getDeleteCheckInSessionMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCheckInSession>>, TError,DeleteCheckInSessionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteCheckInSession>>, TError,DeleteCheckInSessionMutationVariables, TContext> => {
+
+const mutationKey = getDeleteCheckInSessionMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCheckInSession>>, DeleteCheckInSessionMutationVariables> = (props) => {
+          const {sessionId} = props ?? {};
+
+          return  deleteCheckInSession(sessionId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteCheckInSessionMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCheckInSession>>>
+
+    export type DeleteCheckInSessionMutationError = ErrorType<ErrorResponse>
+    export type DeleteCheckInSessionMutationVariables = {sessionId: number}
+
+    /**
+ * @summary Delete a check-in session that has no attendees checked in (admin)
+ */
+export const useDeleteCheckInSession = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCheckInSession>>, TError,DeleteCheckInSessionMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteCheckInSession>>,
+        TError,
+        DeleteCheckInSessionMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteCheckInSessionMutationOptions(options), queryClient);
+    }
+
+export const getListSessionCheckInsUrl = (sessionId: number,) => {
+
+
+
+
+  return `/api/check-in-sessions/${sessionId}/check-ins`
+}
+
+/**
+ * @summary List attendees checked in to a session (admin)
+ */
+export const listSessionCheckIns = async (sessionId: number, options?: Parameters<typeof customFetch>[1]): Promise<RegistrationCheckIn[]> => {
+
+  return customFetch<RegistrationCheckIn[]>(getListSessionCheckInsUrl(sessionId),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListSessionCheckInsQueryKey = (sessionId: number,) => {
+    return [
+    `/api/check-in-sessions/${sessionId}/check-ins`
+    ] as const;
+    }
+
+
+export const getListSessionCheckInsQueryOptions = <TData = Awaited<ReturnType<typeof listSessionCheckIns>>, TError = ErrorType<ErrorResponse>>(sessionId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessionCheckIns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListSessionCheckInsQueryKey(sessionId);
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listSessionCheckIns>>> = ({ signal }) => listSessionCheckIns(sessionId, { signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, enabled: sessionId !== null && sessionId !== undefined, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listSessionCheckIns>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListSessionCheckInsQueryResult = NonNullable<Awaited<ReturnType<typeof listSessionCheckIns>>>
+export type ListSessionCheckInsQueryError = ErrorType<ErrorResponse>
+
+
+export function useListSessionCheckIns<TData = Awaited<ReturnType<typeof listSessionCheckIns>>, TError = ErrorType<ErrorResponse>>(
+ sessionId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessionCheckIns>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listSessionCheckIns>>,
+          TError,
+          Awaited<ReturnType<typeof listSessionCheckIns>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListSessionCheckIns<TData = Awaited<ReturnType<typeof listSessionCheckIns>>, TError = ErrorType<ErrorResponse>>(
+ sessionId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessionCheckIns>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listSessionCheckIns>>,
+          TError,
+          Awaited<ReturnType<typeof listSessionCheckIns>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListSessionCheckIns<TData = Awaited<ReturnType<typeof listSessionCheckIns>>, TError = ErrorType<ErrorResponse>>(
+ sessionId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessionCheckIns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List attendees checked in to a session (admin)
+ */
+
+export function useListSessionCheckIns<TData = Awaited<ReturnType<typeof listSessionCheckIns>>, TError = ErrorType<ErrorResponse>>(
+ sessionId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listSessionCheckIns>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListSessionCheckInsQueryOptions(sessionId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCheckInRegistrationUrl = (sessionId: number,
+    registrationId: number,) => {
+
+
+
+
+  return `/api/check-in-sessions/${sessionId}/registrations/${registrationId}/check-in`
+}
+
+/**
+ * @summary Check a registered attendee into a session (admin)
+ */
+export const checkInRegistration = async (sessionId: number,
+    registrationId: number, options?: Parameters<typeof customFetch>[1]): Promise<RegistrationCheckIn> => {
+
+  return customFetch<RegistrationCheckIn>(getCheckInRegistrationUrl(sessionId,registrationId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCheckInRegistrationMutationKey = () => ['checkInRegistration'] as const;
+
+export const getCheckInRegistrationMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof checkInRegistration>>, TError,CheckInRegistrationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof checkInRegistration>>, TError,CheckInRegistrationMutationVariables, TContext> => {
+
+const mutationKey = getCheckInRegistrationMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof checkInRegistration>>, CheckInRegistrationMutationVariables> = (props) => {
+          const {sessionId,registrationId} = props ?? {};
+
+          return  checkInRegistration(sessionId,registrationId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CheckInRegistrationMutationResult = NonNullable<Awaited<ReturnType<typeof checkInRegistration>>>
+
+    export type CheckInRegistrationMutationError = ErrorType<ErrorResponse>
+    export type CheckInRegistrationMutationVariables = {sessionId: number;registrationId: number}
+
+    /**
+ * @summary Check a registered attendee into a session (admin)
+ */
+export const useCheckInRegistration = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof checkInRegistration>>, TError,CheckInRegistrationMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof checkInRegistration>>,
+        TError,
+        CheckInRegistrationMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCheckInRegistrationMutationOptions(options), queryClient);
+    }
+
+export const getUndoRegistrationCheckInUrl = (sessionId: number,
+    registrationId: number,) => {
+
+
+
+
+  return `/api/check-in-sessions/${sessionId}/registrations/${registrationId}/check-in`
+}
+
+/**
+ * @summary Undo an attendee check-in (admin)
+ */
+export const undoRegistrationCheckIn = async (sessionId: number,
+    registrationId: number, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getUndoRegistrationCheckInUrl(sessionId,registrationId),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getUndoRegistrationCheckInMutationKey = () => ['undoRegistrationCheckIn'] as const;
+
+export const getUndoRegistrationCheckInMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof undoRegistrationCheckIn>>, TError,UndoRegistrationCheckInMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof undoRegistrationCheckIn>>, TError,UndoRegistrationCheckInMutationVariables, TContext> => {
+
+const mutationKey = getUndoRegistrationCheckInMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof undoRegistrationCheckIn>>, UndoRegistrationCheckInMutationVariables> = (props) => {
+          const {sessionId,registrationId} = props ?? {};
+
+          return  undoRegistrationCheckIn(sessionId,registrationId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UndoRegistrationCheckInMutationResult = NonNullable<Awaited<ReturnType<typeof undoRegistrationCheckIn>>>
+
+    export type UndoRegistrationCheckInMutationError = ErrorType<ErrorResponse>
+    export type UndoRegistrationCheckInMutationVariables = {sessionId: number;registrationId: number}
+
+    /**
+ * @summary Undo an attendee check-in (admin)
+ */
+export const useUndoRegistrationCheckIn = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof undoRegistrationCheckIn>>, TError,UndoRegistrationCheckInMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof undoRegistrationCheckIn>>,
+        TError,
+        UndoRegistrationCheckInMutationVariables,
+        TContext
+      > => {
+      return useMutation(getUndoRegistrationCheckInMutationOptions(options), queryClient);
     }
 
 export const getCreateTestimonyUrl = () => {
