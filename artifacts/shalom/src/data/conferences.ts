@@ -7,7 +7,8 @@ const ejHaroldImage = "/images/2026/speakers/ejay-harold.webp";
 const robertBannermanImage = "/images/2026/speakers/robert-bannerman.webp";
 const tobiSamagbeyiImage = "/images/2026/speakers/tobi-samagbeyi.webp";
 const reveileMusicImageOne = "/images/2026/speakers/reveille-music.webp";
-const prophetShamarBennettImage = "/images/2026/speakers/prophet-shamar-bennett.webp";
+const prophetShamarBennettImage =
+  "/images/2026/speakers/prophet-shamar-bennett.webp";
 const tomideOlulanaImage = "/images/2026/speakers/tomide-olulana.webp";
 const femiOpeyemiImage = "/images/2026/speakers/femi-opeyemi.webp";
 
@@ -44,13 +45,14 @@ export const conferences: Conference[] = [
   {
     year: "2026",
     theme: "The Comforter",
-    tagline: "Two nights of worship, prayer and the Word, built around the Holy Spirit.",
+    tagline:
+      "Two nights of worship, prayer and the Word, built around the Holy Spirit.",
     date: "October 9-10, 2026",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
     summary:
       "Two nights in Windsor Mill for students and young adults who want more of the Holy Spirit.",
     description:
-      "This year we are gathering around John 14:26-27 and the One Jesus called the Comforter. Friday night is worship and prophetic ministry. Saturday is the heart of worship. Come ready to pray, to be prayed for, and to leave lighter than you came.",
+      "This year we are gathering around John 14:26-27 and the Holy Spirit called the Comforter. Friday night is worship and prophetic ministry. Saturday is the heart of worship. Come ready to pray, to be prayed for, and to leave lighter than you came.",
     scripture: "John 14:26-27",
     scriptureText:
       "But the Comforter, which is the Holy Ghost, whom the Father will send in my name, he shall teach you all things, and bring all things to your remembrance. Peace I leave with you, my peace I give unto you.",
@@ -177,7 +179,8 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
     theme: "Transcend",
     tagline: "Rising above what we thought were our limits.",
     date: "October 11, 2025",
-    summary: "Shalom 2025 was a call to go past the ceiling we had put on our faith.",
+    summary:
+      "Shalom 2025 was a call to go past the ceiling we had put on our faith.",
     description:
       "Transcend pushed us to expect more of God than we had been. One day, one room, and a lot of prayer.",
     image: "/images/2025/shalom-2025-cover.png",
@@ -200,7 +203,8 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
     tagline: "Fear not, for I am with you.",
     date: "December 8-9, 2023",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
-    summary: "Two days on Isaiah 41:10-11 and the courage God gives His people.",
+    summary:
+      "Two days on Isaiah 41:10-11 and the courage God gives His people.",
     description:
       "Fearless was about trusting that God is actually with us, especially when the situation says otherwise.",
     scripture: "Isaiah 41:10-11",
@@ -243,13 +247,12 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
     tagline: "Peace that does not depend on the circumstances.",
     date: "December 11, 2021",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
-    summary: "One evening on the peace of God that outlasts fear, pressure and uncertainty.",
+    summary:
+      "One evening on the peace of God that outlasts fear, pressure and uncertainty.",
     description:
       "Transcending Peace was a single evening of worship, streamed on YouTube for everyone who could not be in the room.",
     image: "/images/2021/shalom-2021-cover.png",
-    schedule: [
-      { time: "6:00 PM", title: "Shalom Conference 2021" },
-    ],
+    schedule: [{ time: "6:00 PM", title: "Shalom Conference 2021" }],
     speakers: [
       { name: "Reveille Youth Ministry", role: "Host Ministry" },
       { name: "RCCG Higher Ground Assembly", role: "Streaming Host" },
@@ -258,7 +261,8 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
   {
     year: "2019",
     theme: "Perfect Peace",
-    tagline: "Thou wilt keep him in perfect peace, whose mind is stayed on thee.",
+    tagline:
+      "Thou wilt keep him in perfect peace, whose mind is stayed on thee.",
     date: "December 7, 2019",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
     summary: "A youth and young adults night on Isaiah 26:3.",
