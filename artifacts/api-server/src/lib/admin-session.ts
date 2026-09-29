@@ -4,6 +4,13 @@ import type { Request, Response } from "express";
 const COOKIE_NAME = "shalom_admin_session";
 const MAX_AGE_SECONDS = 60 * 60 * 8;
 
+export type AdminRole = "admin" | "checkin";
+
+export type AdminSession = {
+  username: string;
+  role: AdminRole;
+};
+
 function getSessionSecret(): string | null {
   return process.env.SESSION_SECRET ?? null;
 }
@@ -36,12 +43,16 @@ function readCookie(req: Request): string | null {
   return value ? decodeURIComponent(value.slice(prefix.length)) : null;
 }
 
-export function establishAdminSession(res: Response, username: string): boolean {
+export function establishAdminSession(
+  res: Response,
+  username: string,
+  role: AdminRole = "admin",
+): boolean {
   const secret = getSessionSecret();
   if (!secret) return false;
   const issuedAt = Math.floor(Date.now() / 1000);
   const encodedUsername = encodeIdentity(username);
-  const tokenData = `${issuedAt}.${encodedUsername}`;
+  const tokenData = `${issuedAt}.${encodedUsername}.${role}`;
   const token = `${tokenData}.${sign(tokenData, secret)}`;
   res.cookie(COOKIE_NAME, token, {
     httpOnly: true,
@@ -63,25 +74,47 @@ export function clearAdminSession(res: Response): void {
 }
 
 export function hasAdminSession(req: Request): boolean {
-  return getAdminIdentity(req) !== null;
+  return getAdminSession(req)?.role === "admin";
+}
+
+export function hasCheckInAccess(req: Request): boolean {
+  return getAdminSession(req) !== null;
 }
 
 export function getAdminIdentity(req: Request): string | null {
+  return getAdminSession(req)?.username ?? null;
+}
+
+export function getAdminSession(req: Request): AdminSession | null {
   const secret = getSessionSecret();
   const token = readCookie(req);
   if (!secret || !token) return null;
-  const [issuedAtText, encodedUsername, signature] = token.split(".");
+  const parts = token.split(".");
+  if (parts.length !== 3 && parts.length !== 4) return null;
+
+  const [issuedAtText, encodedUsername] = parts;
+  const signature = parts.at(-1);
+  // Three-part cookies predate role-based access. They were issued only to
+  // full admins, so keep them valid as admin sessions until they expire.
+  const role = (parts.length === 3 ? "admin" : parts[2]) as AdminRole;
   const issuedAt = Number(issuedAtText);
-  if (!Number.isInteger(issuedAt) || !encodedUsername || !signature || Date.now() / 1000 - issuedAt > MAX_AGE_SECONDS) {
+  if (
+    !Number.isInteger(issuedAt) ||
+    !encodedUsername ||
+    !signature ||
+    (role !== "admin" && role !== "checkin") ||
+    Date.now() / 1000 - issuedAt > MAX_AGE_SECONDS
+  ) {
     return null;
   }
 
-  const tokenData = `${issuedAtText}.${encodedUsername}`;
+  const tokenData = parts.slice(0, -1).join(".");
   const expected = sign(tokenData, secret);
   const actualBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expected);
   if (actualBuffer.length !== expectedBuffer.length || !timingSafeEqual(actualBuffer, expectedBuffer)) {
     return null;
   }
-  return decodeIdentity(encodedUsername);
+  const username = decodeIdentity(encodedUsername);
+  return username ? { username, role } : null;
 }

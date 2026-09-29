@@ -1,4 +1,4 @@
-import { Router, type IRouter } from "express";
+import { Router, type IRouter, type Request, type Response } from "express";
 import { desc, eq, sql } from "drizzle-orm";
 import { db, adminUsersTable } from "@workspace/db";
 import {
@@ -10,11 +10,29 @@ import {
   ListAdminUsersResponse,
   LogoutAdminResponse,
 } from "@workspace/api-zod";
-import { clearAdminSession, establishAdminSession, getAdminIdentity } from "../lib/admin-session";
+import {
+  clearAdminSession,
+  establishAdminSession,
+  getAdminSession,
+  hasAdminSession,
+} from "../lib/admin-session";
 import { hashAdminPassword, verifyAdminPassword } from "../lib/admin-password";
 
 const router: IRouter = Router();
 const BOOTSTRAP_LOCK_ID = 7_313_026;
+
+function requireFullAdmin(req: Request, res: Response): boolean {
+  const session = getAdminSession(req);
+  if (!session) {
+    res.status(401).json({ error: "Admin sign-in is required." });
+    return false;
+  }
+  if (!hasAdminSession(req)) {
+    res.status(403).json({ error: "Full admin access is required." });
+    return false;
+  }
+  return true;
+}
 
 function normalizeUsername(username: string): string {
   return username.trim().toLowerCase();
@@ -47,18 +65,23 @@ async function bootstrapFirstAdmin(): Promise<void> {
     await transaction.insert(adminUsersTable).values({
       username,
       passwordHash: await hashAdminPassword(configuredPassword),
+      role: "admin",
     });
   });
 }
 
 router.get("/admin/session", (req, res): void => {
-  const username = getAdminIdentity(req);
-  if (!username) {
+  const session = getAdminSession(req);
+  if (!session) {
     res.status(401).json({ error: "Admin session required" });
     return;
   }
 
-  res.json(GetAdminSessionResponse.parse({ ok: true, username }));
+  res.json(GetAdminSessionResponse.parse({
+    ok: true,
+    username: session.username,
+    role: session.role,
+  }));
 });
 
 router.delete("/admin/session", (_req, res): void => {
@@ -67,15 +90,13 @@ router.delete("/admin/session", (_req, res): void => {
 });
 
 router.get("/admin/users", async (req, res): Promise<void> => {
-  if (!getAdminIdentity(req)) {
-    res.status(401).json({ error: "Admin sign-in is required." });
-    return;
-  }
+  if (!requireFullAdmin(req, res)) return;
 
   const users = await db
     .select({
       id: adminUsersTable.id,
       username: adminUsersTable.username,
+      role: adminUsersTable.role,
       createdAt: adminUsersTable.createdAt,
     })
     .from(adminUsersTable)
@@ -84,10 +105,7 @@ router.get("/admin/users", async (req, res): Promise<void> => {
 });
 
 router.post("/admin/users", async (req, res): Promise<void> => {
-  if (!getAdminIdentity(req)) {
-    res.status(401).json({ error: "Admin sign-in is required." });
-    return;
-  }
+  if (!requireFullAdmin(req, res)) return;
 
   const parsed = CreateAdminUserBody.safeParse(req.body);
   if (!parsed.success) {
@@ -107,10 +125,12 @@ router.post("/admin/users", async (req, res): Promise<void> => {
       .values({
         username,
         passwordHash: await hashAdminPassword(parsed.data.password),
+        role: parsed.data.role ?? "admin",
       })
       .returning({
         id: adminUsersTable.id,
         username: adminUsersTable.username,
+        role: adminUsersTable.role,
         createdAt: adminUsersTable.createdAt,
       });
 
@@ -148,13 +168,19 @@ router.post("/admin/login", async (req, res): Promise<void> => {
     return;
   }
 
-  if (!establishAdminSession(res, user.username)) {
+  const role = user.role ?? "admin";
+  if (role !== "admin" && role !== "checkin") {
+    res.status(401).json({ error: "Invalid credentials." });
+    return;
+  }
+
+  if (!establishAdminSession(res, user.username, role)) {
     req.log.error("Session secret not configured");
     res.status(500).json({ error: "Server misconfiguration" });
     return;
   }
 
-  res.json(LoginAdminResponse.parse({ ok: true }));
+  res.json(LoginAdminResponse.parse({ ok: true, username: user.username, role }));
 });
 
 export default router;

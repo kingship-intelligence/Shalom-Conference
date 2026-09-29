@@ -5,8 +5,10 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AdminSessionRole } from './adminSessionRole';
 
 export interface AdminSession {
   ok: boolean;
   username: string;
+  role: AdminSessionRole;
 }

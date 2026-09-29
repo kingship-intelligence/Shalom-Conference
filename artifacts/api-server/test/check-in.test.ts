@@ -30,12 +30,13 @@ const registrationsTable = {
   conferenceYear: registrationColumn("conferenceYear"),
   checkInTokenHash: registrationColumn("checkInTokenHash"),
   firstName: registrationColumn("firstName"),
+  lastName: registrationColumn("lastName"),
   email: registrationColumn("email"),
 };
 
 const defaultRegistrations = [
-  { id: 101, firstName: "Ada", email: "ada@example.org", conferenceYear: 2026, checkInTokenHash: null },
-  { id: 102, firstName: "Grace", email: "grace@example.org", conferenceYear: 2025, checkInTokenHash: null },
+  { id: 101, firstName: "Ada", lastName: "Lovelace", email: "ada@example.org", conferenceYear: 2026, checkInTokenHash: null },
+  { id: 102, firstName: "Grace", lastName: "Hopper", email: "grace@example.org", conferenceYear: 2025, checkInTokenHash: null },
 ];
 const sentQrEmails = [];
 const state = {
@@ -215,7 +216,12 @@ mock.module("drizzle-orm", {
 mock.module(adminSessionPath, {
   namedExports: {
     getAdminIdentity: (req) =>
-      req.headers["x-test-admin"] === "1" ? "staff@example.org" : null,
+      req.headers["x-test-admin"] === "1" || req.headers["x-test-checkin"] === "1"
+        ? "staff@example.org"
+        : null,
+    hasAdminSession: (req) => req.headers["x-test-admin"] === "1",
+    hasCheckInAccess: (req) =>
+      req.headers["x-test-admin"] === "1" || req.headers["x-test-checkin"] === "1",
   },
 });
 mock.module(emailPath, {
@@ -239,7 +245,7 @@ function makeApp() {
   return app;
 }
 
-async function request(method, path, body, admin = false) {
+async function request(method, path, body, access = false) {
   const app = makeApp();
   const server = app.listen(0);
   await new Promise((resolve) => server.once("listening", resolve));
@@ -250,7 +256,11 @@ async function request(method, path, body, admin = false) {
       method,
       headers: {
         ...(body ? { "content-type": "application/json" } : {}),
-        ...(admin ? { "x-test-admin": "1" } : {}),
+        ...(access === "checkin"
+          ? { "x-test-checkin": "1" }
+          : access
+            ? { "x-test-admin": "1" }
+            : {}),
       },
       ...(body ? { body: JSON.stringify(body) } : {}),
     });
@@ -290,6 +300,7 @@ describe("admin check-in", () => {
       ["POST", "/check-in-sessions", { conferenceYear: 2026, sessionDate: "2026-09-28", name: "Opening" }],
       ["DELETE", "/check-in-sessions/1"],
       ["GET", "/check-in-sessions/1/check-ins"],
+      ["GET", "/check-in-sessions/1/roster"],
       ["POST", "/check-in-sessions/1/scan", { payload: `shalom-checkin:v1:${"A".repeat(43)}` }],
       ["POST", "/check-in-sessions/1/registrations/101/qr-email"],
       ["POST", "/check-in-sessions/1/registrations/101/check-in"],
@@ -302,6 +313,72 @@ describe("admin check-in", () => {
     }
     assert.equal(state.sessions.length, 0);
     assert.equal(state.checkIns.length, 0);
+  });
+
+  it("limits check-in staff to the minimal roster and arrival actions", async () => {
+    const session = await request(
+      "POST",
+      "/check-in-sessions",
+      { conferenceYear: 2026, sessionDate: "2026-09-28", name: "Opening" },
+      true,
+    );
+    assert.equal(session.status, 201);
+    const sessionId = (await session.json()).id;
+
+    const sessions = await request("GET", "/check-in-sessions", undefined, "checkin");
+    assert.equal(sessions.status, 200);
+
+    const roster = await request(
+      "GET",
+      `/check-in-sessions/${sessionId}/roster`,
+      undefined,
+      "checkin",
+    );
+    assert.equal(roster.status, 200);
+    assert.deepEqual(await roster.json(), [
+      { id: 101, firstName: "Ada", lastName: "Lovelace", conferenceYear: 2026 },
+    ]);
+    assert.equal(roster.headers.get("content-type")?.includes("application/json"), true);
+
+    const checkedIn = await request(
+      "POST",
+      `/check-in-sessions/${sessionId}/registrations/101/check-in`,
+      undefined,
+      "checkin",
+    );
+    assert.equal(checkedIn.status, 201);
+    assert.equal((await checkedIn.json()).checkedInBy, "staff@example.org");
+
+    const undo = await request(
+      "DELETE",
+      `/check-in-sessions/${sessionId}/registrations/101/check-in`,
+      undefined,
+      "checkin",
+    );
+    assert.equal(undo.status, 204);
+
+    const createSession = await request(
+      "POST",
+      "/check-in-sessions",
+      { conferenceYear: 2026, sessionDate: "2026-09-29", name: "Evening" },
+      "checkin",
+    );
+    const deleteSession = await request(
+      "DELETE",
+      `/check-in-sessions/${sessionId}`,
+      undefined,
+      "checkin",
+    );
+    const replaceQr = await request(
+      "POST",
+      `/check-in-sessions/${sessionId}/registrations/101/qr-email`,
+      undefined,
+      "checkin",
+    );
+    assert.equal(createSession.status, 403);
+    assert.equal(deleteSession.status, 403);
+    assert.equal(replaceQr.status, 403);
+    assert.equal(state.sessions.length, 1);
   });
 
   it("creates configurable sessions and rejects duplicate session names for the same date", async () => {
@@ -428,7 +505,7 @@ describe("admin check-in", () => {
       "POST",
       `/check-in-sessions/${session.id}/scan`,
       { payload: credential.payload },
-      true,
+      "checkin",
     );
     assert.equal(scanned.status, 201);
     assert.equal((await scanned.json()).registrationId, 101);
@@ -437,7 +514,7 @@ describe("admin check-in", () => {
       "POST",
       `/check-in-sessions/${session.id}/scan`,
       { payload: credential.payload },
-      true,
+      "checkin",
     );
     assert.equal(duplicate.status, 409);
 

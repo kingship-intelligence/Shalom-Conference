@@ -40,6 +40,12 @@ import { Check, User, UserCheck, Users, Mail, Phone, Calendar, MessageSquare, Ar
 import { AdminCheckIn } from "@/components/admin-check-in";
 
 const SESSION_KEY = "shalom_admin_auth";
+type AdminRole = "admin" | "checkin";
+
+function isAdminRole(value: unknown): value is AdminRole {
+  return value === "admin" || value === "checkin";
+}
+
 const PRAYER_SLOT_LABELS: Record<string, string> = {
   "00:00": "12 AM – 1 AM",
   "01:00": "1 AM – 2 AM",
@@ -129,6 +135,7 @@ function exportPrayerChainCSV(signups: any[]) {
 
 function useAdminAuth() {
   const [authed, setAuthed] = useState(false);
+  const [role, setRole] = useState<AdminRole | null>(null);
   const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -150,6 +157,13 @@ function useAdminAuth() {
         if (!res.ok) {
           throw new Error("Admin session is no longer valid.");
         }
+        return res.json();
+      })
+      .then((session) => {
+        if (!isAdminRole(session?.role)) {
+          throw new Error("Admin session has no valid access role.");
+        }
+        setRole(session.role);
         setAuthed(true);
       })
       .catch((sessionError) => {
@@ -179,7 +193,13 @@ function useAdminAuth() {
         body: JSON.stringify({ username, password }),
       });
       if (res.ok) {
+        const session = await res.json();
+        if (!isAdminRole(session?.role)) {
+          setError("The server returned an invalid account role.");
+          return;
+        }
         sessionStorage.setItem(SESSION_KEY, "1");
+        setRole(session.role);
         setAuthed(true);
       } else {
         setError("Incorrect username or password.");
@@ -193,6 +213,7 @@ function useAdminAuth() {
 
   const logout = useCallback((message = "") => {
     sessionStorage.removeItem(SESSION_KEY);
+    setRole(null);
     setAuthed(false);
     setError(message);
     void fetch("/api/admin/session", {
@@ -201,7 +222,7 @@ function useAdminAuth() {
     }).catch(() => {});
   }, []);
 
-  return { authed, checking, login, logout, loading, error };
+  return { authed, role, checking, login, logout, loading, error };
 }
 
 function LoginScreen({ onLogin, loading, error }: { onLogin: (u: string, p: string) => void; loading: boolean; error: string }) {
@@ -292,7 +313,8 @@ function LoginScreen({ onLogin, loading, error }: { onLogin: (u: string, p: stri
 }
 
 export default function Admin() {
-  const { authed, checking, login, logout, loading, error } = useAdminAuth();
+  const { authed, role, checking, login, logout, loading, error } = useAdminAuth();
+  const fullAdmin = authed && role === "admin";
   const queryClient = useQueryClient();
   const [registrationSearch, setRegistrationSearch] = useState("");
   const [prayerChainSearch, setPrayerChainSearch] = useState("");
@@ -302,21 +324,25 @@ export default function Admin() {
   const [newAdminUsername, setNewAdminUsername] = useState("");
   const [newAdminPassword, setNewAdminPassword] = useState("");
   const [confirmAdminPassword, setConfirmAdminPassword] = useState("");
+  const [newAdminRole, setNewAdminRole] = useState<AdminRole>("checkin");
   const [adminAccountFormError, setAdminAccountFormError] = useState("");
 
   const registrationsQuery = useListRegistrations({
     query: {
-      enabled: authed,
+      enabled: fullAdmin,
       queryKey: getListRegistrationsQueryKey(),
       retry: 2,
       refetchOnWindowFocus: true,
     },
     request: { credentials: "include" },
   });
-  const testimoniesQuery = useListTestimonies();
+  const testimoniesQuery = useListTestimonies({
+    query: { enabled: fullAdmin },
+    request: { credentials: "include" },
+  });
   const adminUsersQuery = useListAdminUsers({
     query: {
-      enabled: authed,
+      enabled: fullAdmin,
       queryKey: getListAdminUsersQueryKey(),
       retry: 2,
       refetchOnWindowFocus: true,
@@ -325,7 +351,7 @@ export default function Admin() {
   });
   const merchOrdersQuery = useListMerchOrders({
     query: {
-      enabled: authed,
+      enabled: fullAdmin,
       queryKey: getListMerchOrdersQueryKey(),
       retry: 2,
       refetchOnWindowFocus: true,
@@ -334,7 +360,7 @@ export default function Admin() {
   });
   const prayerChainQuery = useListPrayerChainSignups({
     query: {
-      enabled: authed,
+      enabled: fullAdmin,
       queryKey: getListPrayerChainSignupsQueryKey(),
       retry: 2,
       refetchOnWindowFocus: true,
@@ -343,7 +369,7 @@ export default function Admin() {
   });
   const firstTimerResponsesQuery = useListFirstTimerResponses({
     query: {
-      enabled: authed,
+      enabled: fullAdmin,
       queryKey: getListFirstTimerResponsesQueryKey(),
       retry: 2,
       refetchOnWindowFocus: true,
@@ -352,7 +378,7 @@ export default function Admin() {
   });
   const prayerChargeSurveyQuery = useListPrayerChargeSurveyResponses({
     query: {
-      enabled: authed,
+      enabled: fullAdmin,
       queryKey: getListPrayerChargeSurveyResponsesQueryKey(),
       retry: 2,
       refetchOnWindowFocus: true,
@@ -394,6 +420,7 @@ export default function Admin() {
         setNewAdminUsername("");
         setNewAdminPassword("");
         setConfirmAdminPassword("");
+        setNewAdminRole("checkin");
         setAdminAccountFormError("");
         queryClient.invalidateQueries({ queryKey: getListAdminUsersQueryKey() });
       },
@@ -412,6 +439,7 @@ export default function Admin() {
       data: {
         username: newAdminUsername.trim(),
         password: newAdminPassword,
+        role: newAdminRole,
       },
     });
   }
@@ -523,6 +551,50 @@ export default function Admin() {
     return <LoginScreen onLogin={login} loading={loading} error={error} />;
   }
 
+  if (role === "checkin") {
+    return (
+      <div className="min-h-screen bg-background pb-16 text-foreground">
+        <header className="px-4 py-6 sm:px-6">
+          <div className="container mx-auto flex max-w-7xl items-center justify-between">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Staff access</p>
+              <h1 className="mt-1 text-2xl font-bold italic text-white">CHECK-IN DESK</h1>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link href="/" className="text-sm font-bold uppercase tracking-widest text-white/50 hover:text-white">
+                <ArrowLeft className="mr-2 inline h-4 w-4" />
+                Home
+              </Link>
+              <button
+                type="button"
+                onClick={() => logout()}
+                className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-white/50 hover:text-white"
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
+              </button>
+            </div>
+          </div>
+        </header>
+        <main className="container mx-auto max-w-7xl px-4 pt-3 sm:px-6">
+          <AdminCheckIn
+            authed={authed}
+            canManageSessions={false}
+            canSendReplacementQr={false}
+          />
+        </main>
+      </div>
+    );
+  }
+
+  if (role !== "admin") {
+    return (
+      <div className="grid min-h-screen place-items-center bg-background text-white/60">
+        <p className="text-sm">Checking account access…</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
       <header className="relative z-20 px-4 py-8 sm:px-6">
@@ -598,9 +670,14 @@ export default function Admin() {
                       className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3"
                     >
                       <span className="font-semibold text-white">{adminUser.username}</span>
-                      <span className="text-xs text-white/40">
-                        Added {format(new Date(adminUser.createdAt), "MMM d, yyyy")}
-                      </span>
+                      <div className="flex items-center gap-3">
+                        <Badge variant="outline" className="border-white/15 text-white/60">
+                          {adminUser.role === "checkin" ? "Check-in only" : "Full admin"}
+                        </Badge>
+                        <span className="text-xs text-white/40">
+                          Added {format(new Date(adminUser.createdAt), "MMM d, yyyy")}
+                        </span>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -613,9 +690,9 @@ export default function Admin() {
 
             <form onSubmit={submitAdminAccount} className="space-y-4">
               <div>
-                <h3 className="text-sm font-bold uppercase tracking-widest text-white/55">Add an admin</h3>
+                <h3 className="text-sm font-bold uppercase tracking-widest text-white/55">Create a staff login</h3>
                 <p className="mt-1 text-xs leading-relaxed text-white/40">
-                  New accounts can sign in to this dashboard. Use a unique username and a password of at least 12 characters.
+                  Check-in-only accounts can scan and record arrivals without seeing the rest of the admin portal.
                 </p>
               </div>
               <div>
@@ -634,6 +711,20 @@ export default function Admin() {
                   placeholder="admin@example.com"
                   className="h-11 border-white/10 bg-white/5 text-white placeholder:text-white/25"
                 />
+              </div>
+              <div>
+                <label htmlFor="new-admin-role" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/45">
+                  Access level
+                </label>
+                <select
+                  id="new-admin-role"
+                  value={newAdminRole}
+                  onChange={(event) => setNewAdminRole(event.target.value as AdminRole)}
+                  className="h-11 w-full rounded-md border border-white/10 bg-background px-3 text-sm text-white"
+                >
+                  <option value="checkin">Check-in only</option>
+                  <option value="admin">Full admin portal</option>
+                </select>
               </div>
               <div>
                 <label htmlFor="new-admin-password" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/45">
@@ -677,7 +768,11 @@ export default function Admin() {
                 disabled={createAdminUserMutation.isPending}
                 className="w-full rounded-full bg-primary font-bold uppercase tracking-widest text-white hover:bg-primary/90"
               >
-                {createAdminUserMutation.isPending ? "Creating account…" : "Create admin account"}
+                {createAdminUserMutation.isPending
+                  ? "Creating account…"
+                  : newAdminRole === "checkin"
+                    ? "Create check-in login"
+                    : "Create full admin"}
               </Button>
             </form>
           </div>
@@ -685,9 +780,8 @@ export default function Admin() {
 
         <AdminCheckIn
           authed={authed}
-          registrations={registrationsQuery.data ?? []}
-          registrationsLoading={registrationsQuery.isLoading}
-          registrationsError={registrationsQuery.error}
+          canManageSessions
+          canSendReplacementQr
         />
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">

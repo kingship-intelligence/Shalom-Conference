@@ -247,7 +247,7 @@ paths:
     get:
       operationId: listCheckInSessions
       tags: [check-in]
-      summary: List conference check-in sessions (admin)
+      summary: List conference check-in sessions (admin or check-in staff)
       responses:
         "200":
           description: Configured check-in sessions
@@ -266,7 +266,7 @@ paths:
     post:
       operationId: createCheckInSession
       tags: [check-in]
-      summary: Create a conference check-in session (admin)
+      summary: Create a conference check-in session (admin only)
       requestBody:
         required: true
         content:
@@ -292,6 +292,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Full admin access required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "409":
           description: A session with this name already exists for that date
           content:
@@ -302,7 +308,7 @@ paths:
     delete:
       operationId: deleteCheckInSession
       tags: [check-in]
-      summary: Delete a check-in session that has no attendees checked in (admin)
+      summary: Delete a check-in session that has no attendees checked in (admin only)
       parameters:
         - $ref: "#/components/parameters/CheckInSessionId"
       responses:
@@ -336,7 +342,7 @@ paths:
     get:
       operationId: listSessionCheckIns
       tags: [check-in]
-      summary: List attendees checked in to a session (admin)
+      summary: List attendees checked in to a session (admin or check-in staff)
       parameters:
         - $ref: "#/components/parameters/CheckInSessionId"
       responses:
@@ -360,6 +366,46 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Full admin access required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Check-in session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /check-in-sessions/{sessionId}/roster:
+    get:
+      operationId: listCheckInRoster
+      tags: [check-in]
+      summary: List the minimal attendee roster for a check-in session
+      parameters:
+        - $ref: "#/components/parameters/CheckInSessionId"
+      responses:
+        "200":
+          description: Names and registration references for attendees in the session year
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/CheckInRosterRegistration"
+        "400":
+          description: Invalid session ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
         "404":
           description: Check-in session not found
           content:
@@ -370,7 +416,7 @@ paths:
     post:
       operationId: scanCheckInQr
       tags: [check-in]
-      summary: Check an attendee in by scanning their QR code (admin)
+      summary: Check an attendee in by scanning their QR code (admin or check-in staff)
       parameters:
         - $ref: "#/components/parameters/CheckInSessionId"
       requestBody:
@@ -414,7 +460,7 @@ paths:
     post:
       operationId: sendRegistrationCheckInQr
       tags: [check-in]
-      summary: Email a replacement attendee QR code (admin)
+      summary: Email a replacement attendee QR code (admin only)
       parameters:
         - $ref: "#/components/parameters/CheckInSessionId"
         - $ref: "#/components/parameters/RegistrationId"
@@ -429,6 +475,12 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Full admin access required
           content:
             application/json:
               schema:
@@ -449,7 +501,7 @@ paths:
     post:
       operationId: checkInRegistration
       tags: [check-in]
-      summary: Check a registered attendee into a session (admin)
+      summary: Check a registered attendee into a session (admin or check-in staff)
       parameters:
         - $ref: "#/components/parameters/CheckInSessionId"
         - $ref: "#/components/parameters/RegistrationId"
@@ -487,7 +539,7 @@ paths:
     delete:
       operationId: undoRegistrationCheckIn
       tags: [check-in]
-      summary: Undo an attendee check-in (admin)
+      summary: Undo an attendee check-in (admin or check-in staff)
       parameters:
         - $ref: "#/components/parameters/CheckInSessionId"
         - $ref: "#/components/parameters/RegistrationId"
@@ -752,10 +804,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Full admin access required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       operationId: createAdminUser
       tags: [admin]
-      summary: Add another admin account
+      summary: Add an admin or check-in staff account
       requestBody:
         required: true
         content:
@@ -777,6 +835,12 @@ paths:
                 $ref: "#/components/schemas/ErrorResponse"
         "401":
           description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Full admin access required
           content:
             application/json:
               schema:
@@ -936,6 +1000,14 @@ components:
         registrationId: { type: integer }
         checkedInAt: { type: string, format: date-time }
         checkedInBy: { type: string }
+    CheckInRosterRegistration:
+      type: object
+      required: [id, firstName, lastName, conferenceYear]
+      properties:
+        id:             { type: integer }
+        firstName:      { type: string }
+        lastName:       { type: string }
+        conferenceYear: { type: integer }
     CheckInQrScanInput:
       type: object
       required: [payload]
@@ -1085,10 +1157,11 @@ components:
         conferenceYear: { type: integer, minimum: 2000, maximum: 2100 }
     AdminUser:
       type: object
-      required: [id, username, createdAt]
+      required: [id, username, role, createdAt]
       properties:
         id:        { type: integer }
         username:  { type: string }
+        role:      { type: string, enum: [admin, checkin] }
         createdAt: { type: string, format: date-time }
     AdminUserInput:
       type: object
@@ -1096,6 +1169,7 @@ components:
       properties:
         username: { type: string, minLength: 3, maxLength: 254 }
         password: { type: string, minLength: 12, maxLength: 200 }
+        role:     { type: string, enum: [admin, checkin] }
     AdminLoginInput:
       type: object
       required: [username, password]
@@ -1104,15 +1178,18 @@ components:
         password: { type: string, minLength: 1, maxLength: 200 }
     AdminLoginResponse:
       type: object
-      required: [ok]
+      required: [ok, username, role]
       properties:
-        ok: { type: boolean }
+        ok:       { type: boolean }
+        username: { type: string }
+        role:     { type: string, enum: [admin, checkin] }
     AdminSession:
       type: object
-      required: [ok, username]
+      required: [ok, username, role]
       properties:
-        ok: { type: boolean }
+        ok:       { type: boolean }
         username: { type: string }
+        role:     { type: string, enum: [admin, checkin] }
     AdminLogoutResponse:
       type: object
       required: [ok]

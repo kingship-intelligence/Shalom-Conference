@@ -5,7 +5,10 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AdminLoginResponseRole } from './adminLoginResponseRole';
 
 export interface AdminLoginResponse {
   ok: boolean;
+  username: string;
+  role: AdminLoginResponseRole;
 }

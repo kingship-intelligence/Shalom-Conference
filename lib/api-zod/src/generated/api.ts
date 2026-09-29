@@ -201,7 +201,7 @@ export const SkipRegistrationBadgeResponse = zod.object({
 
 
 /**
- * @summary List conference check-in sessions (admin)
+ * @summary List conference check-in sessions (admin or check-in staff)
  */
 export const listCheckInSessionsResponseSessionDateRegExp = new RegExp('^\\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$');
 
@@ -218,7 +218,7 @@ export const ListCheckInSessionsResponse = zod.array(ListCheckInSessionsResponse
 
 
 /**
- * @summary Create a conference check-in session (admin)
+ * @summary Create a conference check-in session (admin only)
  */
 export const createCheckInSessionBodyConferenceYearMin = 2000;
 export const createCheckInSessionBodyConferenceYearMax = 2200;
@@ -248,7 +248,7 @@ export const CreateCheckInSessionResponse = zod.object({
 
 
 /**
- * @summary Delete a check-in session that has no attendees checked in (admin)
+ * @summary Delete a check-in session that has no attendees checked in (admin only)
  */
 
 
@@ -261,7 +261,7 @@ export const DeleteCheckInSessionResponse = zod.void()
 
 
 /**
- * @summary List attendees checked in to a session (admin)
+ * @summary List attendees checked in to a session (admin or check-in staff)
  */
 
 
@@ -281,7 +281,26 @@ export const ListSessionCheckInsResponse = zod.array(ListSessionCheckInsResponse
 
 
 /**
- * @summary Check an attendee in by scanning their QR code (admin)
+ * @summary List the minimal attendee roster for a check-in session
+ */
+
+
+
+export const ListCheckInRosterParams = zod.object({
+  "sessionId": zod.coerce.number().int().min(1)
+})
+
+export const ListCheckInRosterResponseItem = zod.object({
+  "id": zod.number().int(),
+  "firstName": zod.string(),
+  "lastName": zod.string(),
+  "conferenceYear": zod.number().int()
+})
+export const ListCheckInRosterResponse = zod.array(ListCheckInRosterResponseItem)
+
+
+/**
+ * @summary Check an attendee in by scanning their QR code (admin or check-in staff)
  */
 
 
@@ -307,7 +326,7 @@ export const ScanCheckInQrResponse = zod.object({
 
 
 /**
- * @summary Email a replacement attendee QR code (admin)
+ * @summary Email a replacement attendee QR code (admin only)
  */
 
 
@@ -321,7 +340,7 @@ export const SendRegistrationCheckInQrResponse = zod.void()
 
 
 /**
- * @summary Check a registered attendee into a session (admin)
+ * @summary Check a registered attendee into a session (admin or check-in staff)
  */
 
 
@@ -341,7 +360,7 @@ export const CheckInRegistrationResponse = zod.object({
 
 
 /**
- * @summary Undo an attendee check-in (admin)
+ * @summary Undo an attendee check-in (admin or check-in staff)
  */
 
 
@@ -509,7 +528,8 @@ export const ListFirstTimerResponsesResponse = zod.array(ListFirstTimerResponses
  */
 export const GetAdminSessionResponse = zod.object({
   "ok": zod.boolean(),
-  "username": zod.string()
+  "username": zod.string(),
+  "role": zod.enum(['admin', 'checkin'])
 })
 
 
@@ -537,7 +557,9 @@ export const LoginAdminBody = zod.object({
 })
 
 export const LoginAdminResponse = zod.object({
-  "ok": zod.boolean()
+  "ok": zod.boolean(),
+  "username": zod.string(),
+  "role": zod.enum(['admin', 'checkin'])
 })
 
 
@@ -547,13 +569,14 @@ export const LoginAdminResponse = zod.object({
 export const ListAdminUsersResponseItem = zod.object({
   "id": zod.number().int(),
   "username": zod.string(),
+  "role": zod.enum(['admin', 'checkin']),
   "createdAt": zod.coerce.date()
 })
 export const ListAdminUsersResponse = zod.array(ListAdminUsersResponseItem)
 
 
 /**
- * @summary Add another admin account
+ * @summary Add an admin or check-in staff account
  */
 export const createAdminUserBodyUsernameMin = 3;
 export const createAdminUserBodyUsernameMax = 254;
@@ -565,12 +588,14 @@ export const createAdminUserBodyPasswordMax = 200;
 
 export const CreateAdminUserBody = zod.object({
   "username": zod.string().min(createAdminUserBodyUsernameMin).max(createAdminUserBodyUsernameMax),
-  "password": zod.string().min(createAdminUserBodyPasswordMin).max(createAdminUserBodyPasswordMax)
+  "password": zod.string().min(createAdminUserBodyPasswordMin).max(createAdminUserBodyPasswordMax),
+  "role": zod.enum(['admin', 'checkin']).optional()
 })
 
 export const CreateAdminUserResponse = zod.object({
   "id": zod.number().int(),
   "username": zod.string(),
+  "role": zod.enum(['admin', 'checkin']),
   "createdAt": zod.coerce.date()
 })
 

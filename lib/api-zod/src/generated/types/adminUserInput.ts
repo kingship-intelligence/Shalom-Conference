@@ -5,6 +5,7 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AdminUserInputRole } from './adminUserInputRole';
 
 export interface AdminUserInput {
   /**
@@ -17,4 +18,5 @@ export interface AdminUserInput {
      * @maxLength 200
      */
   password: string;
+  role?: AdminUserInputRole;
 }

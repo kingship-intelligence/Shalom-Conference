@@ -3,6 +3,8 @@ import { and, asc, desc, eq } from "drizzle-orm";
 import {
   CheckInRegistrationParams,
   CheckInRegistrationResponse,
+  ListCheckInRosterParams,
+  ListCheckInRosterResponse,
   CreateCheckInSessionBody,
   CreateCheckInSessionResponse,
   DeleteCheckInSessionParams,
@@ -20,16 +22,26 @@ import {
   registrationCheckInsTable,
   registrationsTable,
 } from "@workspace/db";
-import { getAdminIdentity } from "../lib/admin-session";
+import { getAdminIdentity, hasAdminSession, hasCheckInAccess } from "../lib/admin-session";
 import { createCheckInQrCredential, hashCheckInQrPayload, isValidCheckInQrPayload } from "../lib/check-in-qr";
 import { sendCheckInQrEmail } from "../lib/email";
 
 const router: IRouter = Router();
 
-function requireAdmin(req: Request, res: Response): string | null {
+function requireCheckInUser(req: Request, res: Response): string | null {
   const identity = getAdminIdentity(req);
-  if (!identity) {
+  if (!identity || !hasCheckInAccess(req)) {
     res.status(401).json({ error: "Admin sign-in is required." });
+    return null;
+  }
+  return identity;
+}
+
+function requireFullAdmin(req: Request, res: Response): string | null {
+  const identity = requireCheckInUser(req, res);
+  if (!identity) return null;
+  if (!hasAdminSession(req)) {
+    res.status(403).json({ error: "Full admin access is required." });
     return null;
   }
   return identity;
@@ -46,7 +58,7 @@ function isValidCalendarDate(value: string): boolean {
 }
 
 router.get("/check-in-sessions", async (req, res): Promise<void> => {
-  if (!requireAdmin(req, res)) return;
+  if (!requireCheckInUser(req, res)) return;
 
   const sessions = await db
     .select()
@@ -59,8 +71,44 @@ router.get("/check-in-sessions", async (req, res): Promise<void> => {
   res.json(ListCheckInSessionsResponse.parse(sessions));
 });
 
+router.get(
+  "/check-in-sessions/:sessionId/roster",
+  async (req, res): Promise<void> => {
+    if (!requireCheckInUser(req, res)) return;
+
+    const parsed = ListCheckInRosterParams.safeParse(req.params);
+    if (!parsed.success || parsed.data.sessionId < 1) {
+      res.status(400).json({ error: "Invalid session ID." });
+      return;
+    }
+
+    const [session] = await db
+      .select({ conferenceYear: checkInSessionsTable.conferenceYear })
+      .from(checkInSessionsTable)
+      .where(eq(checkInSessionsTable.id, parsed.data.sessionId))
+      .limit(1);
+    if (!session) {
+      res.status(404).json({ error: "Check-in session not found." });
+      return;
+    }
+
+    const registrations = await db
+      .select({
+        id: registrationsTable.id,
+        firstName: registrationsTable.firstName,
+        lastName: registrationsTable.lastName,
+        conferenceYear: registrationsTable.conferenceYear,
+      })
+      .from(registrationsTable)
+      .where(eq(registrationsTable.conferenceYear, session.conferenceYear))
+      .orderBy(asc(registrationsTable.lastName), asc(registrationsTable.firstName));
+
+    res.json(ListCheckInRosterResponse.parse(registrations));
+  },
+);
+
 router.post("/check-in-sessions", async (req, res): Promise<void> => {
-  const adminIdentity = requireAdmin(req, res);
+  const adminIdentity = requireFullAdmin(req, res);
   if (!adminIdentity) return;
 
   const parsed = CreateCheckInSessionBody.safeParse(req.body);
@@ -109,7 +157,7 @@ router.post("/check-in-sessions", async (req, res): Promise<void> => {
 });
 
 router.delete("/check-in-sessions/:sessionId", async (req, res): Promise<void> => {
-  if (!requireAdmin(req, res)) return;
+  if (!requireFullAdmin(req, res)) return;
 
   const parsed = DeleteCheckInSessionParams.safeParse(req.params);
   if (!parsed.success || parsed.data.sessionId < 1) {
@@ -153,7 +201,7 @@ router.delete("/check-in-sessions/:sessionId", async (req, res): Promise<void> =
 });
 
 router.get("/check-in-sessions/:sessionId/check-ins", async (req, res): Promise<void> => {
-  if (!requireAdmin(req, res)) return;
+  if (!requireCheckInUser(req, res)) return;
 
   const parsed = ListSessionCheckInsParams.safeParse(req.params);
   if (!parsed.success || parsed.data.sessionId < 1) {
@@ -182,7 +230,7 @@ router.get("/check-in-sessions/:sessionId/check-ins", async (req, res): Promise<
 router.post(
   "/check-in-sessions/:sessionId/scan",
   async (req, res): Promise<void> => {
-    const adminIdentity = requireAdmin(req, res);
+    const adminIdentity = requireCheckInUser(req, res);
     if (!adminIdentity) return;
 
     const parsedParams = ScanCheckInQrParams.safeParse(req.params);
@@ -261,7 +309,7 @@ router.post(
 router.post(
   "/check-in-sessions/:sessionId/registrations/:registrationId/qr-email",
   async (req, res): Promise<void> => {
-    if (!requireAdmin(req, res)) return;
+    if (!requireFullAdmin(req, res)) return;
 
     const parsed = SendRegistrationCheckInQrParams.safeParse(req.params);
     if (
@@ -341,7 +389,7 @@ router.post(
 router.post(
   "/check-in-sessions/:sessionId/registrations/:registrationId/check-in",
   async (req, res): Promise<void> => {
-    const adminIdentity = requireAdmin(req, res);
+    const adminIdentity = requireCheckInUser(req, res);
     if (!adminIdentity) return;
 
     const parsed = CheckInRegistrationParams.safeParse(req.params);
@@ -413,7 +461,7 @@ router.post(
 router.delete(
   "/check-in-sessions/:sessionId/registrations/:registrationId/check-in",
   async (req, res): Promise<void> => {
-    if (!requireAdmin(req, res)) return;
+    if (!requireCheckInUser(req, res)) return;
 
     const parsed = UndoRegistrationCheckInParams.safeParse(req.params);
     if (!parsed.success || parsed.data.sessionId < 1 || parsed.data.registrationId < 1) {

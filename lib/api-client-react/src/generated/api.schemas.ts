@@ -105,6 +105,13 @@ export interface RegistrationCheckIn {
   checkedInBy: string;
 }
 
+export interface CheckInRosterRegistration {
+  id: number;
+  firstName: string;
+  lastName: string;
+  conferenceYear: number;
+}
+
 export interface CheckInQrScanInput {
   /**
      * Opaque attendee QR payload; contains no attendee details or database identifiers.
@@ -299,11 +306,28 @@ export interface FirstTimerResponseInput {
   conferenceYear: number;
 }
 
+export type AdminUserRole = typeof AdminUserRole[keyof typeof AdminUserRole];
+
+
+export const AdminUserRole = {
+  admin: 'admin',
+  checkin: 'checkin',
+} as const;
+
 export interface AdminUser {
   id: number;
   username: string;
+  role: AdminUserRole;
   createdAt: string;
 }
+
+export type AdminUserInputRole = typeof AdminUserInputRole[keyof typeof AdminUserInputRole];
+
+
+export const AdminUserInputRole = {
+  admin: 'admin',
+  checkin: 'checkin',
+} as const;
 
 export interface AdminUserInput {
   /**
@@ -316,6 +340,7 @@ export interface AdminUserInput {
      * @maxLength 200
      */
   password: string;
+  role?: AdminUserInputRole;
 }
 
 export interface AdminLoginInput {
@@ -331,13 +356,32 @@ export interface AdminLoginInput {
   password: string;
 }
 
+export type AdminLoginResponseRole = typeof AdminLoginResponseRole[keyof typeof AdminLoginResponseRole];
+
+
+export const AdminLoginResponseRole = {
+  admin: 'admin',
+  checkin: 'checkin',
+} as const;
+
 export interface AdminLoginResponse {
   ok: boolean;
+  username: string;
+  role: AdminLoginResponseRole;
 }
+
+export type AdminSessionRole = typeof AdminSessionRole[keyof typeof AdminSessionRole];
+
+
+export const AdminSessionRole = {
+  admin: 'admin',
+  checkin: 'checkin',
+} as const;
 
 export interface AdminSession {
   ok: boolean;
   username: string;
+  role: AdminSessionRole;
 }
 
 export interface AdminLogoutResponse {

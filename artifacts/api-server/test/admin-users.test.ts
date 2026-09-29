@@ -9,6 +9,7 @@ const table = {
   id: { name: "id" },
   username: { name: "username" },
   passwordHash: { name: "password_hash" },
+  role: { name: "role" },
   createdAt: { name: "created_at" },
 };
 const state = { rows: [], nextId: 1 };
@@ -147,6 +148,7 @@ describe("admin account management", () => {
       {
         id: 1,
         username: "primary.admin@example.com",
+        role: "admin",
         createdAt: state.rows[0].createdAt.toISOString(),
       },
     ]);
@@ -167,6 +169,7 @@ describe("admin account management", () => {
     assert.deepEqual(await created.json(), {
       id: 2,
       username: "second.admin@example.com",
+      role: "admin",
       createdAt: state.rows[1].createdAt.toISOString(),
     });
     assert.notEqual(state.rows[1].passwordHash, "a-long-new-admin-password");
@@ -195,6 +198,7 @@ describe("admin account management", () => {
     assert.deepEqual(await session.json(), {
       ok: true,
       username: "primary.admin@example.com",
+      role: "admin",
     });
 
     const weakPassword = await request(
@@ -223,5 +227,47 @@ describe("admin account management", () => {
     assert.equal(logout.status, 200);
     assert.deepEqual(await logout.json(), { ok: true });
     assert.match(logout.headers.get("set-cookie"), /Expires=Thu, 01 Jan 1970/i);
+  });
+
+  it("creates check-in-only accounts and keeps them out of admin account management", async () => {
+    const primaryLogin = await signIn(bootstrapCredentials);
+    const adminCookie = primaryLogin.headers.get("set-cookie").split(";")[0];
+    const created = await request(
+      "POST",
+      "/admin/users",
+      {
+        username: "checkin.staff@example.org",
+        password: "a-long-checkin-password",
+        role: "checkin",
+      },
+      { cookie: adminCookie },
+    );
+
+    assert.equal(created.status, 201);
+    assert.equal((await created.json()).role, "checkin");
+
+    const staffLogin = await signIn({
+      username: "checkin.staff@example.org",
+      password: "a-long-checkin-password",
+    });
+    assert.equal(staffLogin.status, 200);
+    assert.deepEqual(await staffLogin.json(), {
+      ok: true,
+      username: "checkin.staff@example.org",
+      role: "checkin",
+    });
+
+    const staffCookie = staffLogin.headers.get("set-cookie").split(";")[0];
+    const deniedUsersList = await request("GET", "/admin/users", undefined, {
+      cookie: staffCookie,
+    });
+    const deniedUserCreate = await request(
+      "POST",
+      "/admin/users",
+      { username: "another.staff", password: "another-long-password" },
+      { cookie: staffCookie },
+    );
+    assert.equal(deniedUsersList.status, 403);
+    assert.equal(deniedUserCreate.status, 403);
   });
 });

@@ -5,9 +5,11 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+import type { AdminUserRole } from './adminUserRole';
 
 export interface AdminUser {
   id: number;
   username: string;
+  role: AdminUserRole;
   createdAt: Date;
 }

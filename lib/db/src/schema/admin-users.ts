@@ -8,6 +8,7 @@ export const adminUsersTable = pgTable(
     id: serial("id").primaryKey(),
     username: text("username").notNull(),
     passwordHash: text("password_hash").notNull(),
+    role: text("role").notNull().default("admin"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex("admin_users_username_unique").on(table.username)],

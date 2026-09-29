@@ -1,17 +1,19 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   getListCheckInSessionsQueryKey,
+  getListCheckInRosterQueryKey,
   getListSessionCheckInsQueryKey,
   useCheckInRegistration,
   useCreateCheckInSession,
   useDeleteCheckInSession,
   useListCheckInSessions,
+  useListCheckInRoster,
   useListSessionCheckIns,
   useScanCheckInQr,
   useSendRegistrationCheckInQr,
   useUndoRegistrationCheckIn,
+  type CheckInRosterRegistration,
   type CheckInSession,
-  type Registration,
 } from "@workspace/api-client-react";
 import { BrowserQRCodeReader } from "@zxing/browser";
 import { useQueryClient } from "@tanstack/react-query";
@@ -38,9 +40,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 type AdminCheckInProps = {
   authed: boolean;
-  registrations: Registration[];
-  registrationsLoading: boolean;
-  registrationsError: unknown;
+  canManageSessions: boolean;
+  canSendReplacementQr: boolean;
 };
 
 function errorMessage(error: unknown, fallback: string) {
@@ -64,9 +65,8 @@ function sessionTimeLabel(value: string) {
 
 export function AdminCheckIn({
   authed,
-  registrations,
-  registrationsLoading,
-  registrationsError,
+  canManageSessions,
+  canSendReplacementQr,
 }: AdminCheckInProps) {
   const queryClient = useQueryClient();
   const [selectedSessionId, setSelectedSessionId] = useState<number | null>(null);
@@ -100,6 +100,15 @@ export function AdminCheckIn({
   }, [selectedSessionId, sessions]);
 
   const selectedSession = sessions.find((session) => session.id === selectedSessionId) ?? null;
+  const rosterQuery = useListCheckInRoster(selectedSessionId ?? 0, {
+    query: {
+      enabled: authed && selectedSessionId !== null,
+      queryKey: getListCheckInRosterQueryKey(selectedSessionId ?? 0),
+      retry: 1,
+    },
+    request: { credentials: "include" },
+  });
+  const registrations: CheckInRosterRegistration[] = rosterQuery.data ?? [];
   const sessionCheckInsQuery = useListSessionCheckIns(selectedSessionId ?? 0, {
     query: {
       enabled: authed && selectedSessionId !== null,
@@ -113,12 +122,10 @@ export function AdminCheckIn({
 
   const eligibleRegistrations = useMemo(
     () =>
-      selectedSession
-        ? registrations
-            .filter((registration) => registration.conferenceYear === selectedSession.conferenceYear)
-            .sort((a, b) => `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`))
-        : [],
-    [registrations, selectedSession],
+      [...registrations].sort((a, b) =>
+        `${a.lastName} ${a.firstName}`.localeCompare(`${b.lastName} ${b.firstName}`),
+      ),
+    [registrations],
   );
   const normalizedSearch = search.trim().toLowerCase();
   const filteredRegistrations = normalizedSearch
@@ -127,8 +134,6 @@ export function AdminCheckIn({
           registration.firstName,
           registration.lastName,
           `${registration.firstName} ${registration.lastName}`,
-          registration.email,
-          registration.phone ?? "",
         ].some((value) => value.toLowerCase().includes(normalizedSearch)),
       )
     : eligibleRegistrations;
@@ -288,21 +293,23 @@ export function AdminCheckIn({
               Choose the configured session, then mark each registered attendee present. The roster is limited to that conference year.
             </p>
           </div>
-          <Button
-            type="button"
-            onClick={() => {
-              setShowCreateForm((value) => !value);
-              setFormError("");
-            }}
-            className="w-full rounded-full bg-primary font-bold uppercase tracking-widest text-white hover:bg-primary/90 sm:w-auto"
-            data-testid="button-toggle-create-session"
-          >
-            <Plus className="h-4 w-4" />
-            {showCreateForm ? "Close form" : "Add session"}
-          </Button>
+          {canManageSessions && (
+            <Button
+              type="button"
+              onClick={() => {
+                setShowCreateForm((value) => !value);
+                setFormError("");
+              }}
+              className="w-full rounded-full bg-primary font-bold uppercase tracking-widest text-white hover:bg-primary/90 sm:w-auto"
+              data-testid="button-toggle-create-session"
+            >
+              <Plus className="h-4 w-4" />
+              {showCreateForm ? "Close form" : "Add session"}
+            </Button>
+          )}
         </div>
 
-        {showCreateForm && (
+        {canManageSessions && showCreateForm && (
           <form
             onSubmit={submitSession}
             className="mt-6 grid gap-4 rounded-xl border border-primary/20 bg-background/50 p-4 sm:grid-cols-2 lg:grid-cols-[0.7fr_1fr_1.4fr_auto]"
@@ -401,7 +408,11 @@ export function AdminCheckIn({
             <div className="rounded-xl border border-dashed border-white/15 px-4 py-8 text-center" data-testid="empty-check-in-sessions">
               <Clock3 className="mx-auto h-6 w-6 text-white/30" />
               <p className="mt-3 text-sm font-semibold text-white/65">No sessions yet</p>
-              <p className="mt-1 text-xs leading-relaxed text-white/35">Create the first arrival window to begin checking people in.</p>
+              <p className="mt-1 text-xs leading-relaxed text-white/35">
+                {canManageSessions
+                  ? "Create the first arrival window to begin checking people in."
+                  : "Ask a full admin to configure a check-in session before arrival."}
+              </p>
             </div>
           ) : (
             <div className="space-y-2" data-testid="list-check-in-sessions">
@@ -459,17 +470,19 @@ export function AdminCheckIn({
                           : `${checkIns.length}/${eligibleRegistrations.length}`}
                     </p>
                   </div>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    disabled={sessionCheckInsQuery.isLoading || sessionCheckInsQuery.isError || checkIns.length > 0 || deleteSessionMutation.isPending}
-                    onClick={deleteSelectedSession}
-                    className="h-11 border-red-300/20 text-red-300 hover:bg-red-300/10 hover:text-red-200"
-                    data-testid={`button-delete-check-in-session-${selectedSession.id}`}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                    {deleteSessionMutation.isPending ? "Deleting…" : "Delete"}
-                  </Button>
+                  {canManageSessions && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      disabled={sessionCheckInsQuery.isLoading || sessionCheckInsQuery.isError || checkIns.length > 0 || deleteSessionMutation.isPending}
+                      onClick={deleteSelectedSession}
+                      className="h-11 border-red-300/20 text-red-300 hover:bg-red-300/10 hover:text-red-200"
+                      data-testid={`button-delete-check-in-session-${selectedSession.id}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                      {deleteSessionMutation.isPending ? "Deleting…" : "Delete"}
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -494,15 +507,15 @@ export function AdminCheckIn({
                     Try again
                   </Button>
                 </div>
-              ) : registrationsLoading ? (
+              ) : rosterQuery.isLoading ? (
                 <div className="mt-6 space-y-3" data-testid="loading-check-in-registrations">
                   {[1, 2, 3].map((item) => <Skeleton key={item} className="h-20 rounded-xl bg-white/5" />)}
                 </div>
-              ) : registrationsError ? (
+              ) : rosterQuery.isError ? (
                 <div className="mt-6 rounded-xl border border-red-400/20 bg-red-400/5 px-5 py-10 text-center" data-testid="error-check-in-registrations">
                   <CircleAlert className="mx-auto h-6 w-6 text-red-300" />
                   <p className="mt-3 font-semibold text-red-200">The attendee roster could not be loaded.</p>
-                  <p className="mt-2 text-sm text-red-200/65">{errorMessage(registrationsError, "The private registrations request failed.")}</p>
+                  <p className="mt-2 text-sm text-red-200/65">{errorMessage(rosterQuery.error, "The private registrations request failed.")}</p>
                 </div>
               ) : (
                 <>
@@ -513,7 +526,7 @@ export function AdminCheckIn({
                         type="search"
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
-                        placeholder="Find by name, email, or phone"
+                        placeholder="Find by name"
                         aria-label="Search the session roster"
                         className="h-12 border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/30"
                         data-testid="input-check-in-search"
@@ -541,9 +554,11 @@ export function AdminCheckIn({
                       </div>
                     </div>
                   </div>
-                  <p className="mt-2 text-xs text-white/35">
-                    Emailing a new QR code replaces and invalidates any older code for that attendee.
-                  </p>
+                  {canSendReplacementQr && (
+                    <p className="mt-2 text-xs text-white/35">
+                      Emailing a new QR code replaces and invalidates any older code for that attendee.
+                    </p>
+                  )}
 
                   {scannerOpen && (
                     <div className="mt-5 rounded-xl border border-primary/25 bg-black/30 p-4 sm:p-5" data-testid="panel-qr-scanner">
@@ -618,31 +633,30 @@ export function AdminCheckIn({
                                 <div className="flex flex-wrap items-center gap-2">
                                   <h4 className="truncate font-bold text-white">{registration.firstName} {registration.lastName}</h4>
                                   {isCheckedIn && <Badge className="border border-emerald-300/20 bg-emerald-300/10 text-emerald-200">Present</Badge>}
-                                  {registration.volunteer && <Badge className="border border-primary/20 bg-primary/10 text-primary">{registration.volunteerRole || "Volunteer"}</Badge>}
                                 </div>
-                                <p className="mt-1 truncate text-sm text-white/45">{registration.email}</p>
-                                {registration.phone && <p className="mt-1 text-xs text-white/30">{registration.phone}</p>}
                               </div>
                               <div className="flex flex-col gap-2 sm:flex-row">
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  disabled={!selectedSession || qrEmailPending}
-                                  onClick={() => {
-                                    if (!selectedSession) return;
-                                    setQrEmailSentRegistrationId(null);
-                                    sendQrMutation.mutate({
-                                      sessionId: selectedSession.id,
-                                      registrationId: registration.id,
-                                    });
-                                  }}
-                                  aria-label={`Email a new QR code to ${registration.firstName} ${registration.lastName}; this replaces any previous code`}
-                                  className="w-full border-white/15 text-white/75 hover:bg-white/5 sm:w-auto"
-                                  data-testid={`button-email-qr-registration-${registration.id}`}
-                                >
-                                  <Mail className="h-4 w-4" />
-                                  {qrEmailPending ? "Sending…" : "Email new QR"}
-                                </Button>
+                                {canSendReplacementQr && (
+                                  <Button
+                                    type="button"
+                                    variant="outline"
+                                    disabled={!selectedSession || qrEmailPending}
+                                    onClick={() => {
+                                      if (!selectedSession) return;
+                                      setQrEmailSentRegistrationId(null);
+                                      sendQrMutation.mutate({
+                                        sessionId: selectedSession.id,
+                                        registrationId: registration.id,
+                                      });
+                                    }}
+                                    aria-label={`Email a new QR code to ${registration.firstName} ${registration.lastName}; this replaces any previous code`}
+                                    className="w-full border-white/15 text-white/75 hover:bg-white/5 sm:w-auto"
+                                    data-testid={`button-email-qr-registration-${registration.id}`}
+                                  >
+                                    <Mail className="h-4 w-4" />
+                                    {qrEmailPending ? "Sending…" : "Email new QR"}
+                                  </Button>
+                                )}
                                 <Button
                                   type="button"
                                   variant={isCheckedIn ? "outline" : "default"}
