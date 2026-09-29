@@ -17,6 +17,8 @@ export type Conference = {
   theme: string;
   tagline: string;
   date: string;
+  /** ISO timestamp for when doors open on the first night. Drives the home page countdown. */
+  startsAt?: string;
   /** Omit when the venue for an archived year is not on record. */
   location?: string;
   summary: string;
@@ -48,6 +50,7 @@ export const conferences: Conference[] = [
     tagline:
       "Two nights of worship, prayer and the Word, built around the Holy Spirit.",
     date: "October 9-10, 2026",
+    startsAt: "2026-10-09T19:00:00-04:00",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
     summary:
       "Two nights in Windsor Mill for students and young adults who want more of the Holy Spirit.",

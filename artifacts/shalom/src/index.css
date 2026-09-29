@@ -165,29 +165,42 @@
 }
 
 /* Slow colour drift over the home hero video */
+/*
+ * Home hero tint. Dark enough for white text to stay legible, light enough
+ * that the footage underneath still reads as footage. The drift is a
+ * transform on an oversized layer so it stays on the compositor.
+ */
 .hero-overlay-shift {
+  overflow: hidden;
+}
+
+.hero-overlay-shift::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 220%;
   background: linear-gradient(
     110deg,
-    rgba(7, 3, 15, 0.92) 0%,
-    rgba(30, 5, 42, 0.72) 42%,
-    rgba(76, 14, 88, 0.4) 68%,
-    rgba(11, 3, 20, 0.7) 100%
+    rgba(7, 3, 15, 0.7) 0%,
+    rgba(30, 5, 42, 0.5) 42%,
+    rgba(76, 14, 88, 0.3) 68%,
+    rgba(11, 3, 20, 0.55) 100%
   );
-  background-size: 220% 100%;
-  animation: hero-overlay-drift 18s ease-in-out infinite alternate;
+  will-change: transform;
+}
+
+@media (min-width: 768px) and (prefers-reduced-motion: no-preference) {
+  .hero-overlay-shift::before {
+    animation: hero-overlay-drift 18s ease-in-out infinite alternate;
+  }
 }
 
 @keyframes hero-overlay-drift {
-  0% {
-    background-position: 0% 50%;
+  from {
+    transform: translateX(0);
   }
-  100% {
-    background-position: 100% 50%;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-overlay-shift {
-    animation: none;
+  to {
+    /* Layer is 220% wide, so shifting by 120% of the container walks it fully. */
+    transform: translateX(calc(-100% * 120 / 220));
   }
 }
