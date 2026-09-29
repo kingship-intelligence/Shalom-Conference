@@ -218,7 +218,7 @@ export default function Shop() {
               Wear The <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Fire</span>
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
-              Official merchandise for the Shalom Youth Conference. Preorder now. All items are premium quality and made to last.
+              The Comforter tee and crewneck, each in a standard and a Shalom edition. Preorders are open now.
             </p>
           </div>
         </section>

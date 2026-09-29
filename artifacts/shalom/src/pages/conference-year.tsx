@@ -1,14 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useCreateFirstTimerResponse } from "@workspace/api-client-react";
 import { Link } from "wouter";
-import { ArrowRight, Calendar, CheckCircle2, Mail, MapPin, MessageSquare, Users, Zap } from "lucide-react";
-import { SiInstagram, SiYoutube } from "react-icons/si";
+import { ArrowRight, Calendar, CheckCircle2, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { currentConference, getConferenceByYear, type Conference } from "@/data/conferences";
 import NotFound from "@/pages/not-found";
 import SiteHeader from "@/components/SiteHeader";
-import shalomLogo from "@assets/logo_1778697155106.png";
+import SiteFooter from "@/components/SiteFooter";
 
 type ConferenceYearProps = {
   year?: string;
@@ -29,7 +28,7 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
     setFeedback("");
 
     if (!name.trim() || !email.trim() || isFirstTime === null) {
-      setFeedback("Enter your name and email, then choose Yes or No.");
+      setFeedback("We need your name, your email, and a yes or no.");
       return;
     }
 
@@ -52,7 +51,7 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
         onError: (error: any) => {
           setFeedback(
             error.data?.error ||
-              "We could not save your response. Check your connection and try again.",
+              "That didn't go through. Check your connection and try once more.",
           );
         },
       },
@@ -63,12 +62,12 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
     return (
       <div
         role="status"
-        className="flex min-h-72 flex-col items-center justify-center border border-primary/30 bg-primary/5 p-8 text-center"
+        className="flex min-h-72 flex-col items-center justify-center rounded-2xl border border-primary/30 bg-primary/5 p-8 text-center"
       >
         <CheckCircle2 className="h-12 w-12 text-primary" />
-        <h3 className="mt-5 text-2xl font-black uppercase text-white">Response received</h3>
+        <h3 className="mt-5 text-2xl font-black uppercase text-white">Got it</h3>
         <p className="mt-3 max-w-md text-white/60">
-          Thank you. Your first-timer response for Shalom {conferenceYear} has been saved.
+          Thanks for letting us know. See you in October.
         </p>
       </div>
     );
@@ -87,7 +86,7 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
           autoComplete="name"
           required
           maxLength={160}
-          className="h-12 border-white/15 bg-black/20 text-white placeholder:text-white/30"
+          className="h-12 rounded-xl border-white/15 bg-black/20 text-white placeholder:text-white/30"
           placeholder="Your full name"
         />
       </div>
@@ -103,13 +102,13 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
           autoComplete="email"
           required
           maxLength={254}
-          className="h-12 border-white/15 bg-black/20 text-white placeholder:text-white/30"
+          className="h-12 rounded-xl border-white/15 bg-black/20 text-white placeholder:text-white/30"
           placeholder="you@example.com"
         />
       </div>
       <fieldset>
         <legend className="mb-3 text-xs font-bold uppercase tracking-widest text-white/55">
-          Is this your first time attending Shalom?
+          Is this your first Shalom?
         </legend>
         <div className="grid grid-cols-2 gap-3">
           {[
@@ -118,7 +117,7 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
           ].map((option) => (
             <label
               key={option.label}
-              className={`cursor-pointer border px-4 py-3 text-center text-sm font-bold uppercase tracking-wider transition-colors ${
+              className={`cursor-pointer rounded-full border px-4 py-3 text-center text-sm font-bold uppercase tracking-wider transition-colors ${
                 isFirstTime === option.value
                   ? "border-primary bg-primary text-primary-foreground"
                   : "border-white/15 bg-black/20 text-white/65 hover:border-primary/60"
@@ -139,7 +138,7 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
         </div>
       </fieldset>
       {feedback && (
-        <p role="alert" className="border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+        <p role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-200">
           {feedback}
         </p>
       )}
@@ -148,7 +147,7 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
         disabled={createResponse.isPending}
         className="h-12 w-full rounded-full font-bold uppercase tracking-widest"
       >
-        {createResponse.isPending ? "Saving…" : "Submit response"}
+        {createResponse.isPending ? "Sending…" : "Send"}
       </Button>
     </form>
   );
@@ -158,7 +157,7 @@ function SpeakerCard({
   speaker,
   autoFlip = false,
 }: {
-  speaker: Conference["speakers"][number];
+  speaker: NonNullable<Conference["speakers"]>[number];
   autoFlip?: boolean;
 }) {
   const [flipped, setFlipped] = useState(false);
@@ -182,7 +181,7 @@ function SpeakerCard({
       ([entry]) => {
         if (entry.isIntersecting) {
           observer.unobserve(card);
-           timeout = window.setTimeout(() => setFlipped(true), SPEAKER_AUTO_FLIP_DELAY_MS);
+          timeout = window.setTimeout(() => setFlipped(true), SPEAKER_AUTO_FLIP_DELAY_MS);
         }
       },
       { threshold: 0.3 },
@@ -202,7 +201,7 @@ function SpeakerCard({
 
   if (!speaker.bio) {
     return (
-      <div className="overflow-hidden border border-white/10 bg-background/60 text-center sm:text-left">
+      <div className="overflow-hidden rounded-2xl border border-white/10 bg-background/60 text-center sm:text-left">
         {speaker.image ? (
           <img
             src={speaker.image}
@@ -234,7 +233,7 @@ function SpeakerCard({
         aria-pressed={flipped}
       >
         <div
-          className="absolute inset-0 overflow-hidden border border-white/10 bg-background/60 text-left transition-transform duration-700 [backface-visibility:hidden] [transform-style:preserve-3d] motion-reduce:transition-none"
+          className="absolute inset-0 overflow-hidden rounded-2xl border border-white/10 bg-background/60 text-left transition-transform duration-700 [backface-visibility:hidden] [transform-style:preserve-3d] motion-reduce:transition-none"
           style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
         >
           {speaker.image ? (
@@ -257,7 +256,7 @@ function SpeakerCard({
         </div>
 
         <div
-          className="absolute inset-0 flex flex-col overflow-y-auto border border-primary/30 bg-background p-5 text-left transition-transform duration-700 [backface-visibility:hidden] [transform:rotateY(180deg)] [transform-style:preserve-3d] motion-reduce:transition-none sm:p-6"
+          className="absolute inset-0 flex flex-col overflow-y-auto rounded-2xl border border-primary/30 bg-background p-5 text-left transition-transform duration-700 [backface-visibility:hidden] [transform:rotateY(180deg)] [transform-style:preserve-3d] motion-reduce:transition-none sm:p-6"
           style={{ transform: flipped ? "rotateY(0deg)" : "rotateY(-180deg)" }}
         >
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">{speaker.role}</p>
@@ -266,7 +265,7 @@ function SpeakerCard({
         </div>
       </button>
       <p className="mt-3 text-center text-xs uppercase tracking-[0.18em] text-white/45">
-        Tap to {flipped ? "view photo" : "read bio"}
+        Tap to {flipped ? "see photo" : "read bio"}
       </p>
     </div>
   );
@@ -280,6 +279,9 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
   }
 
   const isCurrent = conference.year === currentConference.year;
+  const schedule = conference.schedule ?? [];
+  const speakers = conference.speakers ?? [];
+  const hasProgramme = schedule.length > 0 || speakers.length > 0;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -288,7 +290,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
       <main>
         {conference.flyer ? (
           <section className="relative flex min-h-[100dvh] items-center overflow-hidden px-4 pb-20 pt-28 sm:px-6">
-            {/* Flyer backdrop */}
+            {/* Flyer, blurred, as the backdrop */}
             <div className="absolute inset-0">
               <img
                 src={conference.flyer}
@@ -301,17 +303,15 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
             </div>
 
             <div className="container relative z-10 mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[0.9fr_1fr] lg:gap-16">
-              {/* Poster */}
               <div className="flex justify-center lg:justify-start">
                 <img
                   src={conference.flyer}
-                  alt={`Shalom ${conference.year} — ${conference.theme}`}
+                  alt={`Shalom ${conference.year} flyer: ${conference.theme}`}
                   fetchPriority="high"
                   className="max-h-[78vh] w-auto max-w-sm rounded-2xl shadow-2xl ring-1 ring-white/10 sm:max-w-md"
                 />
               </div>
 
-              {/* About */}
               <div className="text-center lg:text-left">
                 <h2 className="mb-6 text-2xl font-black uppercase tracking-tighter text-white sm:text-3xl lg:text-4xl">
                   {conference.summary}
@@ -321,11 +321,11 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                 </p>
 
                 {isCurrent ? (
-                  <div className="flex flex-col items-center lg:items-start">
+                  <div className="mt-10 flex flex-col items-center gap-3 lg:items-start">
                     <Button
                       asChild
                       size="lg"
-                      className="mt-10 h-14 w-full max-w-xs whitespace-normal rounded-full bg-primary px-6 text-base font-bold uppercase leading-tight tracking-wide text-center text-primary-foreground shadow-lg hover:bg-primary/90 sm:px-8 sm:text-lg sm:tracking-wider"
+                      className="h-14 w-full max-w-xs rounded-full bg-primary px-8 text-base font-bold uppercase tracking-wide text-primary-foreground shadow-lg hover:bg-primary/90 sm:text-lg sm:tracking-wider"
                     >
                       <Link href="/register">
                         Register for Shalom {conference.year}
@@ -336,10 +336,10 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                       asChild
                       variant="outline"
                       size="lg"
-                      className="mt-3 h-auto min-h-12 w-full max-w-xs whitespace-normal rounded-full border-primary/40 bg-white/5 px-5 py-3 text-xs font-bold uppercase leading-snug tracking-[0.08em] text-center text-white hover:border-primary hover:bg-primary/10 hover:text-white sm:text-sm sm:tracking-wide"
+                      className="h-auto min-h-12 w-full max-w-xs whitespace-normal rounded-full border-white/20 bg-white/5 px-5 py-3 text-xs font-bold uppercase leading-snug tracking-wide text-white hover:border-primary hover:bg-primary/10 hover:text-white sm:text-sm"
                     >
                       <Link href="/register?badge=1">
-                        Already registered? Create your “I’m Attending” badge
+                        Already registered? Make your badge
                       </Link>
                     </Button>
                   </div>
@@ -352,23 +352,18 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
             <div className="absolute inset-0">
               <img
                 src={conference.image}
-                alt={`${conference.year} ${conference.theme}`}
+                alt={`Shalom ${conference.year}: ${conference.theme}`}
                 className="h-full w-full object-cover opacity-50"
               />
               <div className="absolute inset-0 bg-gradient-to-b from-background/35 via-background/78 to-background" />
-              <div className="absolute -right-24 top-0 h-80 w-80 rounded-full bg-primary/20 blur-3xl" />
-              <div className="absolute -left-24 bottom-0 h-80 w-80 rounded-full bg-secondary/20 blur-3xl" />
             </div>
 
             <div className="container relative z-10 mx-auto max-w-6xl">
-              <div className="mb-8 inline-flex items-center rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur-sm">
-                <Zap className="mr-2 h-4 w-4" />
-                <span>
-                  Shalom {conference.year} {isCurrent ? "Registration Open" : "Archive"}
-                </span>
-              </div>
+              <p className="mb-6 font-mono text-sm uppercase tracking-widest text-primary">
+                Shalom {conference.year}
+              </p>
 
-              <h1 className="mb-6 text-4xl font-black uppercase leading-none tracking-tighter text-glow sm:text-6xl md:text-9xl">
+              <h1 className="mb-6 text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl md:text-9xl">
                 {conference.theme}
               </h1>
               <p className="mx-auto mb-10 max-w-3xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl md:text-3xl">
@@ -376,26 +371,26 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               </p>
 
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-                {isCurrent && conference.registrationUrl ? (
+                {isCurrent ? (
                   <Button
                     asChild
                     size="lg"
-                    className="h-14 w-full max-w-xs whitespace-normal rounded-none px-6 text-base font-bold uppercase leading-tight tracking-wide text-center bg-glow sm:w-auto sm:px-8 sm:text-lg sm:tracking-wider"
+                    className="h-14 w-full max-w-xs rounded-full px-8 text-base font-bold uppercase tracking-wide sm:w-auto sm:text-lg"
                   >
-                    <a href={conference.registrationUrl} target="_blank" rel="noreferrer">
+                    <Link href="/register">
                       Register for Shalom {conference.year}
                       <ArrowRight className="h-5 w-5" />
-                    </a>
+                    </Link>
                   </Button>
                 ) : null}
                 <Button
                   asChild
                   variant="outline"
                   size="lg"
-                  className="h-14 w-full max-w-xs whitespace-normal rounded-none border-white/20 px-6 text-base font-medium uppercase leading-tight tracking-wide text-center sm:w-auto sm:px-8 sm:text-lg sm:tracking-wider"
+                  className="h-14 w-full max-w-xs rounded-full border-white/20 px-8 text-base font-medium uppercase tracking-wide sm:w-auto sm:text-lg"
                 >
                   <Link href="/archive">
-                    View Archives <ArrowRight className="h-5 w-5" />
+                    Back to the archive <ArrowRight className="h-5 w-5" />
                   </Link>
                 </Button>
               </div>
@@ -406,35 +401,47 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
         <section className="border-y border-white/10 bg-card px-4 py-16 sm:px-6">
           <div className="container mx-auto grid max-w-5xl gap-8 sm:grid-cols-2">
             <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-5 sm:text-left">
-              <MapPin className="h-8 w-8 text-primary" />
+              <Calendar className="h-8 w-8 text-primary" />
               <div>
-                <h2 className="text-xl font-bold text-white">Location</h2>
-                <p className="text-muted-foreground">{conference.location}</p>
-              </div>
-            </div>
-            <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-5 sm:text-left">
-              <Calendar className="h-8 w-8 text-secondary" />
-              <div>
-                <h2 className="text-xl font-bold text-white">Date</h2>
+                <h2 className="text-xl font-bold text-white">When</h2>
                 <p className="text-muted-foreground">{conference.date}</p>
               </div>
             </div>
+            {conference.location ? (
+              <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-5 sm:text-left">
+                <MapPin className="h-8 w-8 text-primary" />
+                <div>
+                  <h2 className="text-xl font-bold text-white">Where</h2>
+                  <p className="text-muted-foreground">{conference.location}</p>
+                </div>
+              </div>
+            ) : null}
           </div>
         </section>
+
+        {conference.scripture && conference.scriptureText ? (
+          <section className="px-4 py-20 sm:px-6 sm:py-24">
+            <blockquote className="container mx-auto max-w-4xl text-center">
+              <p className="text-2xl font-light italic leading-snug text-white sm:text-3xl md:text-4xl">
+                “{conference.scriptureText}”
+              </p>
+              <footer className="mt-6 font-mono text-sm uppercase tracking-widest text-primary">
+                {conference.scripture}
+              </footer>
+            </blockquote>
+          </section>
+        ) : null}
 
         {isCurrent && conference.year === "2026" ? (
           <section id="first-timers" className="scroll-mt-24 border-t border-white/10 px-4 py-20 sm:px-6 sm:py-24">
             <div className="container mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
               <div className="text-center lg:text-left">
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
-                  Help us welcome you
-                </p>
-                <h2 className="mt-4 text-4xl font-black uppercase tracking-tighter text-white sm:text-6xl">
+                <h2 className="text-4xl font-black uppercase tracking-tighter text-white sm:text-6xl">
                   First time at Shalom?
                 </h2>
                 <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/60 lg:mx-0">
-                  Let our team know whether Shalom {conference.year} will be your first conference
-                  with us. This response is separate from conference registration.
+                  Tell us so we can look out for you when you arrive. This is a separate,
+                  quick form. It doesn't register you for the conference.
                 </p>
               </div>
               <FirstTimerForm conferenceYear={Number(conference.year)} />
@@ -442,130 +449,57 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
           </section>
         ) : null}
 
-        <section className="bg-card px-4 py-20 sm:px-6 sm:py-24">
-          <div
-            className="container mx-auto grid max-w-7xl gap-12 lg:grid-cols-2"
-          >
-            <div id="lineup" className="scroll-mt-24 text-center lg:text-left">
-                <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
-                  Event Schedule
-                </h2>
-                <div className="space-y-6">
-                  {conference.schedule.map((event) => (
-                    <div
-                      key={`${event.time}-${event.title}`}
-                      className="border-b border-white/10 pb-6 last:border-0"
-                    >
-                      <p className="mb-2 font-mono text-sm uppercase tracking-widest text-primary">
-                        {event.time}
-                      </p>
-                      {event.label && (
-                        <p className="mb-1 text-sm font-bold uppercase tracking-[0.2em] text-white/60">
-                          {event.label}
+        {hasProgramme ? (
+          <section className="bg-card px-4 py-20 sm:px-6 sm:py-24">
+            <div className="container mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
+              {schedule.length > 0 ? (
+                <div id="lineup" className="scroll-mt-24 text-center lg:text-left">
+                  <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
+                    Schedule
+                  </h2>
+                  <div className="space-y-6">
+                    {schedule.map((event) => (
+                      <div
+                        key={`${event.time}-${event.title}`}
+                        className="border-b border-white/10 pb-6 last:border-0"
+                      >
+                        <p className="mb-2 font-mono text-sm uppercase tracking-widest text-primary">
+                          {event.time}
                         </p>
-                      )}
-                      <h3 className="text-xl font-bold text-white sm:text-2xl">{event.title}</h3>
-                    </div>
-                  ))}
+                        {event.label && (
+                          <p className="mb-1 text-sm font-bold uppercase tracking-[0.2em] text-white/60">
+                            {event.label}
+                          </p>
+                        )}
+                        <h3 className="text-xl font-bold text-white sm:text-2xl">{event.title}</h3>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              </div>
+              ) : null}
 
-            <div className="text-center lg:text-left">
-              <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
-                Lineup
-              </h2>
-              <div className="grid gap-4 sm:grid-cols-2">
-                {conference.speakers.map((speaker) => (
-                  <SpeakerCard
-                    key={speaker.name}
-                    speaker={speaker}
-                    autoFlip={year === "2026"}
-                  />
-                ))}
-              </div>
+              {speakers.length > 0 ? (
+                <div className="text-center lg:text-left">
+                  <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
+                    {isCurrent ? "Who's ministering" : "Who ministered"}
+                  </h2>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {speakers.map((speaker) => (
+                      <SpeakerCard
+                        key={speaker.name}
+                        speaker={speaker}
+                        autoFlip={isCurrent}
+                      />
+                    ))}
+                  </div>
+                </div>
+              ) : null}
             </div>
-          </div>
-        </section>
+          </section>
+        ) : null}
       </main>
 
-      <footer className="bg-gray-900 px-4 pb-10 pt-16 text-white sm:px-6">
-        <div className="container mx-auto max-w-6xl">
-          <div className="mb-12 flex justify-center">
-            <img src={shalomLogo} alt="SHALOM" className="h-14 w-auto object-contain" />
-          </div>
-
-          <div className="mb-12 grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-4">
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Contact</p>
-              <a
-                href="mailto:admin@shalomconference.com"
-                className="flex items-center justify-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
-              >
-                <Mail className="h-4 w-4 shrink-0 text-primary" />
-                admin@shalomconference.com
-              </a>
-            </div>
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Giving</p>
-              <a
-                href="mailto:finance@shalomconference.com"
-                className="flex items-center justify-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
-              >
-                <Mail className="h-4 w-4 shrink-0 text-primary" />
-                finance@shalomconference.com
-              </a>
-            </div>
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Testimonies</p>
-              <Link
-                href="/testimonies"
-                className="flex items-center justify-center gap-2 text-sm font-medium text-gray-400 transition-colors hover:text-white"
-              >
-                <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
-                Share Your Testimony
-              </Link>
-            </div>
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Media</p>
-              <a
-                href="mailto:media@shalomconference.com"
-                className="flex items-center justify-center gap-2 text-sm text-gray-400 transition-colors hover:text-white"
-              >
-                <Mail className="h-4 w-4 shrink-0 text-primary" />
-                media@shalomconference.com
-              </a>
-            </div>
-          </div>
-
-          <div className="mb-8 h-px w-full bg-white/10" />
-
-          <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-8">
-            <p className="text-sm font-semibold uppercase tracking-[0.15em] text-gray-500">
-              © {new Date().getFullYear()} Shalom Conference. All rights reserved.
-            </p>
-            <a
-              href="https://www.instagram.com/shalomconference/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Shalom Conference on Instagram"
-              className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-primary"
-            >
-              <SiInstagram className="h-5 w-5" />
-              @shalomconference
-            </a>
-            <a
-              href="https://youtube.com/@shalomconference?si=o4djdLbW1gG5iLOa"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Shalom Conference on YouTube"
-              className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-gray-500 transition-colors hover:text-primary"
-            >
-              <SiYoutube className="h-5 w-5" />
-              YouTube
-            </a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }

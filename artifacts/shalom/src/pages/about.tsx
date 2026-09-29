@@ -11,20 +11,20 @@ export default function About() {
       <SiteHeader />
 
       <main>
-        <section className="relative overflow-hidden px-4 py-20 text-center sm:px-6 sm:py-24 sm:text-left">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,hsl(var(--secondary)/0.18),transparent_45%)]" />
-          <div className="container relative z-10 mx-auto max-w-6xl">
+        <section className="px-4 py-20 text-center sm:px-6 sm:py-24 sm:text-left">
+          <div className="container mx-auto max-w-6xl">
             <h1 className="mb-8 text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl md:text-8xl">
-              What Is Shalom?
+              What is Shalom?
             </h1>
             <p className="mx-auto max-w-4xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl">
-              Shalom is an annual conference inspired by the Holy Spirit.
+              Shalom is a yearly conference for students and young adults, put on by
+              Reveille, the youth ministry of RCCG Higher Ground Assembly in Windsor Mill,
+              Maryland.
             </p>
             <p className="mx-auto mt-6 max-w-4xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl">
-              We aim to create an atmosphere that will foster genuine worship,
-              spiritual awakening, and deliverance in the lives of those who are
-              earnestly seeking Christ with an extreme thirst after
-              righteousness.
+              The early years were a single night of worship, and that is still the heart of
+              it. We come to worship without distraction, to pray for each other, and to make
+              room for the Holy Spirit to do what only He can do.
             </p>
           </div>
         </section>
@@ -34,30 +34,29 @@ export default function About() {
             <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-card sm:aspect-video md:aspect-[21/9]">
               <img
                 src="/images/home/shalom-about-worship.png"
-                alt="Shalom worship moment"
+                alt="Young people worshipping at a Shalom conference"
                 className="h-full w-full object-cover"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-background/80 via-background/10 to-transparent" />
             </div>
           </div>
         </section>
+
         <section className="px-4 py-20 sm:px-6 sm:py-24">
           <div className="container mx-auto max-w-4xl">
             <div className="text-center lg:text-left">
               <h2 className="mb-8 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
-                We Are Gathering Around The Comforter
+                This year: The Comforter
               </h2>
               <div className="space-y-6 text-lg leading-relaxed text-muted-foreground sm:text-xl">
                 <p>
-                  The 2026 theme is The Comforter, taken from{" "}
-                  {currentConference.scripture}. We are asking God to meet
-                  people with the comfort, conviction, freedom, and renewal that
-                  only the Holy Spirit can bring.
+                  The theme for {currentConference.year} comes from {currentConference.scripture}, where
+                  Jesus promises His friends that the Father will send the Holy Spirit to teach them,
+                  remind them, and leave them with a peace the world can't give.
                 </p>
                 <p>
-                  This is more than an event page. It is becoming a catalog of
-                  what God has done through Shalom and a simple invitation into
-                  what He is doing next.
+                  That's what we're praying for over these two nights. If you've been carrying
+                  something heavy, this is a good place to set it down.
                 </p>
               </div>
 
@@ -65,24 +64,20 @@ export default function About() {
                 <Button
                   asChild
                   size="lg"
-                  className="w-full max-w-xs rounded-none uppercase tracking-wider sm:w-auto"
+                  className="w-full max-w-xs rounded-full uppercase tracking-wider sm:w-auto"
                 >
-                  <a
-                    href={currentConference.registrationUrl}
-                    target="_blank"
-                    rel="noreferrer"
-                  >
-                    Register for 2026 <ArrowRight className="h-5 w-5" />
-                  </a>
+                  <Link href="/register">
+                    Register for {currentConference.year} <ArrowRight className="h-5 w-5" />
+                  </Link>
                 </Button>
                 <Button
                   asChild
                   variant="outline"
                   size="lg"
-                  className="w-full max-w-xs rounded-none border-white/20 uppercase tracking-wider sm:w-auto"
+                  className="w-full max-w-xs rounded-full border-white/20 uppercase tracking-wider sm:w-auto"
                 >
                   <Link href="/archive">
-                    View Archive <ArrowRight className="h-5 w-5" />
+                    Past years <ArrowRight className="h-5 w-5" />
                   </Link>
                 </Button>
               </div>

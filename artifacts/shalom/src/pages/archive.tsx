@@ -15,11 +15,10 @@ export default function Archive() {
           <div className="container mx-auto max-w-7xl">
             <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16 md:mx-0 md:text-left">
               <h1 className="mb-6 text-4xl font-black uppercase tracking-tighter text-white sm:text-5xl md:text-7xl">
-                Previous Shalom Gatherings
+                Past years
               </h1>
               <p className="text-lg leading-relaxed text-muted-foreground sm:text-xl">
-                Explore the themes, moments, and stories from past Shalom
-                conferences as the movement continues year after year.
+                Every Shalom so far, and the word God gave us for each one.
               </p>
             </div>
 
@@ -55,18 +54,20 @@ export default function Archive() {
                         <Calendar className="h-4 w-4 text-primary" />
                         <span>{conference.date}</span>
                       </div>
-                      <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
-                        <MapPin className="h-4 w-4 text-primary" />
-                        <span>{conference.location}</span>
-                      </div>
+                      {conference.location ? (
+                        <div className="flex flex-col items-center gap-2 sm:flex-row sm:gap-3">
+                          <MapPin className="h-4 w-4 text-primary" />
+                          <span>{conference.location}</span>
+                        </div>
+                      ) : null}
                     </div>
                     <Button
                       asChild
                       variant="outline"
-                      className="w-full max-w-xs rounded-none border-white/20 uppercase tracking-wider sm:w-auto"
+                      className="w-full max-w-xs rounded-full border-white/20 uppercase tracking-wider sm:w-auto"
                     >
                       <Link href={`/archive/${conference.year}`}>
-                        View Archive <ArrowRight className="h-4 w-4" />
+                        Shalom {conference.year} <ArrowRight className="h-4 w-4" />
                       </Link>
                     </Button>
                   </div>

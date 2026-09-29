@@ -16,22 +16,22 @@ export type Conference = {
   theme: string;
   tagline: string;
   date: string;
-  shortDate: string;
-  location: string;
+  /** Omit when the venue for an archived year is not on record. */
+  location?: string;
   summary: string;
   description: string;
   scripture?: string;
   scriptureText?: string;
-  registrationUrl?: string;
   image: string;
   flyer?: string;
-  highlights: string[];
-  schedule: Array<{
+  /** Omit for archived years where the programme is not on record. */
+  schedule?: Array<{
     time: string;
     label?: string;
     title: string;
   }>;
-  speakers: Array<{
+  /** Omit for archived years where the lineup is not on record. */
+  speakers?: Array<{
     name: string;
     role: string;
     image?: string;
@@ -44,26 +44,18 @@ export const conferences: Conference[] = [
   {
     year: "2026",
     theme: "The Comforter",
-    tagline: "Pure worship, deliverance, and spiritual renewal in the presence of the Holy Spirit.",
+    tagline: "Two nights of worship, prayer and the Word, built around the Holy Spirit.",
     date: "October 9-10, 2026",
-    shortDate: "Oct 9-10, 2026",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
     summary:
-      "Shalom 2026 gathers students and young adults for pure worship, deliverance, and spiritual renewal.",
+      "Two nights in Windsor Mill for students and young adults who want more of the Holy Spirit.",
     description:
-      "The Comforter is a two-day Shalom Conference centered on John 14:26-27 and the ministry of the Holy Spirit. Expect undistracted worship, deliverance, prayer, teaching, and space for spiritual renewal as God draws near.",
+      "This year we are gathering around John 14:26-27 and the One Jesus called the Comforter. Friday night is worship and prophetic ministry. Saturday is the heart of worship. Come ready to pray, to be prayed for, and to leave lighter than you came.",
     scripture: "John 14:26-27",
     scriptureText:
       "But the Comforter, which is the Holy Ghost, whom the Father will send in my name, he shall teach you all things, and bring all things to your remembrance. Peace I leave with you, my peace I give unto you.",
-    registrationUrl: "https://example.com/register",
     image: shalom2026FlyerImage,
     flyer: shalom2026FlyerImage,
-    highlights: [
-      "Pure worship",
-      "Teaching on the Comforter",
-      "Deliverance and prayer ministry",
-      "Spiritual renewal for students and young adults",
-    ],
     schedule: [
       {
         time: "Friday | 7:00 PM",
@@ -183,82 +175,36 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
   {
     year: "2025",
     theme: "Transcend",
-    tagline: "A call to rise above limits and encounter God beyond the ordinary.",
+    tagline: "Rising above what we thought were our limits.",
     date: "October 11, 2025",
-    shortDate: "Oct 11, 2025",
-    location: "Shalom Conference",
-    summary:
-      "A gathering focused on transcending limits through worship, faith, and renewed hunger for God.",
+    summary: "Shalom 2025 was a call to go past the ceiling we had put on our faith.",
     description:
-      "Transcend marked a year of calling the next generation beyond ordinary expectations and into deeper devotion, bold prayer, and faith that moves beyond the room.",
+      "Transcend pushed us to expect more of God than we had been. One day, one room, and a lot of prayer.",
     image: "/images/2025/shalom-2025-cover.png",
-    highlights: [
-      "High-energy worship",
-      "Messages on identity and calling",
-      "Group prayer moments",
-      "Youth community connections",
-    ],
-    schedule: [
-      { time: "10:00 AM", title: "Opening Worship" },
-      { time: "12:00 PM", title: "Community Lunch" },
-      { time: "2:00 PM", title: "Breakout Conversations" },
-      { time: "6:00 PM", title: "Evening Gathering" },
-    ],
-    speakers: [
-      { name: "Archive Speaker", role: "Main Session" },
-      { name: "Shalom Worship", role: "Worship Team" },
-    ],
   },
   {
     year: "2024",
     theme: "The Redeemed",
-    tagline: "A gathering around the story of redemption in Christ.",
+    tagline: "Let the redeemed of the Lord say so.",
     date: "December 14, 2024",
-    shortDate: "Dec 14, 2024",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
-    summary:
-      "A worship gathering centered on Psalm 107:2-7 and the testimony of the redeemed.",
+    summary: "Built on Psalm 107:2-7. A night about what God has already done.",
     description:
-      "The Redeemed marked a Shalom gathering focused on the saving, restoring, and gathering work of God through worship and the Word.",
+      "The Redeemed was a night of worship and testimony. We spent it remembering how far God has brought us and saying so out loud.",
+    scripture: "Psalm 107:2-7",
     image: "/images/2024/shalom-2024-cover.png",
-    highlights: [
-      "Electric worship",
-      "Real encounter",
-      "Deep community",
-      "Weekend schedule",
-    ],
-    schedule: [
-      { time: "Friday 7:30 PM", title: "Session 1: The Awakening" },
-      { time: "Saturday 10:00 AM", title: "Session 2: Deep Waters" },
-      { time: "Saturday 7:00 PM", title: "Session 3: The Outpouring" },
-      { time: "Sunday 10:30 AM", title: "Session 4: Sent Out" },
-    ],
-    speakers: [
-      { name: "Sarah Jenkins", role: "Keynote Speaker" },
-      { name: "Shalom Worship", role: "House Band" },
-      { name: "Marcus Doe", role: "Guest Speaker" },
-      { name: "DJ Elevate", role: "Afterparty" },
-    ],
   },
   {
     year: "2023",
     theme: "Fearless",
-    tagline: "A call to stand in faith without fear.",
+    tagline: "Fear not, for I am with you.",
     date: "December 8-9, 2023",
-    shortDate: "Dec 8-9, 2023",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
-    summary:
-      "A Shalom gathering centered on Isaiah 41:10-11 and the courage God gives His people.",
+    summary: "Two days on Isaiah 41:10-11 and the courage God gives His people.",
     description:
-      "Fearless called the Shalom family to trust God's presence, strength, and help in every season.",
+      "Fearless was about trusting that God is actually with us, especially when the situation says otherwise.",
     scripture: "Isaiah 41:10-11",
     image: "/images/2023/shalom-2023-cover.png",
-    highlights: [
-      "Fearless faith",
-      "Worship and the Word",
-      "Prayer and encouragement",
-      "Two-day gathering",
-    ],
     schedule: [
       { time: "December 8", title: "Opening Gathering" },
       { time: "December 9", title: "Main Conference Gathering" },
@@ -275,21 +221,13 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
   {
     year: "2022",
     theme: "The Lord Our Fortress",
-    tagline: "A gathering declaring God as refuge, strength, and defense.",
+    tagline: "God as our refuge, our strength, and our defense.",
     date: "December 16-17, 2022",
-    shortDate: "Dec 16-17, 2022",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
-    summary:
-      "A Shalom conference focused on the safety, strength, and covering found in the Lord.",
+    summary: "Two days declaring that God is a safe place to run to.",
     description:
-      "The Lord Our Fortress gathered the Shalom family around worship, prayer, and the declaration that God is a sure refuge for His people.",
+      "The Lord Our Fortress was worship and prayer around one idea: whatever is going on, God is a sure refuge for His people.",
     image: "/images/2022/shalom-2022-cover.png",
-    highlights: [
-      "God as refuge",
-      "Worship and prayer",
-      "Two-day conference",
-      "Faith and strength",
-    ],
     schedule: [
       { time: "December 16", title: "Opening Gathering" },
       { time: "December 17", title: "Main Conference Gathering" },
@@ -302,21 +240,13 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
   {
     year: "2021",
     theme: "Transcending Peace",
-    tagline: "A gathering centered on peace that rises above circumstance.",
+    tagline: "Peace that does not depend on the circumstances.",
     date: "December 11, 2021",
-    shortDate: "Dec 11, 2021",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
-    summary:
-      "A Shalom conference focused on the peace of God that transcends fear, pressure, and uncertainty.",
+    summary: "One evening on the peace of God that outlasts fear, pressure and uncertainty.",
     description:
-      "Transcending Peace gathered the Shalom family around worship and the promise of God's peace in every season.",
+      "Transcending Peace was a single evening of worship, streamed on YouTube for everyone who could not be in the room.",
     image: "/images/2021/shalom-2021-cover.png",
-    highlights: [
-      "Peace in Christ",
-      "Worship and encouragement",
-      "Streaming on YouTube",
-      "Youth ministry gathering",
-    ],
     schedule: [
       { time: "6:00 PM", title: "Shalom Conference 2021" },
     ],
@@ -328,22 +258,14 @@ With a sound that blends contemporary worship with vibrant African praise, Revei
   {
     year: "2019",
     theme: "Perfect Peace",
-    tagline: "A youth and young adults gathering centered on God's perfect peace.",
+    tagline: "Thou wilt keep him in perfect peace, whose mind is stayed on thee.",
     date: "December 7, 2019",
-    shortDate: "Dec 7, 2019",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
-    summary:
-      "A Shalom annual conference focused on Isaiah 26:3 and the peace God gives to those whose minds are stayed on Him.",
+    summary: "A youth and young adults night on Isaiah 26:3.",
     description:
-      "Perfect Peace gathered youth and young adults for worship, ministry, and encouragement in the promise of God's peace.",
+      "Perfect Peace was worship, ministry and a room full of young people learning to keep their minds on God.",
     scripture: "Isaiah 26:3",
     image: "/images/2019/shalom-2019-cover.png",
-    highlights: [
-      "Perfect peace",
-      "Youth and young adults",
-      "Worship and ministry",
-      "Annual conference",
-    ],
     schedule: [
       { time: "6:00 PM", title: "Doors Open" },
       { time: "6:30 PM", title: "Shalom Annual Conference" },

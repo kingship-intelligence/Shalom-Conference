@@ -91,7 +91,7 @@ export default function Testimonies() {
               Thank You!
             </h1>
             <p className="text-white/70 text-lg">
-              Your testimony has been shared. Thank you for telling us what God did at Shalom.
+              We got it. Thank you for telling us what God did.
             </p>
           </div>
           <div className="space-y-4">
@@ -99,10 +99,10 @@ export default function Testimonies() {
               onClick={handleReset}
               className="w-full h-14 rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none"
             >
-              Share Another
+              Share another
             </Button>
             <Button asChild variant="ghost" className="w-full text-white/50 hover:text-white">
-              <Link href="/">Back to Home</Link>
+              <Link href="/">Back home</Link>
             </Button>
           </div>
         </motion.div>
@@ -111,12 +111,7 @@ export default function Testimonies() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground relative pb-20">
-      <div className="fixed inset-0 pointer-events-none">
-        <div className="absolute top-0 right-0 -mr-32 -mt-32 w-96 h-96 rounded-full bg-primary/10 blur-[100px]" />
-        <div className="absolute bottom-0 left-0 -ml-32 -mb-32 w-96 h-96 rounded-full bg-secondary/10 blur-[100px]" />
-      </div>
-
+    <div className="min-h-screen bg-background text-foreground relative pb-20">
       <SiteHeader />
 
       <main className="container relative z-10 mx-auto max-w-2xl px-4 mt-8">
@@ -145,7 +140,8 @@ export default function Testimonies() {
             transition={{ delay: 0.2 }}
             className="text-white/70 text-lg mb-8"
           >
-            Share what God did at Shalom
+            Did something happen at Shalom? Healing, a word, a decision, a change you can't
+            explain? Tell us. It's anonymous, and it encourages the team more than you know.
           </motion.p>
         </div>
 
@@ -200,7 +196,7 @@ export default function Testimonies() {
                     </FormLabel>
                     <FormControl>
                       <Textarea
-                        placeholder="Share your story..."
+                        placeholder="What happened?"
                         {...field}
                         className="bg-white/5 border-white/10 h-40 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
                         data-testid="textarea-testimony"
@@ -214,14 +210,14 @@ export default function Testimonies() {
               <Button
                 type="submit"
                 disabled={createTestimony.isPending}
-                className="w-full h-16 rounded-full bg-gradient-to-r from-primary to-secondary text-xl font-bold uppercase tracking-widest text-white shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:shadow-[0_0_50px_rgba(234,88,12,0.6)] transition-all border-none mt-4"
+                className="w-full h-16 rounded-full bg-primary text-xl font-bold uppercase tracking-widest text-white hover:bg-primary/90 border-none mt-4"
                 data-testid="button-submit"
               >
                 {createTestimony.isPending ? (
-                  "Submitting..."
+                  "Sending…"
                 ) : (
                   <>
-                    Submit Testimony <MessageSquare className="ml-2 h-6 w-6" />
+                    Send <MessageSquare className="ml-2 h-6 w-6" />
                   </>
                 )}
               </Button>

@@ -1249,7 +1249,8 @@ function RegistrationForm() {
 
 export default function Register() {
   const searchParams = new URLSearchParams(window.location.search);
-  const isExistingBadge = searchParams.get("badge") === "true";
+  const badgeParam = searchParams.get("badge");
+  const isExistingBadge = badgeParam === "1" || badgeParam === "true";
 
   if (isExistingBadge) {
     return <ExistingRegistrationBadge />;

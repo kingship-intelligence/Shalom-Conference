@@ -2,11 +2,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Mail, MessageSquare } from "lucide-react";
-import { SiInstagram, SiYoutube } from "react-icons/si";
+import { ArrowRight } from "lucide-react";
 import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
-import shalomLogo from "@assets/logo_1778697155106.png";
+import SiteFooter from "@/components/SiteFooter";
 
 const FadeIn = ({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) => (
   <motion.div
@@ -55,16 +54,16 @@ function ConferenceCountdown() {
   ];
 
   return (
-    <section className="border-y border-white/10 bg-gray-950 px-4 py-14 text-white sm:px-6 sm:py-16">
+    <section className="border-y border-white/10 bg-background px-4 py-14 text-white sm:px-6 sm:py-16">
       <div className="container mx-auto max-w-5xl text-center">
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
-          October 9, 2026 · 7 PM ET
+          Friday, October 9 · Doors 7 PM
         </p>
         <h2
           className="mt-4 text-3xl font-bold uppercase tracking-wide sm:text-5xl"
           style={{ fontFamily: "var(--font-display)" }}
         >
-          {countdown.hasStarted ? "Shalom 2026 Is Here" : "Countdown To Shalom 2026"}
+          {countdown.hasStarted ? "Shalom 2026 is happening now" : "Shalom 2026 is coming"}
         </h2>
 
         {!countdown.hasStarted && (
@@ -154,12 +153,12 @@ export default function Home() {
   }, [heroSegment, isDesktop, startHeroPlayback]);
 
   return (
-    <div className="min-h-screen text-gray-900 bg-white">
+    <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
-      {/* HERO — image on mobile, video on desktop */}
+      {/* Hero: still image on phones, looping video on larger screens */}
       <section
-        className="relative isolate flex min-h-[min(760px,calc(100svh-76px))] items-center overflow-hidden bg-gray-950 px-6 py-20 text-white sm:px-10 lg:px-16"
+        className="relative isolate flex min-h-[min(760px,calc(100svh-76px))] items-center overflow-hidden bg-background px-6 py-20 text-white sm:px-10 lg:px-16"
         style={{
           backgroundImage: `url('${
             isDesktop
@@ -205,7 +204,8 @@ export default function Home() {
               {currentConference.year}: {currentConference.theme}
             </h1>
             <p className="mb-8 max-w-xl text-lg font-medium leading-relaxed text-white/80">
-              A two-day gathering for genuine worship, spiritual awakening, deliverance, and renewal in the presence of the Holy Spirit.
+              {currentConference.date}, Windsor Mill, MD. Two nights of worship and prayer
+              for students and young adults.
             </p>
             <div className="flex flex-wrap justify-center gap-3">
               <Button
@@ -233,7 +233,6 @@ export default function Home() {
 
       <ConferenceCountdown />
 
-      {/* CTA — solid orange */}
       <section id="home-cta" className="bg-primary px-4 py-28 sm:px-6">
         <div className="container mx-auto max-w-3xl text-center">
           <FadeIn>
@@ -241,10 +240,11 @@ export default function Home() {
               className="mb-6 text-6xl font-bold uppercase tracking-wide text-white sm:text-8xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Join Us For 2026
+              Come as you are
             </h2>
             <p className="mx-auto mb-12 max-w-xl text-xl font-medium text-white/85">
-              A simple invitation to gather, worship, pray, and encounter the Comforter together.
+              Bring a friend. Registration takes about a minute and we'll email you
+              everything you need for the door.
             </p>
             <Button
               asChild
@@ -253,102 +253,14 @@ export default function Home() {
               data-testid="button-register-footer"
             >
               <Link href="/register">
-                Secure Your Spot <ArrowRight className="ml-3 h-6 w-6" />
+                Register <ArrowRight className="ml-3 h-6 w-6" />
               </Link>
             </Button>
           </FadeIn>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="bg-gray-900 text-white px-4 pt-16 pb-10 sm:px-6">
-        <div className="container mx-auto max-w-6xl">
-          <div className="flex justify-center mb-12">
-            <img
-              src={shalomLogo}
-              alt="SHALOM"
-              className="h-14 w-auto object-contain"
-              data-testid="img-shalom-logo-footer"
-            />
-          </div>
-
-          <div className="grid gap-8 text-center sm:grid-cols-2 lg:grid-cols-4 mb-12">
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Contact</p>
-              <a
-                href="mailto:admin@shalomconference.com"
-                className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
-                data-testid="link-contact-email"
-              >
-                <Mail className="h-4 w-4 shrink-0 text-primary" />
-                admin@shalomconference.com
-              </a>
-            </div>
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Giving</p>
-              <a
-                href="mailto:finance@shalomconference.com"
-                className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
-                data-testid="link-finance-email"
-              >
-                <Mail className="h-4 w-4 shrink-0 text-primary" />
-                finance@shalomconference.com
-              </a>
-            </div>
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Testimonies</p>
-              <Link
-                href="/testimonies"
-                className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-medium"
-                data-testid="link-share-testimony-footer"
-              >
-                <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
-                Share Your Testimony
-              </Link>
-            </div>
-            <div>
-              <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Media</p>
-              <a
-                href="mailto:media@shalomconference.com"
-                className="flex items-center justify-center gap-2 text-gray-400 hover:text-white transition-colors text-sm"
-                data-testid="link-media-email"
-              >
-                <Mail className="h-4 w-4 shrink-0 text-primary" />
-                media@shalomconference.com
-              </a>
-            </div>
-          </div>
-
-          <div className="h-px w-full bg-white/10 mb-8" />
-
-          <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-8">
-            <p className="text-gray-500 text-sm uppercase tracking-[0.15em] font-semibold">
-              © {new Date().getFullYear()} Shalom Conference. All rights reserved.
-            </p>
-            <a
-              href="https://www.instagram.com/shalomconference/"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Shalom Conference on Instagram"
-              className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest"
-              data-testid="link-instagram"
-            >
-              <SiInstagram className="h-5 w-5" />
-              @shalomconference
-            </a>
-            <a
-              href="https://youtube.com/@shalomconference?si=o4djdLbW1gG5iLOa"
-              target="_blank"
-              rel="noreferrer"
-              aria-label="Shalom Conference on YouTube"
-              className="flex items-center gap-2 text-gray-500 hover:text-primary transition-colors text-sm font-bold uppercase tracking-widest"
-            >
-              <SiYoutube className="h-5 w-5" />
-              YouTube
-            </a>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   );
 }
