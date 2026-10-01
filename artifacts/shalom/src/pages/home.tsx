@@ -238,7 +238,7 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
     const flyerTimer = window.setTimeout(() => {
       setPanel(2);
       setAutoAdvanceEnabled(false);
-    }, 8_000);
+    }, 12_000);
     return () => {
       window.clearTimeout(videoTimer);
       window.clearTimeout(flyerTimer);
