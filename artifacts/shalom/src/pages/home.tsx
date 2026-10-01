@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { motion, useInView, useMotionTemplate, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { AnimatePresence, motion, useInView, useMotionTemplate, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Pause, Play } from "lucide-react";
 import { currentConference } from "@/data/conferences";
@@ -253,46 +253,28 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
 
   return (
     <div ref={heroRef} className="relative mx-auto w-full max-w-xl" style={{ perspective: 1400 }}>
-      <motion.div
-        className="grid"
-        style={{ transformStyle: "preserve-3d" }}
-        animate={{ rotateY: panel === 0 ? 0 : 180 }}
-        transition={{ duration: reducedMotion || !enabled ? 0 : 0.95, ease: [0.22, 1, 0.36, 1] }}
-        onAnimationComplete={() => {
-          if (panel === 1) setVideoFlipComplete(true);
-        }}
-      >
-        <div
-          aria-hidden={panel !== 0}
-          inert={panel !== 0}
+      <AnimatePresence mode="wait" initial={false}>
+        <motion.div
+          key={panel}
+          initial={{ opacity: 0, rotateY: -90 }}
+          animate={{ opacity: 1, rotateY: 0 }}
+          exit={{ opacity: 0, rotateY: 90 }}
+          transition={{ duration: reducedMotion || !enabled ? 0 : 0.55, ease: [0.22, 1, 0.36, 1] }}
+          onAnimationComplete={() => {
+            if (panel === 1) setVideoFlipComplete(true);
+          }}
           onFocusCapture={() => setAutoAdvanceEnabled(false)}
           onPointerDownCapture={() => setAutoAdvanceEnabled(false)}
-          className="col-start-1 row-start-1 self-center [backface-visibility:hidden]"
-          data-testid="hero-front"
+          style={{ transformStyle: "preserve-3d", backfaceVisibility: "hidden" }}
+          data-testid={panel === 0 ? "hero-front" : panel === 1 ? "hero-video-panel" : "hero-flyer-panel"}
         >
-          {children}
-        </div>
-        <div
-          aria-hidden={panel === 0}
-          inert={panel === 0}
-          className="col-start-1 row-start-1 [backface-visibility:hidden] [transform:rotateY(180deg)]"
-          data-testid="hero-back"
-        >
-          <motion.div
-            className="grid"
-            style={{ transformStyle: "preserve-3d" }}
-            animate={{ rotateY: panel === 2 ? 180 : 0 }}
-            transition={{ duration: reducedMotion || !enabled ? 0 : 0.95, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <div
-              aria-hidden={panel !== 1}
-              inert={panel !== 1}
-              className="col-start-1 row-start-1 [backface-visibility:hidden]"
-              data-testid="hero-video-panel"
-            >
+          {panel === 0 ? (
+            children
+          ) : panel === 1 ? (
+            <>
               <div className="relative aspect-video overflow-hidden rounded-[2rem] border border-black/10 bg-black shadow-lg" data-testid="video-home-hero">
                 <img src={HERO_POSTER} alt="" width={960} height={540} fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
-                <HeroVideo enabled={enabled && panel === 1 && inView} />
+                <HeroVideo enabled={enabled && inView} />
                 <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
               </div>
               {currentConference.scriptureText && (
@@ -304,13 +286,9 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
               <Link href="/register" className="mt-4 flex min-h-11 items-center justify-center gap-2 text-sm font-bold text-primary">
                 Register for Shalom <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
-            </div>
-            <div
-              aria-hidden={panel !== 2}
-              inert={panel !== 2}
-              className="col-start-1 row-start-1 flex flex-col items-center [backface-visibility:hidden] [transform:rotateY(180deg)]"
-              data-testid="hero-flyer-panel"
-            >
+            </>
+          ) : (
+            <div className="flex flex-col items-center">
               <img
                 src={HERO_FLYER}
                 alt={`Shalom ${currentConference.year} flyer: ${currentConference.theme}`}
@@ -320,9 +298,9 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
                 View Shalom {currentConference.year} <ArrowRight className="h-4 w-4" aria-hidden="true" />
               </Link>
             </div>
-          </motion.div>
-        </div>
-      </motion.div>
+          )}
+        </motion.div>
+      </AnimatePresence>
       <div className="mt-5 flex items-center justify-between gap-3">
         <button
           type="button"
