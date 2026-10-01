@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useMotionTemplate, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Pause, Play } from "lucide-react";
 import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
@@ -102,7 +102,7 @@ function ConferenceCountdown() {
 }
 
 /**
- * Desktop hero video. The footage is 15 ten-second clips. Two <video>
+ * Hero video. The footage is 15 ten-second clips. Two <video>
  * elements take turns: while one plays, the other has the next clip loaded
  * and waiting, so the handoff is a short crossfade instead of a remount,
  * a black frame, and a flash of the poster.
@@ -152,7 +152,7 @@ function HeroVideo({ enabled }: { enabled: boolean }) {
   );
 
   const handleEnded = (index: number) => {
-    if (index !== active) return;
+    if (!enabled || index !== active) return;
     const next = index === 0 ? 1 : 0;
     play(players[next].current);
     setActive(next);
@@ -187,9 +187,113 @@ function HeroVideo({ enabled }: { enabled: boolean }) {
   );
 }
 
+function HeroFilm({ enabled, reducedMotion, desktop, onToggleMotion }: { enabled: boolean; reducedMotion: boolean; desktop: boolean; onToggleMotion: () => void }) {
+  const spring = { stiffness: 120, damping: 24, mass: 0.7 };
+  const pointerX = useSpring(0, spring);
+  const pointerY = useSpring(0, spring);
+  const reflectionOpacity = useSpring(0, spring);
+  const rotateX = useTransform(pointerY, [-1, 1], [7, -7]);
+  const rotateY = useTransform(pointerX, [-1, 1], [-9, 9]);
+  const footageX = useTransform(pointerX, [-1, 1], [10, -10]);
+  const footageY = useTransform(pointerY, [-1, 1], [8, -8]);
+  const outlineX = useTransform(pointerX, [-1, 1], [-12, 12]);
+  const outlineY = useTransform(pointerY, [-1, 1], [-8, 8]);
+  const lightX = useTransform(pointerX, [-1, 1], [10, 90]);
+  const lightY = useTransform(pointerY, [-1, 1], [10, 90]);
+  const reflection = useMotionTemplate`radial-gradient(ellipse at ${lightX}% ${lightY}%, rgba(255,255,255,0.65), rgba(255,255,255,0.12) 35%, transparent 70%)`;
+
+  useEffect(() => {
+    if (!enabled || !desktop) {
+      pointerX.jump(0);
+      pointerY.jump(0);
+      reflectionOpacity.jump(0);
+    }
+  }, [enabled, desktop, pointerX, pointerY, reflectionOpacity]);
+
+  const resetPointer = () => {
+    pointerX.set(0);
+    pointerY.set(0);
+    reflectionOpacity.set(0);
+  };
+
+  return (
+    <div
+      className="relative mx-auto w-full max-w-[650px]"
+      style={{ perspective: 1200 }}
+      onPointerMove={(event) => {
+        if (!enabled || !desktop || event.pointerType !== "mouse") return;
+        const bounds = event.currentTarget.getBoundingClientRect();
+        pointerX.set(Math.max(-1, Math.min(1, ((event.clientX - bounds.left) / bounds.width - 0.5) * 2)));
+        pointerY.set(Math.max(-1, Math.min(1, ((event.clientY - bounds.top) / bounds.height - 0.5) * 2)));
+        reflectionOpacity.set(0.55);
+      }}
+      onPointerLeave={resetPointer}
+      onPointerCancel={resetPointer}
+    >
+      <motion.div
+        aria-hidden="true"
+        initial={reducedMotion ? false : { opacity: 0, y: desktop ? 28 : 12, rotateY: desktop ? -18 : 0 }}
+        animate={{ opacity: 1, y: 0, rotateY: 0 }}
+        transition={{ duration: enabled ? (desktop ? 1.3 : 0.6) : 0, delay: enabled ? 0.2 : 0, ease: [0.16, 1, 0.3, 1] }}
+        style={{ transformStyle: "preserve-3d" }}
+      >
+        <motion.div className="relative" style={{ rotateX, rotateY, transformStyle: "preserve-3d" }}>
+          <motion.div
+            className="hero-film-outline hidden lg:block"
+            style={{ x: outlineX, y: outlineY, z: -35, rotate: -4 }}
+            initial={reducedMotion ? false : { opacity: 0, scale: 0.85 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: enabled ? 1.4 : 0, delay: enabled ? 0.45 : 0, ease: [0.16, 1, 0.3, 1] }}
+          />
+          <motion.div
+            className="relative aspect-video overflow-hidden rounded-[2rem] border border-black/10 bg-black shadow-[0_30px_80px_-32px_rgba(19,16,28,0.3)] lg:aspect-[16/11]"
+            data-testid="video-home-hero"
+            style={{ z: 20 }}
+            initial={reducedMotion || !desktop ? false : { clipPath: "inset(0 49% 0 49% round 2rem)" }}
+            animate={{ clipPath: "inset(0 0% 0 0% round 2rem)" }}
+            transition={{ duration: enabled ? 1.5 : 0, delay: enabled ? 0.25 : 0, ease: [0.76, 0, 0.24, 1] }}
+          >
+            <motion.div className="absolute inset-0" style={{ x: footageX, y: footageY, scale: 1.06 }}>
+              <img
+                src={HERO_POSTER}
+                alt=""
+                width={960}
+                height={540}
+                fetchPriority="high"
+                decoding="async"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+              <HeroVideo enabled={enabled} />
+            </motion.div>
+            <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-br from-white/5 via-transparent to-black/15" />
+            <motion.div
+              className="pointer-events-none absolute inset-0 z-30"
+              style={{ background: reflection, opacity: reflectionOpacity }}
+            />
+            <div className="pointer-events-none absolute inset-0 z-30 rounded-[2rem] ring-1 ring-inset ring-white/20" />
+          </motion.div>
+        </motion.div>
+      </motion.div>
+      {!desktop && !reducedMotion && (
+        <button
+          type="button"
+          onClick={onToggleMotion}
+          aria-label={enabled ? "Pause hero motion" : "Play hero motion"}
+          aria-pressed={!enabled}
+          className="absolute bottom-3 right-3 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-white/30 bg-black/65 text-white backdrop-blur-sm hover:bg-black/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        >
+          {enabled ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
+        </button>
+      )}
+    </div>
+  );
+}
+
 export default function Home() {
   // framer's hook tracks prefers-reduced-motion and updates live.
   const prefersReducedMotion = useReducedMotion() ?? false;
+  const [motionPaused, setMotionPaused] = useState(false);
+  const motionEnabled = !prefersReducedMotion && !motionPaused;
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window === "undefined" ? true : window.matchMedia(HERO_DESKTOP_MEDIA_QUERY).matches,
   );
@@ -207,42 +311,32 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
-      {/* Hero: mobile still-image backdrop; desktop split layout with oval video */}
-      <section className="relative isolate flex min-h-[min(760px,calc(100svh-76px))] items-center overflow-hidden bg-background px-6 py-20 text-white sm:px-10 lg:px-16">
-        {!isDesktop ? (
-          <>
-            <img
-              src="/images/home/shalom-hero-mobile-1080.webp"
-              srcSet="/images/home/shalom-hero-mobile-1080.webp 1080w, /images/home/shalom-hero-mobile-1620.webp 1620w"
-              sizes="100vw"
-              alt=""
-              width={1080}
-              height={1440}
-              fetchPriority="high"
-              decoding="async"
-              className="absolute inset-0 -z-20 h-full w-full object-cover"
-            />
-            <div className="hero-overlay-shift absolute inset-0 -z-10" />
-          </>
-        ) : null}
+      <section className={`home-hero relative isolate flex flex-col items-center overflow-hidden bg-white px-6 pb-6 pt-10 text-[#13101c] sm:px-10 lg:min-h-[min(760px,calc(100svh-76px))] lg:flex-row lg:px-16 lg:py-24 ${!motionEnabled ? "hero-motion-paused" : ""}`}>
         <div className="container relative z-10 mx-auto max-w-7xl">
-          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:gap-16">
+          <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-12 xl:gap-16">
             <motion.div
               initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
               className="mx-auto flex max-w-3xl flex-col items-center text-center lg:mx-0 lg:items-start lg:text-left"
             >
-              <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-white/75 sm:text-sm">
-                Shalom {currentConference.year} · {currentConference.date} · Windsor Mill, MD
-              </p>
               <h1
-                className="mb-6 text-[3.75rem] font-bold uppercase leading-[0.88] tracking-wide text-white sm:text-7xl lg:text-[4.75rem] xl:text-[5.5rem] 2xl:text-[6.5rem] italic"
+                className="hero-title mb-5 text-[clamp(2.8rem,12vw,4.5rem)] font-bold uppercase leading-[0.92] tracking-tight text-black sm:text-7xl lg:mb-7 lg:text-[4.75rem] xl:text-[5.5rem] 2xl:text-[6.5rem] italic"
                 style={{ fontFamily: "var(--font-display)" }}
               >
-                {currentConference.theme}
+                {`${currentConference.year}:${currentConference.theme}`.split(" ").map((word, index) => (
+                  <motion.span
+                    key={`${word}-${index}`}
+                    className="block"
+                    initial={prefersReducedMotion ? false : { opacity: 0, y: 28 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.7, delay: 0.15 + index * 0.12 }}
+                  >
+                    {word}
+                  </motion.span>
+                ))}
               </h1>
-              <p className="mb-8 max-w-xl text-lg font-medium leading-relaxed text-white/80">
+              <p className="mb-6 max-w-xl text-base font-medium leading-relaxed text-slate-600 lg:mb-8 lg:text-lg">
                 Two nights of worship and prayer for students and young adults, built
                 around the Holy Spirit.
               </p>
@@ -250,7 +344,7 @@ export default function Home() {
                 <Button
                   asChild
                   size="lg"
-                  className="group rounded-full bg-primary text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary/90 hover:brightness-110 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                  className="group rounded-full bg-primary text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-[0_8px_35px_-10px_rgba(249,89,31,0.7)] transition-all duration-300 hover:-translate-y-1 hover:bg-primary/90 hover:brightness-110 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
                   data-testid="button-register-hero"
                 >
                   <Link href="/register">
@@ -261,40 +355,27 @@ export default function Home() {
                   asChild
                   variant="outline"
                   size="lg"
-                  className="rounded-full border-white/70 text-white hover:bg-white/10 hover:text-white font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
+                  className="rounded-full border-slate-300 text-[#13101c] hover:bg-slate-100 hover:text-[#13101c] font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
                 >
                   <Link href="/2026">See the lineup</Link>
                 </Button>
               </div>
             </motion.div>
-            {isDesktop && (
-              <motion.div
-                initial={prefersReducedMotion ? false : { opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ duration: 0.8, delay: prefersReducedMotion ? 0 : 0.12 }}
-                className="relative mx-auto w-full max-w-[650px]"
-              >
-                <div
-                  className="relative aspect-[16/10] overflow-hidden rounded-[2rem] border border-white/25 bg-black shadow-[0_30px_100px_-32px_rgba(0,0,0,0.85)] ring-1 ring-white/10"
-                  aria-hidden="true"
-                  data-testid="video-home-hero"
-                >
-                  <img
-                    src={HERO_POSTER}
-                    alt=""
-                    width={960}
-                    height={540}
-                    fetchPriority="high"
-                    decoding="async"
-                    className="absolute inset-0 z-0 h-full w-full object-cover"
-                  />
-                  <HeroVideo enabled={!prefersReducedMotion} />
-                  <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-br from-white/10 via-transparent to-black/20" />
-                </div>
-              </motion.div>
-            )}
+            <HeroFilm enabled={motionEnabled} reducedMotion={prefersReducedMotion} desktop={isDesktop} onToggleMotion={() => setMotionPaused((paused) => !paused)} />
           </div>
         </div>
+        {isDesktop && !prefersReducedMotion && (
+          <button
+            type="button"
+            onClick={() => setMotionPaused((paused) => !paused)}
+            aria-label={motionPaused ? "Play hero motion" : "Pause hero motion"}
+            aria-pressed={motionPaused}
+            className="relative z-20 ml-auto mt-5 flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-[10px] uppercase tracking-widest text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:absolute lg:bottom-5 lg:right-6 lg:mt-0 lg:min-h-0 lg:px-3"
+          >
+            {motionPaused ? <Play className="h-3 w-3" /> : <Pause className="h-3 w-3" />}
+            {motionPaused ? "Play motion" : "Pause motion"}
+          </button>
+        )}
       </section>
 
       <ConferenceCountdown />
