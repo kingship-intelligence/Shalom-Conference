@@ -20,7 +20,7 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 );
 
 const HERO_SEGMENT_COUNT = 15;
-const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 768px)";
+const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
 const HERO_POSTER = "/images/home/shalom-hero-poster.webp";
 const HERO_CROSSFADE_MS = 700; // keep in step with duration-700 on the video elements
 // Countdown target comes from the conference data so there is one place to update.
@@ -178,7 +178,7 @@ function HeroVideo({ enabled }: { enabled: boolean }) {
           poster={index === 0 ? HERO_POSTER : undefined}
           onEnded={() => handleEnded(index)}
           aria-hidden="true"
-          className={`absolute inset-0 -z-20 h-full w-full object-cover transition-opacity duration-700 ease-out ${
+          className={`absolute inset-0 z-10 h-full w-full object-cover transition-opacity duration-700 ease-out ${
             index === active ? "opacity-100" : "opacity-0"
           }`}
         />
@@ -207,77 +207,93 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
-      {/* Hero: still image on phones, looping video on larger screens */}
+      {/* Hero: mobile still-image backdrop; desktop split layout with oval video */}
       <section className="relative isolate flex min-h-[min(760px,calc(100svh-76px))] items-center overflow-hidden bg-background px-6 py-20 text-white sm:px-10 lg:px-16">
-        {isDesktop ? (
+        {!isDesktop ? (
           <>
-            {/* Poster sits under the video so there is never a bare background. */}
             <img
-              src={HERO_POSTER}
+              src="/images/home/shalom-hero-mobile-1080.webp"
+              srcSet="/images/home/shalom-hero-mobile-1080.webp 1080w, /images/home/shalom-hero-mobile-1620.webp 1620w"
+              sizes="100vw"
               alt=""
-              width={960}
-              height={540}
+              width={1080}
+              height={1440}
               fetchPriority="high"
               decoding="async"
-              className="absolute inset-0 -z-30 h-full w-full object-cover"
+              className="absolute inset-0 -z-20 h-full w-full object-cover"
             />
-            <HeroVideo enabled={!prefersReducedMotion} />
+            <div className="hero-overlay-shift absolute inset-0 -z-10" />
           </>
-        ) : (
-          <img
-            src="/images/home/shalom-hero-mobile-1080.webp"
-            srcSet="/images/home/shalom-hero-mobile-1080.webp 1080w, /images/home/shalom-hero-mobile-1620.webp 1620w"
-            sizes="100vw"
-            alt=""
-            width={1080}
-            height={1440}
-            fetchPriority="high"
-            decoding="async"
-            className="absolute inset-0 -z-20 h-full w-full object-cover"
-          />
-        )}
-        <div className="hero-overlay-shift absolute inset-0 -z-10" />
-        <div className="container mx-auto max-w-7xl">
-          <motion.div
-            initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7 }}
-            className="mx-auto flex max-w-3xl flex-col items-center text-center"
-          >
-            <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-white/75 sm:text-sm">
-              Shalom {currentConference.year} · {currentConference.date} · Windsor Mill, MD
-            </p>
-            <h1
-              className="mb-6 text-[3.75rem] font-bold uppercase leading-[0.88] tracking-wide text-white sm:text-7xl lg:text-[5.5rem] xl:text-[6.5rem] italic"
-              style={{ fontFamily: "var(--font-display)" }}
+        ) : null}
+        <div className="container relative z-10 mx-auto max-w-7xl">
+          <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:gap-16">
+            <motion.div
+              initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="mx-auto flex max-w-3xl flex-col items-center text-center lg:mx-0 lg:items-start lg:text-left"
             >
-              {currentConference.theme}
-            </h1>
-            <p className="mb-8 max-w-xl text-lg font-medium leading-relaxed text-white/80">
-              Two nights of worship and prayer for students and young adults, built
-              around the Holy Spirit.
-            </p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <Button
-                asChild
-                size="lg"
-                className="group rounded-full bg-primary text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary/90 hover:brightness-110 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
-                data-testid="button-register-hero"
+              <p className="mb-5 text-xs font-bold uppercase tracking-[0.3em] text-white/75 sm:text-sm">
+                Shalom {currentConference.year} · {currentConference.date} · Windsor Mill, MD
+              </p>
+              <h1
+                className="mb-6 text-[3.75rem] font-bold uppercase leading-[0.88] tracking-wide text-white sm:text-7xl lg:text-[4.75rem] xl:text-[5.5rem] 2xl:text-[6.5rem] italic"
+                style={{ fontFamily: "var(--font-display)" }}
               >
-                <Link href="/register">
-                  Register <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
-                </Link>
-              </Button>
-              <Button
-                asChild
-                variant="outline"
-                size="lg"
-                className="rounded-full border-white/70 text-white hover:bg-white/10 hover:text-white font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
+                {currentConference.theme}
+              </h1>
+              <p className="mb-8 max-w-xl text-lg font-medium leading-relaxed text-white/80">
+                Two nights of worship and prayer for students and young adults, built
+                around the Holy Spirit.
+              </p>
+              <div className="flex flex-wrap justify-center gap-3 lg:justify-start">
+                <Button
+                  asChild
+                  size="lg"
+                  className="group rounded-full bg-primary text-white font-bold uppercase tracking-widest border-none h-14 px-10 text-base shadow-md transition-all duration-300 hover:-translate-y-1 hover:bg-primary/90 hover:brightness-110 motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                  data-testid="button-register-hero"
+                >
+                  <Link href="/register">
+                    Register <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  variant="outline"
+                  size="lg"
+                  className="rounded-full border-white/70 text-white hover:bg-white/10 hover:text-white font-bold uppercase tracking-widest h-14 px-10 text-base bg-transparent"
+                >
+                  <Link href="/2026">See the lineup</Link>
+                </Button>
+              </div>
+            </motion.div>
+            {isDesktop && (
+              <motion.div
+                initial={prefersReducedMotion ? false : { opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: prefersReducedMotion ? 0 : 0.12 }}
+                className="relative mx-auto w-full max-w-[650px]"
               >
-                <Link href="/2026">See the lineup</Link>
-              </Button>
-            </div>
-          </motion.div>
+                <div
+                  className="relative aspect-[16/10] overflow-hidden rounded-[50%] border border-white/25 bg-black shadow-[0_30px_100px_-32px_rgba(0,0,0,0.85)] ring-1 ring-white/10"
+                  aria-hidden="true"
+                  data-testid="video-home-hero"
+                >
+                  <img
+                    src={HERO_POSTER}
+                    alt=""
+                    width={960}
+                    height={540}
+                    fetchPriority="high"
+                    decoding="async"
+                    className="absolute inset-0 z-0 h-full w-full object-cover"
+                  />
+                  <HeroVideo enabled={!prefersReducedMotion} />
+                  <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-br from-white/10 via-transparent to-black/20" />
+                </div>
+              </motion.div>
+            )}
+          </div>
         </div>
       </section>
 

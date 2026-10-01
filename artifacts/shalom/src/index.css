@@ -164,10 +164,10 @@
   }
 }
 
-/* Slow colour drift over the home hero video */
+/* Slow colour drift over the mobile home hero image */
 /*
  * Home hero tint. Dark enough for white text to stay legible, light enough
- * that the footage underneath still reads as footage. The drift is a
+ * that the image underneath still reads clearly. The drift is a
  * transform on an oversized layer so it stays on the compositor.
  */
 .hero-overlay-shift {
