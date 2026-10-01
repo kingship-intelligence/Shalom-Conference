@@ -22,6 +22,7 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 const HERO_SEGMENT_COUNT = 15;
 const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
 const HERO_POSTER = "/images/home/shalom-hero-poster.webp";
+const HERO_FLYER = currentConference.flyer ?? currentConference.image;
 const HERO_CROSSFADE_MS = 700; // keep in step with duration-700 on the video elements
 // Countdown target comes from the conference data so there is one place to update.
 const CONFERENCE_START = currentConference.startsAt
@@ -226,66 +227,113 @@ function HeroVideo({ enabled }: { enabled: boolean }) {
 function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { children: React.ReactNode; enabled: boolean; reducedMotion: boolean; onToggleMotion: () => void }) {
   const heroRef = useRef<HTMLDivElement>(null);
   const inView = useInView(heroRef, { amount: 0.6 });
-  const [flipped, setFlipped] = useState(false);
-  const [autoFlipHandled, setAutoFlipHandled] = useState(false);
+  const [panel, setPanel] = useState<0 | 1 | 2>(0);
+  const [autoAdvanceEnabled, setAutoAdvanceEnabled] = useState(true);
+  const [videoFlipComplete, setVideoFlipComplete] = useState(false);
 
   useEffect(() => {
-    if (!inView || !enabled || reducedMotion || autoFlipHandled) return;
-    const timer = window.setTimeout(() => {
-      setFlipped(true);
-      setAutoFlipHandled(true);
+    if (!inView || !enabled || reducedMotion || !autoAdvanceEnabled) return;
+    const videoTimer = window.setTimeout(() => {
+      setPanel(1);
     }, 4_000);
-    return () => window.clearTimeout(timer);
-  }, [inView, enabled, reducedMotion, autoFlipHandled]);
+    return () => window.clearTimeout(videoTimer);
+  }, [inView, enabled, reducedMotion, autoAdvanceEnabled]);
+
+  useEffect(() => {
+    if (!videoFlipComplete || !autoAdvanceEnabled) return;
+    const flyerTimer = window.setTimeout(() => {
+      setPanel(2);
+      setAutoAdvanceEnabled(false);
+    }, 8_000);
+    return () => window.clearTimeout(flyerTimer);
+  }, [videoFlipComplete, autoAdvanceEnabled]);
+
+  const flipButtonLabel =
+    panel === 0 ? "Flip to video" : panel === 1 ? "Flip to flyer" : "Back to the title";
 
   return (
     <div ref={heroRef} className="relative mx-auto w-full max-w-xl" style={{ perspective: 1400 }}>
       <motion.div
         className="grid"
         style={{ transformStyle: "preserve-3d" }}
-        animate={{ rotateY: flipped ? 180 : 0 }}
+        animate={{ rotateY: panel === 0 ? 0 : 180 }}
         transition={{ duration: reducedMotion || !enabled ? 0 : 0.95, ease: [0.22, 1, 0.36, 1] }}
+        onAnimationComplete={() => {
+          if (panel === 1) setVideoFlipComplete(true);
+        }}
       >
         <div
-          aria-hidden={flipped}
-          inert={flipped}
-          onFocusCapture={() => setAutoFlipHandled(true)}
-          onPointerDownCapture={() => setAutoFlipHandled(true)}
+          aria-hidden={panel !== 0}
+          inert={panel !== 0}
+          onFocusCapture={() => setAutoAdvanceEnabled(false)}
+          onPointerDownCapture={() => setAutoAdvanceEnabled(false)}
           className="col-start-1 row-start-1 self-center [backface-visibility:hidden]"
           data-testid="hero-front"
         >
           {children}
         </div>
         <div
-          aria-hidden={!flipped}
-          inert={!flipped}
+          aria-hidden={panel === 0}
+          inert={panel === 0}
           className="col-start-1 row-start-1 [backface-visibility:hidden] [transform:rotateY(180deg)]"
           data-testid="hero-back"
         >
-          <div className="relative aspect-video overflow-hidden rounded-[2rem] border border-black/10 bg-black shadow-lg" data-testid="video-home-hero">
-            <img src={HERO_POSTER} alt="" width={960} height={540} fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
-            <HeroVideo enabled={enabled && flipped && inView} />
-            <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
-          </div>
-          {currentConference.scriptureText && (
-            <div className="mt-5 rounded-2xl border border-primary/20 bg-card p-5 text-foreground" data-testid="hero-scripture">
-              <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">{currentConference.scripture}</p>
-              <blockquote className="mt-3 text-sm leading-relaxed">“{currentConference.scriptureText}”</blockquote>
+          <motion.div
+            className="grid"
+            style={{ transformStyle: "preserve-3d" }}
+            animate={{ rotateY: panel === 2 ? 180 : 0 }}
+            transition={{ duration: reducedMotion || !enabled ? 0 : 0.95, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div
+              aria-hidden={panel !== 1}
+              inert={panel !== 1}
+              className="col-start-1 row-start-1 [backface-visibility:hidden]"
+              data-testid="hero-video-panel"
+            >
+              <div className="relative aspect-video overflow-hidden rounded-[2rem] border border-black/10 bg-black shadow-lg" data-testid="video-home-hero">
+                <img src={HERO_POSTER} alt="" width={960} height={540} fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
+                <HeroVideo enabled={enabled && panel === 1 && inView} />
+                <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+              </div>
+              {currentConference.scriptureText && (
+                <div className="mt-5 rounded-2xl border border-primary/20 bg-card p-5 text-foreground" data-testid="hero-scripture">
+                  <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">{currentConference.scripture}</p>
+                  <blockquote className="mt-3 text-sm leading-relaxed">“{currentConference.scriptureText}”</blockquote>
+                </div>
+              )}
+              <Link href="/register" className="mt-4 flex min-h-11 items-center justify-center gap-2 text-sm font-bold text-primary">
+                Register for Shalom <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
             </div>
-          )}
-          <Link href="/register" className="mt-4 flex min-h-11 items-center justify-center gap-2 text-sm font-bold text-primary">
-            Register for Shalom <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
+            <div
+              aria-hidden={panel !== 2}
+              inert={panel !== 2}
+              className="col-start-1 row-start-1 flex flex-col items-center [backface-visibility:hidden] [transform:rotateY(180deg)]"
+              data-testid="hero-flyer-panel"
+            >
+              <img
+                src={HERO_FLYER}
+                alt={`Shalom ${currentConference.year} flyer: ${currentConference.theme}`}
+                className="max-h-[65svh] w-auto max-w-full rounded-2xl object-contain shadow-2xl ring-1 ring-black/10"
+              />
+              <Link href="/2026" className="mt-4 flex min-h-11 items-center justify-center gap-2 text-sm font-bold text-primary">
+                View Shalom {currentConference.year} <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </Link>
+            </div>
+          </motion.div>
         </div>
       </motion.div>
       <div className="mt-5 flex items-center justify-between gap-3">
         <button
           type="button"
-          onClick={() => { setAutoFlipHandled(true); setFlipped((current) => !current); }}
-          aria-label={flipped ? "Back to the title" : "Flip"}
+          onClick={() => {
+            setAutoAdvanceEnabled(false);
+            setPanel((current) => (current === 2 ? 0 : (current + 1) as 1 | 2));
+          }}
+          aria-label={flipButtonLabel}
           className="flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
         >
-          {flipped ? "Back to the title" : "Flip"} <ArrowRight className="h-3 w-3" aria-hidden="true" />
+          {flipButtonLabel} <ArrowRight className="h-3 w-3" aria-hidden="true" />
         </button>
         {!reducedMotion && (
           <button
