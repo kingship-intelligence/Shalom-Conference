@@ -233,7 +233,7 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
   useEffect(() => {
     if (!inView || !enabled || reducedMotion || !autoAdvanceEnabled || panel === 2) return;
     const timer = window.setTimeout(() => {
-      setPanel((current) => (current + 1) as 1 | 2);
+      setPanel(panel === 0 ? 1 : 2);
     }, 4_000);
     return () => window.clearTimeout(timer);
   }, [inView, enabled, reducedMotion, autoAdvanceEnabled, panel]);
