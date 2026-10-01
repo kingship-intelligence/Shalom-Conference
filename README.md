@@ -1,18 +1,17 @@
 # Shalom Conference
 
-Shalom Conference is a TypeScript pnpm workspace for a youth conference website and its supporting API/tooling. The main user-facing app is a Vite + React landing page for the Shalom Youth Conference, with shared packages for an Express API, OpenAPI-generated clients, Zod schemas, and a future PostgreSQL/Drizzle data layer.
+Shalom Conference is a full-stack website and event operations platform for the Shalom Youth Conference. It combines a public conference website with registration, attendee badges, email confirmations, QR-code check-in, merchandise preorders, response forms, and an authenticated administration area.
 
 ## What Is In This Repo
 
 - `artifacts/shalom` - the main Shalom Conference web app. This is a Vite React app using Tailwind CSS, Radix UI components, Wouter routing, React Query, Framer Motion, and Lucide icons.
-- `artifacts/api-server` - an Express 5 API server. It currently exposes `GET /api/healthz`.
+- `artifacts/api-server` - an Express 5 API server for registration, attendee badges, check-in, admin accounts, merchandise orders, testimonies, prayer-chain signups, and response forms.
 - `artifacts/mockup-sandbox` - a Vite preview app used for component/mockup rendering.
 - `lib/api-spec` - the OpenAPI contract in `openapi.yaml` plus Orval code generation config.
 - `lib/api-client-react` - generated React Query API hooks and a custom fetch wrapper.
 - `lib/api-zod` - generated Zod schemas/types from the OpenAPI contract.
-- `lib/db` - PostgreSQL/Drizzle setup and schema entry point. The schema is currently a placeholder.
+- `lib/db` - PostgreSQL/Drizzle setup and schemas for registrations, check-in, admin users, merchandise, testimonies, prayer-chain signups, and event response forms.
 - `scripts` - small workspace scripts.
-- `attached_assets` - shared static assets, including the Shalom logo used by the frontend.
 
 ## Tech Stack
 
@@ -56,7 +55,7 @@ Open:
 http://localhost:5173
 ```
 
-The current frontend is a mostly static conference landing page with sections for the hero, event vibe, expectations, lineup, schedule, details, and CTA.
+The frontend includes the public conference site, registration and attendee-badge flow, conference archive, merchandise preorder page, Prayer Charge forms, testimony submission, and the admin/check-in interface.
 
 ## Run The API Server
 
@@ -78,7 +77,7 @@ Expected response:
 { "status": "ok" }
 ```
 
-If you add routes that use the shared database package, also set `DATABASE_URL`:
+The API imports the shared database package, so `DATABASE_URL` is required:
 
 ```sh
 PORT=5000 DATABASE_URL=postgres://USER:PASSWORD@localhost:5432/DB_NAME pnpm --filter @workspace/api-server dev
@@ -92,7 +91,21 @@ The database package lives in `lib/db` and uses Drizzle Kit. Set `DATABASE_URL` 
 DATABASE_URL=postgres://USER:PASSWORD@localhost:5432/DB_NAME pnpm --filter @workspace/db push
 ```
 
-The current schema file is `lib/db/src/schema/index.ts`. It is a placeholder with comments showing the expected pattern for new tables, insert schemas, and types.
+Schema modules are in `lib/db/src/schema`. The entry point, `lib/db/src/schema/index.ts`, defines testimony and merchandise tables and exports the registration, check-in, prayer-chain, response-form, and admin-user schemas.
+
+## Environment Variables
+
+The API uses the following environment variables:
+
+- `PORT` - required server port.
+- `DATABASE_URL` - required PostgreSQL connection string.
+- `SESSION_SECRET` - required for authenticated admin sessions.
+- `ADMIN_USERNAME` and `ADMIN_PASSWORD` - optional bootstrap credentials used to create the first admin account when no account exists.
+- `SITE_URL` - public site URL used in email content; defaults to `https://shalomconference.com`.
+- `PRIVATE_OBJECT_DIR` - private object-storage directory used for attendee portraits.
+- `LOG_LEVEL` - optional Pino log level; defaults to `info`.
+
+Email delivery uses the Replit `google-mail` connector.
 
 ## API Contract And Generated Code
 
@@ -146,20 +159,29 @@ pnpm --filter @workspace/api-server build
 PORT=5000 pnpm --filter @workspace/api-server start
 ```
 
+Run the API test suite:
+
+```sh
+pnpm --filter @workspace/api-server test
+```
+
 ## How The Pieces Fit Together
 
-The frontend currently renders the conference site from `artifacts/shalom/src/pages/home.tsx`. Routing is handled in `artifacts/shalom/src/App.tsx`, with `/` mapped to the home page and a fallback not-found route.
+Frontend routing is defined in `artifacts/shalom/src/App.tsx`. It includes the home page, registration, Prayer Charge, conference archive and year pages, about, partnership, shop, testimonies, legal pages, and admin interface. Current and archived conference content is maintained in `artifacts/shalom/src/data/conferences.ts`.
 
-The API starts from `artifacts/api-server/src/index.ts`, creates the Express app in `artifacts/api-server/src/app.ts`, and mounts routes under `/api`. The health route is implemented in `artifacts/api-server/src/routes/health.ts` and validates its response with the generated Zod schema from `@workspace/api-zod`.
+The API starts from `artifacts/api-server/src/index.ts`, creates the Express app in `artifacts/api-server/src/app.ts`, and mounts routes under `/api`. Route modules live in `artifacts/api-server/src/routes` and validate request and response shapes with generated schemas from `@workspace/api-zod`.
 
 The API contract flows from `lib/api-spec/openapi.yaml` into generated TypeScript clients and validators. That keeps the backend response shapes, frontend API hooks, and runtime validation tied to the same contract.
 
-The database package exports a Drizzle client from `lib/db/src/index.ts`. It requires `DATABASE_URL` when imported, so only import it in code paths that actually need database access.
+The database package exports a Drizzle client from `lib/db/src/index.ts`. It requires `DATABASE_URL` as soon as it is imported.
+
+Registration creates database records and sends confirmation emails with QR-code check-in credentials. Attendees can optionally upload a portrait through private object storage and receive a generated shareable badge. Admin and check-in accounts use signed, HTTP-only cookie sessions with role-based access.
 
 ## Notes And Gotchas
 
 - Vite commands for `artifacts/shalom` and `artifacts/mockup-sandbox` require both `PORT` and `BASE_PATH`.
 - The root `build` command runs typechecking first, then builds all packages with build scripts.
-- The frontend does not currently make API calls, so you can run it without the API server.
-- The API currently has only a health endpoint. Most product behavior is in the frontend landing page.
+- Public informational pages can render without the API, but registration, forms, merchandise orders, testimonies, and admin features require the API and database.
+- Admin authentication requires `SESSION_SECRET`; without it, login cannot establish a session.
+- The first admin can be bootstrapped with `ADMIN_USERNAME` and `ADMIN_PASSWORD`. After that, full administrators can create additional admin or check-in accounts.
 - Do not hand-edit generated files under `lib/api-client-react/src/generated` or `lib/api-zod/src/generated`; update `lib/api-spec/openapi.yaml` and run codegen instead.
