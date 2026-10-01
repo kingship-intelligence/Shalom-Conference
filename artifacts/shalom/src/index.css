@@ -254,6 +254,59 @@
   border-radius: 2.5rem;
 }
 
+.hero-rain {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  mask-image: linear-gradient(transparent, #000 15%, #000 80%, transparent);
+}
+
+.rain-drop {
+  position: absolute;
+  top: -140px;
+  width: 1px;
+  background: linear-gradient(transparent, rgba(96, 128, 151, .65));
+  animation: hero-rainfall linear infinite;
+  animation-play-state: paused;
+}
+
+.hero-rain[data-running="true"] .rain-drop { animation-play-state: running; }
+
+@keyframes hero-rainfall {
+  from { transform: translate3d(30px, -140px, 0) rotate(10deg); }
+  to { transform: translate3d(-130px, 1000px, 0) rotate(10deg); }
+}
+
+.home-scroll-story {
+  overflow: clip;
+}
+
+.home-scroll-chapter {
+  position: relative;
+  perspective: 1800px;
+}
+
+.home-scroll-page {
+  position: relative;
+  transform-origin: center center;
+  background: hsl(var(--background));
+  box-shadow: 0 12px 28px -22px rgba(0, 0, 0, .35);
+}
+
+.home-page-fold {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(0, 0, 0, .12), transparent 15%, transparent 80%, rgba(0, 0, 0, .18));
+  border-bottom: 3px double hsl(var(--ink) / .12);
+}
+
+@media (max-width: 639px) {
+  .rain-drop-desktop { display: none; }
+  .home-scroll-chapter { perspective: 2400px; }
+}
+
 .hero-motion-paused *,
 .hero-motion-paused *::before {
   animation-play-state: paused !important;

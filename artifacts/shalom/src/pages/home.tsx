@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { motion, useInView, useMotionTemplate, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { motion, useInView, useMotionTemplate, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Pause, Play } from "lucide-react";
 import { currentConference } from "@/data/conferences";
@@ -30,6 +30,42 @@ const CONFERENCE_START = currentConference.startsAt
 
 const heroSegmentSrc = (segment: number) =>
   `/videos/shalom-hero-segments/segment-${String(segment + 1).padStart(2, "0")}.mp4`;
+
+function HeroRain({ enabled }: { enabled: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref);
+  return (
+    <div ref={ref} aria-hidden="true" className="hero-rain" data-running={enabled && inView}>
+      {Array.from({ length: 36 }, (_, index) => (
+        <span key={index} className={index > 19 ? "rain-drop rain-drop-desktop" : "rain-drop"} style={{
+          left: `${(index * 37 + 7) % 100}%`,
+          height: `${45 + (index * 19) % 75}px`,
+          animationDuration: `${1.8 + (index % 7) * 0.24}s`,
+          animationDelay: `${-index * 0.37}s`,
+          opacity: 0.2 + (index % 4) * 0.1,
+        }} />
+      ))}
+    </div>
+  );
+}
+
+function ScrollPage({ children, enabled }: { children: React.ReactNode; enabled: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
+  const progress = useSpring(scrollYProgress, { stiffness: 110, damping: 30 });
+  const rotateX = useTransform(progress, [0, 0.3, 0.42, 0.65, 1], [18, 4, 0, 0, -16]);
+  const scale = useTransform(progress, [0, 0.35, 0.65, 1], [0.94, 1, 1, 0.96]);
+  const foldOpacity = useTransform(progress, [0, 0.35, 0.65, 1], [0.65, 0, 0, 0.55]);
+
+  return (
+    <div ref={ref} className="home-scroll-chapter" data-testid="scroll-page">
+      <motion.div className="home-scroll-page" style={{ rotateX: enabled ? rotateX : 0, scale: enabled ? scale : 1 }}>
+        {children}
+        <motion.div aria-hidden="true" className="home-page-fold" style={{ opacity: enabled ? foldOpacity : 0 }} />
+      </motion.div>
+    </div>
+  );
+}
 
 function getCountdownParts() {
   const remaining = Math.max(0, (CONFERENCE_START ?? 0) - Date.now());
@@ -64,9 +100,9 @@ function ConferenceCountdown() {
   ];
 
   return (
-    <section className="border-y border-ink/10 bg-background px-4 py-14 text-ink sm:px-6 sm:py-16">
+    <section className="border-y border-white/10 bg-[#090910] px-4 py-14 text-white sm:px-6 sm:py-16">
       <div className="container mx-auto max-w-5xl text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
+        <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f9591f]">
           {countdown.hasStarted ? "Happening now" : "Countdown"}
         </p>
         <h2
@@ -78,18 +114,18 @@ function ConferenceCountdown() {
 
         {!countdown.hasStarted && (
           <div
-            className="mx-auto mt-10 grid max-w-3xl grid-cols-4 border-y border-ink/15"
+            className="mx-auto mt-10 grid max-w-3xl grid-cols-4 border-y border-white/15"
             aria-label={`${countdown.days} days, ${countdown.hours} hours, ${countdown.minutes} minutes, and ${countdown.seconds} seconds until Shalom 2026`}
           >
             {units.map((unit, index) => (
               <div
                 key={unit.label}
-                className={`py-6 sm:py-8 ${index > 0 ? "border-l border-ink/15" : ""}`}
+                className={`py-6 sm:py-8 ${index > 0 ? "border-l border-white/15" : ""}`}
               >
                 <span className="block font-mono text-3xl font-bold tabular-nums sm:text-6xl">
                   {String(unit.value).padStart(2, "0")}
                 </span>
-                <span className="mt-2 block text-[9px] font-bold uppercase tracking-[0.18em] text-copy-45 sm:text-xs sm:tracking-[0.25em]">
+                <span className="mt-2 block text-[9px] font-bold uppercase tracking-[0.18em] text-white/60 sm:text-xs sm:tracking-[0.25em]">
                   {unit.label}
                 </span>
               </div>
@@ -215,7 +251,7 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
           inert={flipped}
           onFocusCapture={() => setAutoFlipHandled(true)}
           onPointerDownCapture={() => setAutoFlipHandled(true)}
-          className="col-start-1 row-start-1 self-center bg-white [backface-visibility:hidden]"
+          className="col-start-1 row-start-1 self-center [backface-visibility:hidden]"
           data-testid="hero-front"
         >
           {children}
@@ -223,7 +259,7 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
         <div
           aria-hidden={!flipped}
           inert={!flipped}
-          className="col-start-1 row-start-1 bg-white [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          className="col-start-1 row-start-1 [backface-visibility:hidden] [transform:rotateY(180deg)]"
           data-testid="hero-back"
         >
           <div className="relative aspect-video overflow-hidden rounded-[2rem] border border-black/10 bg-black shadow-lg" data-testid="video-home-hero">
@@ -441,7 +477,10 @@ export default function Home() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
 
+      <main className="home-scroll-story">
+      <ScrollPage enabled={motionEnabled}>
       <section className={`home-hero relative isolate flex flex-col items-center overflow-hidden bg-white px-6 pb-6 pt-10 text-[#13101c] sm:px-10 lg:min-h-[min(760px,calc(100svh-76px))] lg:flex-row lg:px-16 lg:py-24 ${!motionEnabled ? "hero-motion-paused" : ""}`}>
+        <HeroRain enabled={motionEnabled} />
         <div className="container relative z-10 mx-auto max-w-7xl">
           {isDesktop ? (
             <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:gap-16">
@@ -468,7 +507,13 @@ export default function Home() {
         )}
       </section>
 
-      <ConferenceCountdown />
+      </ScrollPage>
+
+      <ScrollPage enabled={motionEnabled}>
+        <ConferenceCountdown />
+      </ScrollPage>
+
+      <ScrollPage enabled={motionEnabled}>
 
       <section id="home-cta" className="bg-primary px-4 py-28 sm:px-6">
         <div className="container mx-auto max-w-3xl text-center">
@@ -497,7 +542,12 @@ export default function Home() {
         </div>
       </section>
 
-      <SiteFooter />
+      </ScrollPage>
+      </main>
+
+      <ScrollPage enabled={motionEnabled}>
+        <SiteFooter />
+      </ScrollPage>
     </div>
   );
 }
