@@ -231,12 +231,19 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
   const [autoAdvanceEnabled, setAutoAdvanceEnabled] = useState(true);
 
   useEffect(() => {
-    if (!inView || !enabled || reducedMotion || !autoAdvanceEnabled || panel === 2) return;
-    const timer = window.setTimeout(() => {
-      setPanel(panel === 0 ? 1 : 2);
+    if (!inView || !enabled || reducedMotion || !autoAdvanceEnabled) return;
+    const videoTimer = window.setTimeout(() => {
+      setPanel(1);
     }, 4_000);
-    return () => window.clearTimeout(timer);
-  }, [inView, enabled, reducedMotion, autoAdvanceEnabled, panel]);
+    const flyerTimer = window.setTimeout(() => {
+      setPanel(2);
+      setAutoAdvanceEnabled(false);
+    }, 8_000);
+    return () => {
+      window.clearTimeout(videoTimer);
+      window.clearTimeout(flyerTimer);
+    };
+  }, [inView, enabled, reducedMotion, autoAdvanceEnabled]);
 
   const flipButtonLabel =
     panel === 0 ? "Flip to video" : panel === 1 ? "Flip to flyer" : "Back to the title";
