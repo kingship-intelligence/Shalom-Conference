@@ -183,7 +183,7 @@ export default function PrayerCharge() {
       <SiteHeader />
 
       <main>
-        <section className="relative border-b border-white/10 px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16">
+        <section className="relative border-b border-ink/10 px-4 pb-16 pt-10 sm:px-6 sm:pb-24 sm:pt-16">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_10%_8%,hsl(var(--primary)/0.2),transparent_31%),radial-gradient(circle_at_88%_30%,hsl(var(--secondary)/0.13),transparent_28%)]" />
           <div className="relative z-10 mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1fr_0.82fr] lg:gap-20">
             <motion.div
@@ -192,11 +192,11 @@ export default function PrayerCharge() {
               transition={{ duration: 0.6 }}
               className="order-2 lg:order-1"
             >
-              <h1 className="max-w-2xl text-5xl font-black uppercase leading-[0.92] tracking-tight text-white sm:text-7xl">
+              <h1 className="max-w-2xl text-5xl font-black uppercase leading-[0.92] tracking-tight text-ink sm:text-7xl">
                 Thank you for
                 <span className="block text-primary">praying with us.</span>
               </h1>
-              <p className="mt-7 max-w-xl text-lg leading-relaxed text-white/65 sm:text-xl">
+              <p className="mt-7 max-w-xl text-lg leading-relaxed text-copy-65 sm:text-xl">
                 The Prayer Charge was made meaningful by every voice, every
                 quiet moment, and every heart that showed up. We are grateful
                 you were part of it.
@@ -212,15 +212,15 @@ export default function PrayerCharge() {
                 <Button
                   asChild
                   variant="outline"
-                  className="h-12 rounded-full border-white/20 bg-transparent px-7 font-bold uppercase tracking-widest text-white hover:bg-white/10 hover:text-white"
+                  className="h-12 rounded-full border-ink/20 bg-transparent px-7 font-bold uppercase tracking-widest text-ink hover:bg-ink/10 hover:text-ink"
                   data-testid="link-see-2026"
                 >
                   <Link href="/2026">Visit Shalom 2026</Link>
                 </Button>
               </div>
-              <div className="mt-12 max-w-lg border-t border-white/10 pt-5">
+              <div className="mt-12 max-w-lg border-t border-ink/10 pt-5">
                 <div
-                  className="relative isolate border border-primary/25 bg-white/[0.035] p-5 sm:p-6"
+                  className="relative isolate border border-primary/25 bg-ink/[0.035] p-5 sm:p-6"
                   data-testid="status-prayer-charge-countdown"
                 >
                   {showConfetti && (
@@ -256,14 +256,14 @@ export default function PrayerCharge() {
                         initial={{ opacity: 0.5, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.14 }}
-                        className="text-5xl font-black tabular-nums text-white sm:text-6xl"
+                        className="text-5xl font-black tabular-nums text-ink sm:text-6xl"
                       >
                         {countdownHours}
                       </motion.span>
                       <span className="text-sm font-bold uppercase tracking-widest text-primary">
                         {countdownHours === 1 ? "hour" : "hours"}
                       </span>
-                      <span className="ml-auto text-xs uppercase tracking-widest text-white/50">
+                      <span className="ml-auto text-xs uppercase tracking-widest text-copy-50">
                         of prayer and worship
                       </span>
                     </div>
@@ -273,7 +273,7 @@ export default function PrayerCharge() {
                       aria-valuemin={0}
                       aria-valuemax={12}
                       aria-valuenow={countdownHours}
-                      className="mt-5 h-2 overflow-hidden bg-white/10"
+                      className="mt-5 h-2 overflow-hidden bg-ink/10"
                     >
                       <motion.div
                         className="h-full bg-primary"
@@ -281,7 +281,7 @@ export default function PrayerCharge() {
                         transition={{ duration: 0.16, ease: "linear" }}
                       />
                     </div>
-                    <div className="mt-2 flex justify-between text-xs font-semibold tabular-nums text-white/40">
+                    <div className="mt-2 flex justify-between text-xs font-semibold tabular-nums text-copy-40">
                       <span>0</span>
                       <span>12</span>
                     </div>
@@ -306,7 +306,7 @@ export default function PrayerCharge() {
                 <img
                   src={thankYouArtwork}
                   alt="Thank you message from the Shalom Conference team to Prayer Charge guests"
-                  className="h-auto w-full border border-white/15 shadow-2xl shadow-black/40"
+                  className="h-auto w-full border border-ink/15 shadow-2xl shadow-black/40"
                   data-testid="img-prayer-charge-thank-you"
                 />
               </div>
@@ -317,16 +317,16 @@ export default function PrayerCharge() {
         <section
           id="prayer-charge-video"
           aria-labelledby="prayer-charge-video-heading"
-          className="border-b border-white/10 px-4 py-16 sm:px-6 sm:py-20"
+          className="border-b border-ink/10 px-4 py-16 sm:px-6 sm:py-20"
         >
           <div className="mx-auto max-w-6xl">
             <h2
               id="prayer-charge-video-heading"
-              className="text-3xl font-black uppercase leading-tight text-white sm:text-4xl"
+              className="text-3xl font-black uppercase leading-tight text-ink sm:text-4xl"
             >
               Watch the Prayer Charge
             </h2>
-            <div className="relative mt-8 aspect-video overflow-hidden border border-white/10 bg-black shadow-2xl shadow-black/30">
+            <div className="relative mt-8 aspect-video overflow-hidden border border-ink/10 bg-black shadow-2xl shadow-black/30">
               <iframe
                 src="https://www.youtube-nocookie.com/embed/ElvIbJXp9Ls"
                 title="Shalom Prayer Charge recording"
@@ -356,7 +356,7 @@ export default function PrayerCharge() {
         >
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.72fr_1.28fr] lg:gap-20">
             <div className="lg:pt-5">
-              <h2 className="text-4xl font-black uppercase leading-tight text-white sm:text-5xl">
+              <h2 className="text-4xl font-black uppercase leading-tight text-ink sm:text-5xl">
                 Help us carry it forward.
               </h2>
               <p className="mt-5 max-w-md leading-relaxed text-muted-foreground">
@@ -365,16 +365,16 @@ export default function PrayerCharge() {
                 gathering.
               </p>
               <div className="mt-8 border-l-2 border-primary pl-5">
-                <p className="text-sm font-bold uppercase tracking-widest text-white">
+                <p className="text-sm font-bold uppercase tracking-widest text-ink">
                   This takes about two minutes
                 </p>
-                <p className="mt-2 text-sm leading-relaxed text-white/45">
+                <p className="mt-2 text-sm leading-relaxed text-copy-45">
                   No name or contact information is requested.
                 </p>
               </div>
             </div>
 
-            <div className="border border-white/10 bg-white/[0.035] p-5 sm:p-9">
+            <div className="border border-ink/10 bg-ink/[0.035] p-5 sm:p-9">
               {submitted ? (
                 <motion.div
                   initial={{ opacity: 0, y: 12 }}
@@ -382,10 +382,10 @@ export default function PrayerCharge() {
                   className="flex min-h-[520px] flex-col items-center justify-center text-center"
                   data-testid="status-survey-thank-you"
                 >
-                  <h3 className="text-3xl font-bold text-white">
+                  <h3 className="text-3xl font-bold text-ink">
                     Thank you for sharing.
                   </h3>
-                  <p className="mt-3 max-w-md leading-relaxed text-white/55">
+                  <p className="mt-3 max-w-md leading-relaxed text-copy-55">
                     We are grateful for your honesty and for the part you
                     played in making the Prayer Charge a day of seeking God
                     together.
@@ -394,7 +394,7 @@ export default function PrayerCharge() {
                     type="button"
                     variant="outline"
                     onClick={resetForm}
-                    className="mt-8 rounded-full border-white/20 bg-transparent px-7 text-white hover:bg-white/10 hover:text-white"
+                    className="mt-8 rounded-full border-ink/20 bg-transparent px-7 text-ink hover:bg-ink/10 hover:text-ink"
                     data-testid="button-submit-another-survey"
                   >
                     Share another response
@@ -412,7 +412,7 @@ export default function PrayerCharge() {
                       name="rating"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
+                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-ink">
                             How would you rate the Prayer Charge?
                           </FormLabel>
                           <FormControl>
@@ -435,7 +435,7 @@ export default function PrayerCharge() {
                                   />
                                   <label
                                     htmlFor={`prayer-charge-rating-${value}`}
-                                    className="flex h-14 cursor-pointer items-center justify-center border border-white/10 bg-white/[0.025] text-lg font-bold text-white/55 transition-colors hover:border-primary/60 hover:text-white peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary"
+                                    className="flex h-14 cursor-pointer items-center justify-center border border-ink/10 bg-ink/[0.025] text-lg font-bold text-copy-55 transition-colors hover:border-primary/60 hover:text-ink peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary"
                                   >
                                     {value}
                                   </label>
@@ -443,7 +443,7 @@ export default function PrayerCharge() {
                               ))}
                             </RadioGroup>
                           </FormControl>
-                          <div className="flex max-w-md justify-between text-[11px] uppercase tracking-wider text-white/35">
+                          <div className="flex max-w-md justify-between text-[11px] uppercase tracking-wider text-copy-35">
                             <span>Needs work</span>
                             <span>Life-giving</span>
                           </div>
@@ -457,9 +457,9 @@ export default function PrayerCharge() {
                       name="meaningfulMoment"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
+                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-ink">
                             What moment stayed with you?
-                            <span className="text-xs font-normal normal-case tracking-normal text-white/35">
+                            <span className="text-xs font-normal normal-case tracking-normal text-copy-35">
                               Optional
                             </span>
                           </FormLabel>
@@ -469,11 +469,11 @@ export default function PrayerCharge() {
                               maxLength={1200}
                               rows={4}
                               placeholder="A song, a prayer, a conversation, or a quiet moment..."
-                              className="mt-2 w-full resize-y border-white/10 bg-white/5 px-4 py-3 text-sm leading-relaxed text-white placeholder:text-white/25 focus:border-primary focus:ring-primary"
+                              className="mt-2 w-full resize-y border-ink/10 bg-ink/5 px-4 py-3 text-sm leading-relaxed text-ink placeholder:text-copy-25 focus:border-primary focus:ring-primary"
                               data-testid="textarea-meaningful-moment"
                             />
                           </FormControl>
-                          <p className="text-right text-xs text-white/35">
+                          <p className="text-right text-xs text-copy-35">
                             {meaningfulMoment.length}/1200
                           </p>
                           <FormMessage />
@@ -486,9 +486,9 @@ export default function PrayerCharge() {
                       name="suggestion"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
+                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-ink">
                             Is there anything you would love to see next time?
-                            <span className="ml-2 text-xs font-normal normal-case tracking-normal text-white/35">
+                            <span className="ml-2 text-xs font-normal normal-case tracking-normal text-copy-35">
                               Optional
                             </span>
                           </FormLabel>
@@ -498,11 +498,11 @@ export default function PrayerCharge() {
                               maxLength={1200}
                               rows={3}
                               placeholder="Tell us what would serve you and the community well..."
-                              className="mt-2 w-full resize-y border-white/10 bg-white/5 px-4 py-3 text-sm leading-relaxed text-white placeholder:text-white/25 focus:border-primary focus:ring-primary"
+                              className="mt-2 w-full resize-y border-ink/10 bg-ink/5 px-4 py-3 text-sm leading-relaxed text-ink placeholder:text-copy-25 focus:border-primary focus:ring-primary"
                               data-testid="textarea-suggestion"
                             />
                           </FormControl>
-                          <p className="text-right text-xs text-white/35">
+                          <p className="text-right text-xs text-copy-35">
                             {suggestion.length}/1200
                           </p>
                           <FormMessage />
@@ -515,7 +515,7 @@ export default function PrayerCharge() {
                       name="wouldAttendAgain"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-white">
+                          <FormLabel className="text-sm font-bold uppercase tracking-widest text-ink">
                             Would you attend another Prayer Charge?
                           </FormLabel>
                           <FormControl>
@@ -538,7 +538,7 @@ export default function PrayerCharge() {
                                   />
                                   <label
                                     htmlFor={`attend-again-${option.value}`}
-                                    className="flex min-h-12 cursor-pointer items-center border border-white/10 bg-white/[0.025] px-3 py-3 text-left text-sm font-semibold text-white/65 transition-colors hover:border-primary/60 hover:text-white peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary"
+                                    className="flex min-h-12 cursor-pointer items-center border border-ink/10 bg-ink/[0.025] px-3 py-3 text-left text-sm font-semibold text-copy-65 transition-colors hover:border-primary/60 hover:text-ink peer-data-[state=checked]:border-primary peer-data-[state=checked]:bg-primary peer-data-[state=checked]:text-white peer-focus-visible:ring-2 peer-focus-visible:ring-primary"
                                   >
                                     {option.label}
                                   </label>
@@ -553,7 +553,7 @@ export default function PrayerCharge() {
 
                     {formError && (
                       <div
-                        className="border border-red-400/25 bg-red-400/5 px-4 py-3 text-sm leading-relaxed text-red-200"
+                        className="border border-red-400/25 bg-red-400/5 px-4 py-3 text-sm leading-relaxed text-red-700 dark:text-red-200"
                         role="alert"
                         data-testid="status-survey-error"
                       >

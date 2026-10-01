@@ -65,8 +65,8 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
         className="flex min-h-72 flex-col items-center justify-center rounded-2xl border border-primary/30 bg-primary/5 p-8 text-center"
       >
         <CheckCircle2 className="h-12 w-12 text-primary" />
-        <h3 className="mt-5 text-2xl font-black uppercase text-white">Got it</h3>
-        <p className="mt-3 max-w-md text-white/60">
+        <h3 className="mt-5 text-2xl font-black uppercase text-ink">Got it</h3>
+        <p className="mt-3 max-w-md text-copy-60">
           Thanks for letting us know. See you in October.
         </p>
       </div>
@@ -76,7 +76,7 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
   return (
     <form onSubmit={handleSubmit} className="space-y-5" noValidate>
       <div>
-        <label htmlFor="first-timer-name" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/55">
+        <label htmlFor="first-timer-name" className="mb-2 block text-xs font-bold uppercase tracking-widest text-copy-55">
           Full name
         </label>
         <Input
@@ -86,12 +86,12 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
           autoComplete="name"
           required
           maxLength={160}
-          className="h-12 rounded-xl border-white/15 bg-black/20 text-white placeholder:text-white/30"
+          className="h-12 rounded-xl border-ink/15 bg-shade/20 text-ink placeholder:text-copy-30"
           placeholder="Your full name"
         />
       </div>
       <div>
-        <label htmlFor="first-timer-email" className="mb-2 block text-xs font-bold uppercase tracking-widest text-white/55">
+        <label htmlFor="first-timer-email" className="mb-2 block text-xs font-bold uppercase tracking-widest text-copy-55">
           Email address
         </label>
         <Input
@@ -102,12 +102,12 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
           autoComplete="email"
           required
           maxLength={254}
-          className="h-12 rounded-xl border-white/15 bg-black/20 text-white placeholder:text-white/30"
+          className="h-12 rounded-xl border-ink/15 bg-shade/20 text-ink placeholder:text-copy-30"
           placeholder="you@example.com"
         />
       </div>
       <fieldset>
-        <legend className="mb-3 text-xs font-bold uppercase tracking-widest text-white/55">
+        <legend className="mb-3 text-xs font-bold uppercase tracking-widest text-copy-55">
           Is this your first Shalom?
         </legend>
         <div className="grid grid-cols-2 gap-3">
@@ -120,7 +120,7 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
               className={`cursor-pointer rounded-full border px-4 py-3 text-center text-sm font-bold uppercase tracking-wider transition-colors ${
                 isFirstTime === option.value
                   ? "border-primary bg-primary text-primary-foreground"
-                  : "border-white/15 bg-black/20 text-white/65 hover:border-primary/60"
+                  : "border-ink/15 bg-shade/20 text-copy-65 hover:border-primary/60"
               }`}
             >
               <input
@@ -138,7 +138,7 @@ function FirstTimerForm({ conferenceYear }: { conferenceYear: number }) {
         </div>
       </fieldset>
       {feedback && (
-        <p role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-200">
+        <p role="alert" className="rounded-xl border border-red-400/25 bg-red-400/10 px-4 py-3 text-sm text-red-700 dark:text-red-200">
           {feedback}
         </p>
       )}
@@ -201,7 +201,7 @@ function SpeakerCard({
 
   if (!speaker.bio) {
     return (
-      <div className="overflow-hidden rounded-2xl border border-white/10 bg-background/60 text-center sm:text-left">
+      <div className="overflow-hidden rounded-2xl border border-ink/10 bg-background/60 text-center sm:text-left">
         {speaker.image ? (
           <img
             src={speaker.image}
@@ -216,7 +216,7 @@ function SpeakerCard({
           </div>
         )}
         <div className="p-6">
-          <h3 className="text-2xl font-bold text-white">{speaker.name}</h3>
+          <h3 className="text-2xl font-bold text-ink">{speaker.name}</h3>
           <p className="text-muted-foreground">{speaker.role}</p>
         </div>
       </div>
@@ -233,7 +233,7 @@ function SpeakerCard({
         aria-pressed={flipped}
       >
         <div
-          className="absolute inset-0 overflow-hidden rounded-2xl border border-white/10 bg-background/60 text-left transition-transform duration-700 [backface-visibility:hidden] [transform-style:preserve-3d] motion-reduce:transition-none"
+          className="absolute inset-0 overflow-hidden rounded-2xl border border-ink/10 bg-background/60 text-left transition-transform duration-700 [backface-visibility:hidden] [transform-style:preserve-3d] motion-reduce:transition-none"
           style={{ transform: flipped ? "rotateY(180deg)" : "rotateY(0deg)" }}
         >
           {speaker.image ? (
@@ -260,11 +260,11 @@ function SpeakerCard({
           style={{ transform: flipped ? "rotateY(0deg)" : "rotateY(-180deg)" }}
         >
           <p className="text-xs font-bold uppercase tracking-[0.25em] text-primary">{speaker.role}</p>
-          <h3 className="mt-3 text-2xl font-bold text-white">{speaker.name}</h3>
+          <h3 className="mt-3 text-2xl font-bold text-ink">{speaker.name}</h3>
           <p className="mt-5 whitespace-pre-line text-sm leading-relaxed text-muted-foreground">{speaker.bio}</p>
         </div>
       </button>
-      <p className="mt-3 text-center text-xs uppercase tracking-[0.18em] text-white/45">
+      <p className="mt-3 text-center text-xs uppercase tracking-[0.18em] text-copy-45">
         Tap to {flipped ? "see photo" : "read bio"}
       </p>
     </div>
@@ -308,12 +308,12 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                   src={conference.flyer}
                   alt={`Shalom ${conference.year} flyer: ${conference.theme}`}
                   fetchPriority="high"
-                  className="max-h-[78vh] w-auto max-w-sm rounded-2xl shadow-2xl ring-1 ring-white/10 sm:max-w-md"
+                  className="max-h-[78vh] w-auto max-w-sm rounded-2xl shadow-2xl ring-1 ring-ink/10 sm:max-w-md"
                 />
               </div>
 
               <div className="text-center lg:text-left">
-                <h2 className="mb-6 text-2xl font-black uppercase tracking-tighter text-white sm:text-3xl lg:text-4xl">
+                <h2 className="mb-6 text-2xl font-black uppercase tracking-tighter text-ink sm:text-3xl lg:text-4xl">
                   {conference.summary}
                 </h2>
                 <p className="text-lg leading-relaxed text-muted-foreground">
@@ -336,7 +336,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                       asChild
                       variant="outline"
                       size="lg"
-                      className="h-auto min-h-12 w-full max-w-xs whitespace-normal rounded-full border-white/20 bg-white/5 px-5 py-3 text-xs font-bold uppercase leading-snug tracking-wide text-white hover:border-primary hover:bg-primary/10 hover:text-white sm:text-sm"
+                      className="h-auto min-h-12 w-full max-w-xs whitespace-normal rounded-full border-ink/20 bg-ink/5 px-5 py-3 text-xs font-bold uppercase leading-snug tracking-wide text-ink hover:border-primary hover:bg-primary/10 hover:text-ink sm:text-sm"
                     >
                       <Link href="/register?badge=1">
                         Already registered? Make your badge
@@ -363,7 +363,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                 Shalom {conference.year}
               </p>
 
-              <h1 className="mb-6 text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl md:text-9xl">
+              <h1 className="mb-6 text-4xl font-black uppercase leading-none tracking-tighter text-ink sm:text-6xl md:text-9xl">
                 {conference.theme}
               </h1>
               <p className="mx-auto mb-10 max-w-3xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl md:text-3xl">
@@ -387,7 +387,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                   asChild
                   variant="outline"
                   size="lg"
-                  className="h-14 w-full max-w-xs rounded-full border-white/20 px-8 text-base font-medium uppercase tracking-wide sm:w-auto sm:text-lg"
+                  className="h-14 w-full max-w-xs rounded-full border-ink/20 px-8 text-base font-medium uppercase tracking-wide sm:w-auto sm:text-lg"
                 >
                   <Link href="/archive">
                     Back to the archive <ArrowRight className="h-5 w-5" />
@@ -398,12 +398,12 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
           </section>
         )}
 
-        <section className="border-y border-white/10 bg-card px-4 py-16 sm:px-6">
+        <section className="border-y border-ink/10 bg-card px-4 py-16 sm:px-6">
           <div className="container mx-auto grid max-w-5xl gap-8 sm:grid-cols-2">
             <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-5 sm:text-left">
               <Calendar className="h-8 w-8 text-primary" />
               <div>
-                <h2 className="text-xl font-bold text-white">When</h2>
+                <h2 className="text-xl font-bold text-ink">When</h2>
                 <p className="text-muted-foreground">{conference.date}</p>
               </div>
             </div>
@@ -411,7 +411,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               <div className="flex flex-col items-center gap-4 text-center sm:flex-row sm:gap-5 sm:text-left">
                 <MapPin className="h-8 w-8 text-primary" />
                 <div>
-                  <h2 className="text-xl font-bold text-white">Where</h2>
+                  <h2 className="text-xl font-bold text-ink">Where</h2>
                   <p className="text-muted-foreground">{conference.location}</p>
                 </div>
               </div>
@@ -422,7 +422,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
         {conference.scripture && conference.scriptureText ? (
           <section className="px-4 py-20 sm:px-6 sm:py-24">
             <blockquote className="container mx-auto max-w-4xl text-center">
-              <p className="text-2xl font-light italic leading-snug text-white sm:text-3xl md:text-4xl">
+              <p className="text-2xl font-light italic leading-snug text-ink sm:text-3xl md:text-4xl">
                 “{conference.scriptureText}”
               </p>
               <footer className="mt-6 font-mono text-sm uppercase tracking-widest text-primary">
@@ -433,13 +433,13 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
         ) : null}
 
         {isCurrent && conference.year === "2026" ? (
-          <section id="first-timers" className="scroll-mt-24 border-t border-white/10 px-4 py-20 sm:px-6 sm:py-24">
+          <section id="first-timers" className="scroll-mt-24 border-t border-ink/10 px-4 py-20 sm:px-6 sm:py-24">
             <div className="container mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
               <div className="text-center lg:text-left">
-                <h2 className="text-4xl font-black uppercase tracking-tighter text-white sm:text-6xl">
+                <h2 className="text-4xl font-black uppercase tracking-tighter text-ink sm:text-6xl">
                   First time at Shalom?
                 </h2>
-                <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/60 lg:mx-0">
+                <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-copy-60 lg:mx-0">
                   Tell us so we can look out for you when you arrive. This is a separate,
                   quick form. It doesn't register you for the conference.
                 </p>
@@ -454,24 +454,24 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
             <div className="container mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
               {schedule.length > 0 ? (
                 <div id="lineup" className="scroll-mt-24 text-center lg:text-left">
-                  <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
+                  <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-ink sm:text-4xl md:text-6xl">
                     Schedule
                   </h2>
                   <div className="space-y-6">
                     {schedule.map((event) => (
                       <div
                         key={`${event.time}-${event.title}`}
-                        className="border-b border-white/10 pb-6 last:border-0"
+                        className="border-b border-ink/10 pb-6 last:border-0"
                       >
                         <p className="mb-2 font-mono text-sm uppercase tracking-widest text-primary">
                           {event.time}
                         </p>
                         {event.label && (
-                          <p className="mb-1 text-sm font-bold uppercase tracking-[0.2em] text-white/60">
+                          <p className="mb-1 text-sm font-bold uppercase tracking-[0.2em] text-copy-60">
                             {event.label}
                           </p>
                         )}
-                        <h3 className="text-xl font-bold text-white sm:text-2xl">{event.title}</h3>
+                        <h3 className="text-xl font-bold text-ink sm:text-2xl">{event.title}</h3>
                       </div>
                     ))}
                   </div>
@@ -480,7 +480,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
 
               {speakers.length > 0 ? (
                 <div className="text-center lg:text-left">
-                  <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
+                  <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-ink sm:text-4xl md:text-6xl">
                     {isCurrent ? "Who's ministering" : "Who ministered"}
                   </h2>
                   <div className="grid gap-4 sm:grid-cols-2">

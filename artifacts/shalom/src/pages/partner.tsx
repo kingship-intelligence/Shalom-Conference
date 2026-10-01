@@ -19,7 +19,7 @@ export default function Partner() {
       <main>
         <section className="px-4 py-20 text-center sm:px-6 sm:py-24 sm:text-left">
           <div className="container mx-auto max-w-6xl">
-            <h1 className="mb-8 text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl md:text-8xl">
+            <h1 className="mb-8 text-4xl font-black uppercase leading-none tracking-tighter text-ink sm:text-6xl md:text-8xl">
               Partner with us
             </h1>
             <p className="mx-auto max-w-4xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl">
@@ -31,8 +31,8 @@ export default function Partner() {
 
         <section className="px-4 pb-20 sm:px-6 sm:pb-24">
           <div className="container mx-auto grid max-w-7xl gap-16 lg:grid-cols-[0.8fr_1fr]">
-            <div className="rounded-2xl border border-white/10 bg-card p-8 text-center lg:text-left">
-              <h2 className="mb-4 text-3xl font-black uppercase tracking-tight text-white">
+            <div className="rounded-2xl border border-ink/10 bg-card p-8 text-center lg:text-left">
+              <h2 className="mb-4 text-3xl font-black uppercase tracking-tight text-ink">
                 Shalom {currentConference.year}
               </h2>
               <p className="font-mono text-sm uppercase tracking-widest text-primary">
@@ -49,14 +49,14 @@ export default function Partner() {
               <div className="rounded-2xl border border-primary/30 bg-primary/10 p-6 sm:p-8">
                 <div className="flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
                   <div>
-                    <h3 className="text-2xl font-black uppercase tracking-tight text-white">
+                    <h3 className="text-2xl font-black uppercase tracking-tight text-ink">
                       Give
                     </h3>
                     <p className="mt-3 max-w-xl text-base leading-relaxed text-muted-foreground">
                       Cash App is the quickest way. Zeffy works too if you'd rather use a card.
                     </p>
                   </div>
-                  <p className="shrink-0 rounded-full border border-primary/40 bg-background/70 px-4 py-2 font-mono text-base font-bold text-white">
+                  <p className="shrink-0 rounded-full border border-primary/40 bg-background/70 px-4 py-2 font-mono text-base font-bold text-ink">
                     $HGAReveille
                   </p>
                 </div>
@@ -74,7 +74,7 @@ export default function Partner() {
                     asChild
                     size="lg"
                     variant="outline"
-                    className="w-full rounded-full border-primary/40 uppercase tracking-wider text-white hover:bg-primary/10 hover:text-white sm:w-auto"
+                    className="w-full rounded-full border-primary/40 uppercase tracking-wider text-ink hover:bg-primary/10 hover:text-ink sm:w-auto"
                   >
                     <a href={ZEFFY_URL} target="_blank" rel="noopener noreferrer">
                       Zeffy <ArrowUpRight className="h-5 w-5" />
@@ -85,7 +85,7 @@ export default function Partner() {
                   Need a receipt, or want to talk about sponsoring? Email{" "}
                   <a
                     href={`mailto:${FINANCE_EMAIL}?subject=Shalom%20giving`}
-                    className="font-semibold text-primary underline decoration-primary/40 underline-offset-4 hover:text-white"
+                    className="font-semibold text-primary underline decoration-primary/40 underline-offset-4 hover:text-ink"
                   >
                     {FINANCE_EMAIL}
                   </a>{" "}
@@ -93,8 +93,8 @@ export default function Partner() {
                 </p>
               </div>
 
-              <div className="mt-8 rounded-2xl border border-white/10 bg-card/60 p-6 text-left sm:p-8">
-                <h3 className="text-2xl font-black uppercase tracking-tight text-white">
+              <div className="mt-8 rounded-2xl border border-ink/10 bg-card/60 p-6 text-left sm:p-8">
+                <h3 className="text-2xl font-black uppercase tracking-tight text-ink">
                   Serve
                 </h3>
                 <p className="mt-3 text-base leading-relaxed text-muted-foreground">
@@ -103,14 +103,14 @@ export default function Partner() {
                 </p>
                 <Link
                   href="/register"
-                  className="mt-5 inline-flex items-center gap-2 font-bold uppercase tracking-wider text-primary hover:text-white"
+                  className="mt-5 inline-flex items-center gap-2 font-bold uppercase tracking-wider text-primary hover:text-ink"
                 >
                   Register and volunteer <ArrowRight className="h-4 w-4" />
                 </Link>
               </div>
 
-              <div className="mt-8 rounded-2xl border border-white/10 bg-card/60 p-6 text-left sm:p-8">
-                <h3 className="text-2xl font-black uppercase tracking-tight text-white">
+              <div className="mt-8 rounded-2xl border border-ink/10 bg-card/60 p-6 text-left sm:p-8">
+                <h3 className="text-2xl font-black uppercase tracking-tight text-ink">
                   Bring people
                 </h3>
                 <p className="mt-3 text-base leading-relaxed text-muted-foreground">
@@ -120,7 +120,7 @@ export default function Partner() {
                 </p>
                 <a
                   href={`mailto:${CONTACT_EMAIL}?subject=Bringing%20a%20group%20to%20Shalom`}
-                  className="mt-5 inline-flex items-center gap-2 font-bold uppercase tracking-wider text-primary hover:text-white"
+                  className="mt-5 inline-flex items-center gap-2 font-bold uppercase tracking-wider text-primary hover:text-ink"
                 >
                   {CONTACT_EMAIL} <ArrowRight className="h-4 w-4" />
                 </a>

@@ -73,24 +73,24 @@ function ProductCard({ product, onAdd }: { product: typeof PRODUCTS[0]; onAdd: (
   const [size, setSize] = useState<(typeof SIZES)[number]>("M");
 
   return (
-    <div className="group flex flex-col border border-white/10 bg-black overflow-hidden transition-colors hover:border-primary/50 relative">
-      <div className="aspect-[4/5] w-full overflow-hidden bg-white/5 relative">
+    <div className="group flex flex-col border border-ink/10 bg-header overflow-hidden transition-colors hover:border-primary/50 relative">
+      <div className="aspect-[4/5] w-full overflow-hidden bg-ink/5 relative">
         <img
           src={product.image}
           alt={product.name}
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-black/0 transition-colors group-hover:bg-black/10" />
+        <div className="absolute inset-0 bg-shade/0 transition-colors group-hover:bg-shade/10" />
       </div>
 
       <div className="flex flex-1 flex-col p-6 sm:p-8">
-        <h3 className="text-2xl font-bold uppercase tracking-widest text-white leading-tight">
+        <h3 className="text-2xl font-bold uppercase tracking-widest text-ink leading-tight">
           {product.name}
         </h3>
         <p className="mt-3 text-3xl font-black text-primary">${product.price}</p>
 
         <div className="mt-8 flex-1">
-          <p className="mb-4 text-xs uppercase tracking-widest text-white/50 font-bold">Select Size</p>
+          <p className="mb-4 text-xs uppercase tracking-widest text-copy-50 font-bold">Select Size</p>
           <div className="flex flex-wrap gap-3">
             {SIZES.map((s) => (
               <button
@@ -100,7 +100,7 @@ function ProductCard({ product, onAdd }: { product: typeof PRODUCTS[0]; onAdd: (
                   "flex h-12 w-12 items-center justify-center border text-sm font-bold transition-all",
                   size === s
                     ? "border-primary bg-primary text-white"
-                    : "border-white/20 bg-transparent text-white hover:border-white hover:bg-white/5"
+                    : "border-ink/20 bg-transparent text-ink hover:border-ink hover:bg-ink/5"
                 )}
                 data-testid={`btn-size-${product.id}-${s}`}
               >
@@ -121,7 +121,7 @@ function ProductCard({ product, onAdd }: { product: typeof PRODUCTS[0]; onAdd: (
               image: product.image,
             })
           }
-          className="mt-10 w-full rounded-none bg-white text-black hover:bg-primary hover:text-white font-bold uppercase tracking-widest h-14"
+          className="mt-10 w-full rounded-none bg-ink text-inverse hover:bg-primary hover:text-white font-bold uppercase tracking-widest h-14"
           data-testid={`btn-add-${product.id}`}
         >
           Add to Cart
@@ -207,17 +207,17 @@ export default function Shop() {
 
       <main className="flex-1 pb-24">
         {/* Hero Section */}
-        <section className="relative overflow-hidden border-b border-white/10 bg-black pt-24 pb-16 sm:pt-32 sm:pb-24">
+        <section className="relative overflow-hidden border-b border-ink/10 bg-header pt-24 pb-16 sm:pt-32 sm:pb-24">
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
           <div className="container relative mx-auto px-4 text-center">
             <p className="mb-4 text-xs font-bold uppercase tracking-[0.3em] text-primary">Shalom Merch</p>
             <h1
-              className="text-6xl font-black uppercase leading-none tracking-tighter text-white sm:text-7xl md:text-8xl lg:text-9xl"
+              className="text-6xl font-black uppercase leading-none tracking-tighter text-ink sm:text-7xl md:text-8xl lg:text-9xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
               Wear The <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Fire</span>
             </h1>
-            <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
+            <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-copy-60 sm:text-lg">
               The Comforter tee and crewneck, each in a standard and a Shalom edition. Preorders are open now.
             </p>
           </div>
@@ -241,11 +241,11 @@ export default function Shop() {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             onClick={() => setIsCartOpen(true)}
-            className="fixed bottom-8 right-8 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white shadow-2xl hover:bg-primary/90 hover:scale-105 transition-all border-2 border-transparent hover:border-white/20"
+            className="fixed bottom-8 right-8 z-40 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-white shadow-2xl hover:bg-primary/90 hover:scale-105 transition-all border-2 border-transparent hover:border-ink/20"
             data-testid="btn-floating-cart"
           >
             <ShoppingBag className="h-6 w-6" />
-            <span className="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-white text-xs font-black text-black shadow-md border-2 border-primary">
+            <span className="absolute -top-2 -right-2 flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs font-black text-inverse shadow-md border-2 border-primary">
               {cart.reduce((a, b) => a + b.quantity, 0)}
             </span>
           </motion.button>
@@ -254,14 +254,14 @@ export default function Shop() {
 
       {/* Cart Sheet */}
       <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-        <SheetContent className="flex w-full flex-col bg-black border-l border-white/10 sm:max-w-md p-0 overflow-hidden">
+        <SheetContent className="flex w-full flex-col bg-header border-l border-ink/10 sm:max-w-md p-0 overflow-hidden">
           <SheetTitle className="sr-only">Shopping Cart</SheetTitle>
-          <div className="flex h-20 items-center justify-between border-b border-white/10 px-6 bg-black/80 backdrop-blur-md">
-            <h2 className="text-xl font-black uppercase tracking-widest text-white flex items-center gap-3">
+          <div className="flex h-20 items-center justify-between border-b border-ink/10 px-6 bg-shade/80 backdrop-blur-md">
+            <h2 className="text-xl font-black uppercase tracking-widest text-ink flex items-center gap-3">
               <ShoppingBag className="h-6 w-6 text-primary" />
               Your Cart
             </h2>
-            <SheetClose className="text-white/50 hover:text-white transition-colors p-2" data-testid="btn-close-cart">
+            <SheetClose className="text-copy-50 hover:text-ink transition-colors p-2" data-testid="btn-close-cart">
               <X className="h-6 w-6" />
             </SheetClose>
           </div>
@@ -269,34 +269,34 @@ export default function Shop() {
           <div className="flex-1 overflow-y-auto p-6">
             {cart.length === 0 ? (
               <div className="flex h-full flex-col items-center justify-center text-center">
-                <ShoppingBag className="mb-6 h-16 w-16 text-white/10" />
-                <p className="text-white/50 uppercase tracking-widest text-sm font-bold">Your cart is empty</p>
+                <ShoppingBag className="mb-6 h-16 w-16 text-copy-10" />
+                <p className="text-copy-50 uppercase tracking-widest text-sm font-bold">Your cart is empty</p>
               </div>
             ) : (
               <div className="space-y-8">
                 {cart.map((item) => (
                   <div key={item.id} className="flex gap-5 group" data-testid={`cart-item-${item.id}`}>
-                    <div className="h-32 w-28 flex-shrink-0 bg-white/5 border border-white/10 overflow-hidden">
+                    <div className="h-32 w-28 flex-shrink-0 bg-ink/5 border border-ink/10 overflow-hidden">
                       <img src={item.image} alt={item.productName} className="h-full w-full object-cover" />
                     </div>
                     <div className="flex flex-1 flex-col justify-between py-1">
                       <div>
-                        <h4 className="text-base font-bold text-white leading-tight pr-4">{item.productName}</h4>
-                        <p className="text-xs uppercase tracking-widest text-white/50 mt-2 font-bold">Size: {item.size}</p>
+                        <h4 className="text-base font-bold text-ink leading-tight pr-4">{item.productName}</h4>
+                        <p className="text-xs uppercase tracking-widest text-copy-50 mt-2 font-bold">Size: {item.size}</p>
                       </div>
                       <div className="flex items-center justify-between mt-4">
-                        <div className="flex items-center border border-white/20">
+                        <div className="flex items-center border border-ink/20">
                           <button
                             onClick={() => updateQuantity(item.id, -1)}
-                            className="px-3 py-1.5 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                            className="px-3 py-1.5 text-copy-70 hover:text-ink hover:bg-ink/10 transition-colors"
                             data-testid={`btn-dec-${item.id}`}
                           >
                             <Minus className="h-4 w-4" />
                           </button>
-                          <span className="px-3 text-sm font-bold text-white w-10 text-center">{item.quantity}</span>
+                          <span className="px-3 text-sm font-bold text-ink w-10 text-center">{item.quantity}</span>
                           <button
                             onClick={() => updateQuantity(item.id, 1)}
-                            className="px-3 py-1.5 text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+                            className="px-3 py-1.5 text-copy-70 hover:text-ink hover:bg-ink/10 transition-colors"
                             data-testid={`btn-inc-${item.id}`}
                           >
                             <Plus className="h-4 w-4" />
@@ -312,13 +312,13 @@ export default function Shop() {
           </div>
 
           {cart.length > 0 && (
-            <div className="border-t border-white/10 p-6 bg-black z-10 sticky bottom-0">
+            <div className="border-t border-ink/10 p-6 bg-header z-10 sticky bottom-0">
               <div className="flex justify-between mb-6 items-center">
-                <span className="text-sm font-bold uppercase tracking-widest text-white/50">Subtotal</span>
-                <span className="text-3xl font-black text-white">${total}</span>
+                <span className="text-sm font-bold uppercase tracking-widest text-copy-50">Subtotal</span>
+                <span className="text-3xl font-black text-ink">${total}</span>
               </div>
               <Button
-                className="w-full rounded-none bg-white text-black hover:bg-primary hover:text-white h-16 text-base font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-3"
+                className="w-full rounded-none bg-ink text-inverse hover:bg-primary hover:text-white h-16 text-base font-black uppercase tracking-widest transition-colors flex items-center justify-center gap-3"
                 onClick={() => {
                   setIsCartOpen(false);
                   setIsCheckoutOpen(true);
@@ -334,7 +334,7 @@ export default function Shop() {
 
       {/* Checkout Dialog */}
       <Dialog open={isCheckoutOpen} onOpenChange={setIsCheckoutOpen}>
-        <DialogContent className="max-w-lg bg-black border-white/10 p-0 text-white rounded-none sm:rounded-none overflow-hidden">
+        <DialogContent className="max-w-lg bg-header border-ink/10 p-0 text-ink rounded-none sm:rounded-none overflow-hidden">
           <DialogTitle className="sr-only">Checkout</DialogTitle>
           <DialogDescription className="sr-only">Fill out your details to place a preorder.</DialogDescription>
 
@@ -343,9 +343,9 @@ export default function Shop() {
               <div className="mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-primary/10 text-primary border border-primary/20">
                 <CheckCircle2 className="h-12 w-12" />
               </div>
-              <h2 className="mb-4 text-3xl font-black uppercase tracking-widest text-white">Order Received</h2>
-              <p className="mb-8 text-white/60 leading-relaxed text-lg">
-                Your order <strong className="text-white">#{successOrder.id}</strong> is awaiting manual verification. We will email you once payment is confirmed.
+              <h2 className="mb-4 text-3xl font-black uppercase tracking-widest text-ink">Order Received</h2>
+              <p className="mb-8 text-copy-60 leading-relaxed text-lg">
+                Your order <strong className="text-ink">#{successOrder.id}</strong> is awaiting manual verification. We will email you once payment is confirmed.
               </p>
               <Button
                 onClick={() => {
@@ -353,7 +353,7 @@ export default function Shop() {
                   setIsCheckoutOpen(false);
                   setCart([]);
                 }}
-                className="w-full rounded-none bg-white text-black hover:bg-white/90 h-14 font-bold uppercase tracking-widest"
+                className="w-full rounded-none bg-ink text-inverse hover:bg-ink/90 h-14 font-bold uppercase tracking-widest"
                 data-testid="btn-success-continue"
               >
                 Continue Shopping
@@ -361,8 +361,8 @@ export default function Shop() {
             </div>
           ) : (
             <div className="flex flex-col max-h-[90vh]">
-              <div className="border-b border-white/10 p-6 flex justify-between items-center bg-black/50 backdrop-blur-sm z-10 sticky top-0">
-                <h2 className="text-xl font-black uppercase tracking-widest text-white">Checkout</h2>
+              <div className="border-b border-ink/10 p-6 flex justify-between items-center bg-shade/50 backdrop-blur-sm z-10 sticky top-0">
+                <h2 className="text-xl font-black uppercase tracking-widest text-ink">Checkout</h2>
               </div>
 
               <div className="overflow-y-auto p-6 space-y-8">
@@ -374,10 +374,10 @@ export default function Shop() {
                     <Info className="h-5 w-5" />
                     Payment Instructions
                   </h3>
-                  <div className="space-y-3 text-white/80 leading-relaxed text-base">
+                  <div className="space-y-3 text-copy-80 leading-relaxed text-base">
                     <p>
                       1. Send exactly <strong className="text-primary">${total}</strong> to{" "}
-                      <strong className="text-white">$HGAReveille</strong> on Cash App.
+                      <strong className="text-ink">$HGAReveille</strong> on Cash App.
                     </p>
                     <p>2. Include your name in the payment note.</p>
                     <p>3. Paste your Cash App reference number below.</p>
@@ -394,11 +394,11 @@ export default function Shop() {
                       name="name"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs uppercase tracking-widest text-white/70">Full Name</FormLabel>
+                          <FormLabel className="text-xs uppercase tracking-widest text-copy-70">Full Name</FormLabel>
                           <FormControl>
                             <Input
                               placeholder="John Doe"
-                              className="h-14 bg-white/5 border-white/10 rounded-none focus-visible:ring-primary focus-visible:border-primary text-white px-4 text-base"
+                              className="h-14 bg-ink/5 border-ink/10 rounded-none focus-visible:ring-primary focus-visible:border-primary text-ink px-4 text-base"
                               {...field}
                               data-testid="input-checkout-name"
                             />
@@ -412,14 +412,14 @@ export default function Shop() {
                       name="email"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs uppercase tracking-widest text-white/70">
+                          <FormLabel className="text-xs uppercase tracking-widest text-copy-70">
                             Email Address
                           </FormLabel>
                           <FormControl>
                             <Input
                               type="email"
                               placeholder="john@example.com"
-                              className="h-14 bg-white/5 border-white/10 rounded-none focus-visible:ring-primary focus-visible:border-primary text-white px-4 text-base"
+                              className="h-14 bg-ink/5 border-ink/10 rounded-none focus-visible:ring-primary focus-visible:border-primary text-ink px-4 text-base"
                               {...field}
                               data-testid="input-checkout-email"
                             />
@@ -433,14 +433,14 @@ export default function Shop() {
                       name="phone"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs uppercase tracking-widest text-white/70">
-                            Phone Number <span className="text-white/30 lowercase tracking-normal">(Optional)</span>
+                          <FormLabel className="text-xs uppercase tracking-widest text-copy-70">
+                            Phone Number <span className="text-copy-30 lowercase tracking-normal">(Optional)</span>
                           </FormLabel>
                           <FormControl>
                             <Input
                               type="tel"
                               placeholder="(555) 123-4567"
-                              className="h-14 bg-white/5 border-white/10 rounded-none focus-visible:ring-primary focus-visible:border-primary text-white px-4 text-base"
+                              className="h-14 bg-ink/5 border-ink/10 rounded-none focus-visible:ring-primary focus-visible:border-primary text-ink px-4 text-base"
                               {...field}
                               data-testid="input-checkout-phone"
                             />
@@ -454,13 +454,13 @@ export default function Shop() {
                       name="paymentReference"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-xs uppercase tracking-widest text-white/70">
+                          <FormLabel className="text-xs uppercase tracking-widest text-copy-70">
                             Cash App Reference
                           </FormLabel>
                           <FormControl>
                             <Input
                               placeholder="#ABC123XYZ or Cash App link"
-                              className="h-14 bg-white/5 border-white/10 rounded-none focus-visible:ring-primary focus-visible:border-primary text-white px-4 text-base"
+                              className="h-14 bg-ink/5 border-ink/10 rounded-none focus-visible:ring-primary focus-visible:border-primary text-ink px-4 text-base"
                               {...field}
                               data-testid="input-checkout-reference"
                             />
@@ -473,10 +473,10 @@ export default function Shop() {
                 </Form>
               </div>
 
-              <div className="border-t border-white/10 p-6 bg-black sticky bottom-0 z-10">
+              <div className="border-t border-ink/10 p-6 bg-header sticky bottom-0 z-10">
                 <div className="flex justify-between items-center mb-6">
-                  <span className="text-sm font-bold uppercase tracking-widest text-white/50">Total</span>
-                  <span className="text-3xl font-black text-white">${total}</span>
+                  <span className="text-sm font-bold uppercase tracking-widest text-copy-50">Total</span>
+                  <span className="text-3xl font-black text-ink">${total}</span>
                 </div>
                 <Button
                   type="submit"

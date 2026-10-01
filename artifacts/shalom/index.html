@@ -1,6 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <script>
+      // Apply the saved theme before first paint to avoid a flash on navigation.
+      try {
+        document.documentElement.dataset.theme = localStorage.getItem("shalom-theme") === "dark" ? "dark" : "light";
+      } catch {
+        document.documentElement.dataset.theme = "light";
+      }
+      document.documentElement.style.colorScheme = document.documentElement.dataset.theme;
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
     <title>Shalom Youth Conference</title>

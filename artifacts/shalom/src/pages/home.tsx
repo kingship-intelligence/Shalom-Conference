@@ -64,7 +64,7 @@ function ConferenceCountdown() {
   ];
 
   return (
-    <section className="border-y border-white/10 bg-background px-4 py-14 text-white sm:px-6 sm:py-16">
+    <section className="border-y border-ink/10 bg-background px-4 py-14 text-ink sm:px-6 sm:py-16">
       <div className="container mx-auto max-w-5xl text-center">
         <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
           {countdown.hasStarted ? "Happening now" : "Countdown"}
@@ -78,18 +78,18 @@ function ConferenceCountdown() {
 
         {!countdown.hasStarted && (
           <div
-            className="mx-auto mt-10 grid max-w-3xl grid-cols-4 border-y border-white/15"
+            className="mx-auto mt-10 grid max-w-3xl grid-cols-4 border-y border-ink/15"
             aria-label={`${countdown.days} days, ${countdown.hours} hours, ${countdown.minutes} minutes, and ${countdown.seconds} seconds until Shalom 2026`}
           >
             {units.map((unit, index) => (
               <div
                 key={unit.label}
-                className={`py-6 sm:py-8 ${index > 0 ? "border-l border-white/15" : ""}`}
+                className={`py-6 sm:py-8 ${index > 0 ? "border-l border-ink/15" : ""}`}
               >
                 <span className="block font-mono text-3xl font-bold tabular-nums sm:text-6xl">
                   {String(unit.value).padStart(2, "0")}
                 </span>
-                <span className="mt-2 block text-[9px] font-bold uppercase tracking-[0.18em] text-white/45 sm:text-xs sm:tracking-[0.25em]">
+                <span className="mt-2 block text-[9px] font-bold uppercase tracking-[0.18em] text-copy-45 sm:text-xs sm:tracking-[0.25em]">
                   {unit.label}
                 </span>
               </div>

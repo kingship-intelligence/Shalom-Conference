@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import shalomLogo from "@assets/logo_1778697155106.png";
+import { ThemeToggle } from "@/components/ThemeProvider";
 
 const NAV_LINKS = [
   { label: "Prayer Charge", href: "/prayer-charge" },
@@ -20,19 +21,19 @@ export default function SiteHeader() {
   const [location] = useLocation();
 
   return (
-    <header className="sticky top-0 z-50 bg-black">
+    <header className="sticky top-0 z-50 bg-header">
       <nav className="container mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6">
         <Link href="/" className="flex items-center gap-3">
-          <img src={shalomLogo} alt="SHALOM" className="h-9 w-auto object-contain" />
+          <img src={shalomLogo} alt="SHALOM" className="h-9 w-auto object-contain site-logo" />
         </Link>
 
         {/* Desktop nav */}
-        <div className="hidden sm:flex items-center gap-6 text-xs font-bold uppercase tracking-widest">
+        <div className="hidden lg:flex items-center gap-5 text-xs font-bold uppercase tracking-widest">
           {NAV_LINKS.map((l) => (
             <Link
               key={l.href}
               href={l.href}
-              className={`transition-colors ${location === l.href ? "text-primary" : "text-white/60 hover:text-primary"}`}
+              className={`transition-colors ${location === l.href ? "text-primary" : "text-copy-60 hover:text-primary"}`}
             >
               {l.label}
             </Link>
@@ -40,6 +41,7 @@ export default function SiteHeader() {
         </div>
 
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <Button
             asChild
             size="sm"
@@ -50,9 +52,11 @@ export default function SiteHeader() {
 
           {/* Hamburger — mobile only */}
           <button
-            className="sm:hidden flex items-center justify-center h-10 w-10 rounded-full text-white hover:bg-white/10 transition-colors"
+            className="lg:hidden flex items-center justify-center h-11 w-11 rounded-full text-ink hover:bg-ink/10 transition-colors"
             onClick={() => setMenuOpen((v) => !v)}
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
+            aria-controls="site-mobile-menu"
           >
             {menuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -67,7 +71,8 @@ export default function SiteHeader() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="sm:hidden overflow-hidden border-t border-white/10"
+            id="site-mobile-menu"
+            className="lg:hidden overflow-hidden border-t border-ink/10"
           >
             <div className="flex flex-col px-4 py-3 gap-1">
               {NAV_LINKS.map((l) => (
@@ -75,8 +80,8 @@ export default function SiteHeader() {
                   key={l.href}
                   href={l.href}
                   onClick={() => setMenuOpen(false)}
-                  className={`text-sm font-bold uppercase tracking-widest py-3 border-b border-white/5 last:border-0 transition-colors ${
-                    location === l.href ? "text-primary" : "text-white/60 hover:text-primary"
+                  className={`text-sm font-bold uppercase tracking-widest py-3 border-b border-ink/5 last:border-0 transition-colors ${
+                    location === l.href ? "text-primary" : "text-copy-60 hover:text-primary"
                   }`}
                 >
                   {l.label}

@@ -29,20 +29,20 @@ export default function Terms() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
       <main>
-        <section className="border-b border-white/10 px-4 py-16 sm:px-6 sm:py-24">
+        <section className="border-b border-ink/10 px-4 py-16 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-4xl">
             <div className="flex items-center gap-3 text-primary">
               <ShieldCheck className="h-6 w-6" />
               <p className="text-xs font-bold uppercase tracking-[0.28em]">Legal information</p>
             </div>
-            <h1 className="mt-5 text-5xl font-black uppercase tracking-tight text-white sm:text-7xl">
+            <h1 className="mt-5 text-5xl font-black uppercase tracking-tight text-ink sm:text-7xl">
               Terms &amp; Conditions
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/60">
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-copy-60">
               These terms govern your use of the Shalom Youth Conference website,
               conference registration, and optional communications.
             </p>
-            <p className="mt-5 text-sm font-semibold uppercase tracking-widest text-white/35">
+            <p className="mt-5 text-sm font-semibold uppercase tracking-widest text-copy-35">
               Effective September 22, 2026
             </p>
           </div>
@@ -53,24 +53,24 @@ export default function Terms() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="border border-primary/25 bg-primary/5 p-5">
                 <MessageSquare className="h-5 w-5 text-primary" />
-                <p className="mt-3 font-bold text-white">SMS consent is optional</p>
-                <p className="mt-2 text-sm leading-relaxed text-white/50">
+                <p className="mt-3 font-bold text-ink">SMS consent is optional</p>
+                <p className="mt-2 text-sm leading-relaxed text-copy-50">
                   You can register for the conference without opting in to text updates.
                 </p>
               </div>
-              <div className="border border-white/10 bg-white/[0.03] p-5">
+              <div className="border border-ink/10 bg-ink/[0.03] p-5">
                 <ShieldCheck className="h-5 w-5 text-primary" />
-                <p className="mt-3 font-bold text-white">Your choice matters</p>
-                <p className="mt-2 text-sm leading-relaxed text-white/50">
+                <p className="mt-3 font-bold text-ink">Your choice matters</p>
+                <p className="mt-2 text-sm leading-relaxed text-copy-50">
                   Reply STOP at any time to unsubscribe from SMS updates.
                 </p>
               </div>
             </div>
 
-            <article className="mt-4 space-y-10 border border-white/10 bg-white/[0.025] p-6 sm:p-10">
-              <section className="border-b border-white/10 pb-10">
-                <h2 className="text-2xl font-bold text-white">Using this website</h2>
-                <div className="mt-4 space-y-4 text-sm leading-7 text-white/60">
+            <article className="mt-4 space-y-10 border border-ink/10 bg-ink/[0.025] p-6 sm:p-10">
+              <section className="border-b border-ink/10 pb-10">
+                <h2 className="text-2xl font-bold text-ink">Using this website</h2>
+                <div className="mt-4 space-y-4 text-sm leading-7 text-copy-60">
                   <p>
                     By using this website or submitting a registration, you agree
                     to these Terms &amp; Conditions and our{" "}
@@ -88,9 +88,9 @@ export default function Terms() {
                 </div>
               </section>
 
-              <section className="border-b border-white/10 pb-10">
-                <h2 className="text-2xl font-bold text-white">Conference registration</h2>
-                <div className="mt-4 space-y-4 text-sm leading-7 text-white/60">
+              <section className="border-b border-ink/10 pb-10">
+                <h2 className="text-2xl font-bold text-ink">Conference registration</h2>
+                <div className="mt-4 space-y-4 text-sm leading-7 text-copy-60">
                   <p>
                     Registration information is used to coordinate attendance,
                     volunteers, badges, confirmations, and event updates. A
@@ -104,25 +104,25 @@ export default function Terms() {
                 </div>
               </section>
 
-              <section className="border-b border-white/10 pb-10">
-                <h2 className="text-2xl font-bold text-white">SMS Terms</h2>
-                <div className="mt-4 space-y-4 text-sm leading-7 text-white/60">
+              <section className="border-b border-ink/10 pb-10">
+                <h2 className="text-2xl font-bold text-ink">SMS Terms</h2>
+                <div className="mt-4 space-y-4 text-sm leading-7 text-copy-60">
                   <p>
                     By checking the SMS opt-in box during registration, you agree
                     to receive recurring automated text messages from the
-                    registered Brand name <strong className="text-white">Shalom Youth Conference</strong>{" "}
+                    registered Brand name <strong className="text-ink">Shalom Youth Conference</strong>{" "}
                     at the mobile number you provide. These messages may include
                     conference updates, reminders, schedule information, and related
                     event communications.
                   </p>
                   <p>
-                    Message frequency varies. <strong className="text-white">Message and data rates may apply.</strong>{" "}
+                    Message frequency varies. <strong className="text-ink">Message and data rates may apply.</strong>{" "}
                     Consent is not a condition of registration, attendance,
                     participation, donating, or making a purchase.
                   </p>
                   <p>
-                    Reply <strong className="text-white">STOP</strong> to unsubscribe
-                    from SMS updates. Reply <strong className="text-white">HELP</strong>{" "}
+                    Reply <strong className="text-ink">STOP</strong> to unsubscribe
+                    from SMS updates. Reply <strong className="text-ink">HELP</strong>{" "}
                     for help. After you send STOP, you may receive one final
                     message confirming your request. For questions, contact{" "}
                     <a
@@ -144,9 +144,9 @@ export default function Terms() {
                 </div>
               </section>
 
-              <section className="border-b border-white/10 pb-10">
-                <h2 className="text-2xl font-bold text-white">Communications and privacy</h2>
-                <div className="mt-4 space-y-4 text-sm leading-7 text-white/60">
+              <section className="border-b border-ink/10 pb-10">
+                <h2 className="text-2xl font-bold text-ink">Communications and privacy</h2>
+                <div className="mt-4 space-y-4 text-sm leading-7 text-copy-60">
                   <p>
                     Email and SMS updates are provided according to the choices you
                     make. You can review how information is collected, used, and
@@ -160,8 +160,8 @@ export default function Terms() {
               </section>
 
               <section>
-                <h2 className="text-2xl font-bold text-white">Contact</h2>
-                <div className="mt-4 space-y-4 text-sm leading-7 text-white/60">
+                <h2 className="text-2xl font-bold text-ink">Contact</h2>
+                <div className="mt-4 space-y-4 text-sm leading-7 text-copy-60">
                   <p>
                     Questions about these Terms &amp; Conditions may be sent to{" "}
                     <a
@@ -179,7 +179,7 @@ export default function Terms() {
             <Button
               asChild
               variant="outline"
-              className="mt-2 w-fit rounded-full border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
+              className="mt-2 w-fit rounded-full border-ink/20 bg-transparent text-ink hover:bg-ink/10 hover:text-ink"
             >
               <Link href="/">
                 <ArrowLeft className="mr-2 h-4 w-4" />

@@ -13,7 +13,7 @@ export default function About() {
       <main>
         <section className="px-4 py-20 text-center sm:px-6 sm:py-24 sm:text-left">
           <div className="container mx-auto max-w-6xl">
-            <h1 className="mb-8 text-4xl font-black uppercase leading-none tracking-tighter text-white sm:text-6xl md:text-8xl">
+            <h1 className="mb-8 text-4xl font-black uppercase leading-none tracking-tighter text-ink sm:text-6xl md:text-8xl">
               What is Shalom?
             </h1>
             <p className="mx-auto max-w-4xl text-lg font-light leading-relaxed text-muted-foreground sm:mx-0 sm:text-2xl">
@@ -31,7 +31,7 @@ export default function About() {
 
         <section className="px-4 pb-16 sm:px-6 sm:pb-20">
           <div className="container mx-auto max-w-7xl">
-            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-white/10 bg-card sm:aspect-video md:aspect-[21/9]">
+            <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-ink/10 bg-card sm:aspect-video md:aspect-[21/9]">
               <img
                 src="/images/home/shalom-about-worship.png"
                 alt="Young people worshipping at a Shalom conference"
@@ -45,7 +45,7 @@ export default function About() {
         <section className="px-4 py-20 sm:px-6 sm:py-24">
           <div className="container mx-auto max-w-4xl">
             <div className="text-center lg:text-left">
-              <h2 className="mb-8 text-3xl font-black uppercase tracking-tighter text-white sm:text-4xl md:text-6xl">
+              <h2 className="mb-8 text-3xl font-black uppercase tracking-tighter text-ink sm:text-4xl md:text-6xl">
                 This year: The Comforter
               </h2>
               <div className="space-y-6 text-lg leading-relaxed text-muted-foreground sm:text-xl">
@@ -74,7 +74,7 @@ export default function About() {
                   asChild
                   variant="outline"
                   size="lg"
-                  className="w-full max-w-xs rounded-full border-white/20 uppercase tracking-wider sm:w-auto"
+                  className="w-full max-w-xs rounded-full border-ink/20 uppercase tracking-wider sm:w-auto"
                 >
                   <Link href="/archive">
                     Past years <ArrowRight className="h-5 w-5" />

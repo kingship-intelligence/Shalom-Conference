@@ -5,13 +5,13 @@ import shalomLogo from "@assets/logo_1778697155106.png";
 
 export default function SiteFooter() {
   return (
-    <footer className="bg-card text-white px-4 pt-16 pb-10 sm:px-6">
+    <footer className="bg-card text-ink px-4 pt-16 pb-10 sm:px-6">
       <div className="container mx-auto max-w-6xl">
         <div className="flex justify-center mb-12">
           <img
             src={shalomLogo}
             alt="SHALOM"
-            className="h-14 w-auto object-contain"
+            className="h-14 w-auto object-contain site-logo"
           />
         </div>
 
@@ -20,7 +20,7 @@ export default function SiteFooter() {
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Contact</p>
             <a
               href="mailto:admin@shalomconference.com"
-              className="flex items-center justify-center gap-2 text-muted-foreground hover:text-white transition-colors text-sm"
+              className="flex items-center justify-center gap-2 text-muted-foreground hover:text-ink transition-colors text-sm"
             >
               <Mail className="h-4 w-4 shrink-0 text-primary" />
               admin@shalomconference.com
@@ -30,7 +30,7 @@ export default function SiteFooter() {
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Giving</p>
             <a
               href="mailto:finance@shalomconference.com"
-              className="flex items-center justify-center gap-2 text-muted-foreground hover:text-white transition-colors text-sm"
+              className="flex items-center justify-center gap-2 text-muted-foreground hover:text-ink transition-colors text-sm"
             >
               <Mail className="h-4 w-4 shrink-0 text-primary" />
               finance@shalomconference.com
@@ -40,7 +40,7 @@ export default function SiteFooter() {
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Testimonies</p>
             <Link
               href="/testimonies"
-              className="flex items-center justify-center gap-2 text-muted-foreground hover:text-white transition-colors text-sm font-medium"
+              className="flex items-center justify-center gap-2 text-muted-foreground hover:text-ink transition-colors text-sm font-medium"
             >
               <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
               Share Your Testimony
@@ -50,7 +50,7 @@ export default function SiteFooter() {
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Media</p>
             <a
               href="mailto:media@shalomconference.com"
-              className="flex items-center justify-center gap-2 text-muted-foreground hover:text-white transition-colors text-sm"
+              className="flex items-center justify-center gap-2 text-muted-foreground hover:text-ink transition-colors text-sm"
             >
               <Mail className="h-4 w-4 shrink-0 text-primary" />
               media@shalomconference.com
@@ -60,14 +60,14 @@ export default function SiteFooter() {
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Legal</p>
             <Link
               href="/privacy"
-              className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-white"
+              className="flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-ink"
             >
               <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
               Privacy & Alert Policy
             </Link>
             <Link
               href="/terms"
-              className="mt-3 flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-white"
+              className="mt-3 flex items-center justify-center gap-2 text-sm font-medium text-muted-foreground transition-colors hover:text-ink"
             >
               <ShieldCheck className="h-4 w-4 shrink-0 text-primary" />
               Terms & Conditions
@@ -75,7 +75,7 @@ export default function SiteFooter() {
           </div>
         </div>
 
-        <div className="h-px w-full bg-white/10 mb-8" />
+        <div className="h-px w-full bg-ink/10 mb-8" />
 
         <div className="flex flex-col items-center justify-center gap-4 text-center sm:flex-row sm:gap-8">
           <p className="text-muted-foreground text-sm uppercase tracking-[0.15em] font-semibold">

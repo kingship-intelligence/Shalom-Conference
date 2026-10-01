@@ -277,7 +277,7 @@ export function AdminCheckIn({
       data-testid="section-check-in"
       className="mb-12 overflow-hidden rounded-2xl border border-primary/20 bg-[linear-gradient(135deg,rgba(255,255,255,0.05),rgba(255,88,38,0.06))] shadow-[0_18px_60px_rgba(0,0,0,0.18)]"
     >
-      <div className="border-b border-white/10 px-5 py-6 sm:px-7">
+      <div className="border-b border-ink/10 px-5 py-6 sm:px-7">
         <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
             <div className="flex items-center gap-3">
@@ -286,10 +286,10 @@ export function AdminCheckIn({
               </div>
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-primary">Arrival desk</p>
-                <h2 className="mt-1 text-2xl font-bold uppercase tracking-wider text-white sm:text-3xl">Check-in</h2>
+                <h2 className="mt-1 text-2xl font-bold uppercase tracking-wider text-ink sm:text-3xl">Check-in</h2>
               </div>
             </div>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-white/55">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-copy-55">
               Choose the configured session, then mark each registered attendee present. The roster is limited to that conference year.
             </p>
           </div>
@@ -316,7 +316,7 @@ export function AdminCheckIn({
             data-testid="form-create-check-in-session"
           >
             <div>
-              <label htmlFor="check-in-year" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-white/45">
+              <label htmlFor="check-in-year" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-copy-45">
                 Conference year
               </label>
               <Input
@@ -326,12 +326,12 @@ export function AdminCheckIn({
                 max="2200"
                 value={conferenceYear}
                 onChange={(event) => setConferenceYear(event.target.value)}
-                className="h-11 border-white/10 bg-white/5 text-white"
+                className="h-11 border-ink/10 bg-ink/5 text-ink"
                 data-testid="input-check-in-year"
               />
             </div>
             <div>
-              <label htmlFor="check-in-date" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-white/45">
+              <label htmlFor="check-in-date" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-copy-45">
                 Session date
               </label>
               <Input
@@ -339,12 +339,12 @@ export function AdminCheckIn({
                 type="date"
                 value={sessionDate}
                 onChange={(event) => setSessionDate(event.target.value)}
-                className="h-11 border-white/10 bg-white/5 text-white"
+                className="h-11 border-ink/10 bg-ink/5 text-ink"
                 data-testid="input-check-in-date"
               />
             </div>
             <div>
-              <label htmlFor="check-in-name" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-white/45">
+              <label htmlFor="check-in-name" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-copy-45">
                 Session name
               </label>
               <Input
@@ -354,20 +354,20 @@ export function AdminCheckIn({
                 value={sessionName}
                 onChange={(event) => setSessionName(event.target.value)}
                 placeholder="Friday morning arrival"
-                className="h-11 border-white/10 bg-white/5 text-white placeholder:text-white/25"
+                className="h-11 border-ink/10 bg-ink/5 text-ink placeholder:text-copy-25"
                 data-testid="input-check-in-name"
               />
             </div>
             <Button
               type="submit"
               disabled={createSessionMutation.isPending}
-              className="h-11 self-end rounded-full bg-white text-background hover:bg-white/90"
+              className="h-11 self-end rounded-full bg-ink text-background hover:bg-ink/90"
               data-testid="button-create-check-in-session"
             >
               {createSessionMutation.isPending ? "Saving…" : "Save session"}
             </Button>
             {(formError || createSessionMutation.isError) && (
-              <p className="text-sm text-red-300 sm:col-span-2 lg:col-span-full" role="alert" data-testid="error-create-check-in-session">
+              <p className="text-sm text-red-700 dark:text-red-300 sm:col-span-2 lg:col-span-full" role="alert" data-testid="error-create-check-in-session">
                 {formError || errorMessage(createSessionMutation.error, "The session could not be created.")}
               </p>
             )}
@@ -376,11 +376,11 @@ export function AdminCheckIn({
       </div>
 
       <div className="grid lg:grid-cols-[19rem_minmax(0,1fr)]">
-        <aside className="border-b border-white/10 p-4 sm:p-6 lg:border-b-0 lg:border-r">
+        <aside className="border-b border-ink/10 p-4 sm:p-6 lg:border-b-0 lg:border-r">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">Configured sessions</p>
-              <p className="mt-1 text-sm text-white/60" data-testid="text-check-in-session-count">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-copy-40">Configured sessions</p>
+              <p className="mt-1 text-sm text-copy-60" data-testid="text-check-in-session-count">
                 {sessionsQuery.isLoading
                   ? "Loading sessions"
                   : sessionsQuery.isError
@@ -393,22 +393,22 @@ export function AdminCheckIn({
 
           {sessionsQuery.isLoading ? (
             <div className="space-y-3" data-testid="loading-check-in-sessions">
-              {[1, 2, 3].map((item) => <Skeleton key={item} className="h-24 rounded-xl bg-white/5" />)}
+              {[1, 2, 3].map((item) => <Skeleton key={item} className="h-24 rounded-xl bg-ink/5" />)}
             </div>
           ) : sessionsQuery.isError ? (
             <div className="rounded-xl border border-red-400/20 bg-red-400/5 p-4" data-testid="error-check-in-sessions">
-              <CircleAlert className="h-5 w-5 text-red-300" />
-              <p className="mt-3 text-sm font-semibold text-red-200">Sessions could not be loaded.</p>
-              <p className="mt-1 text-xs leading-relaxed text-red-200/65">{errorMessage(sessionsQuery.error, "The private session list request failed.")}</p>
-              <Button type="button" variant="outline" onClick={() => void sessionsQuery.refetch()} className="mt-4 border-red-200/20 text-red-100 hover:bg-red-200/10" data-testid="button-retry-check-in-sessions">
+              <CircleAlert className="h-5 w-5 text-red-700 dark:text-red-300" />
+              <p className="mt-3 text-sm font-semibold text-red-700 dark:text-red-200">Sessions could not be loaded.</p>
+              <p className="mt-1 text-xs leading-relaxed text-red-700 dark:text-red-200/65">{errorMessage(sessionsQuery.error, "The private session list request failed.")}</p>
+              <Button type="button" variant="outline" onClick={() => void sessionsQuery.refetch()} className="mt-4 border-red-200/20 text-red-700 dark:text-red-100 hover:bg-red-200/10" data-testid="button-retry-check-in-sessions">
                 Try again
               </Button>
             </div>
           ) : sessions.length === 0 ? (
-            <div className="rounded-xl border border-dashed border-white/15 px-4 py-8 text-center" data-testid="empty-check-in-sessions">
-              <Clock3 className="mx-auto h-6 w-6 text-white/30" />
-              <p className="mt-3 text-sm font-semibold text-white/65">No sessions yet</p>
-              <p className="mt-1 text-xs leading-relaxed text-white/35">
+            <div className="rounded-xl border border-dashed border-ink/15 px-4 py-8 text-center" data-testid="empty-check-in-sessions">
+              <Clock3 className="mx-auto h-6 w-6 text-copy-30" />
+              <p className="mt-3 text-sm font-semibold text-copy-65">No sessions yet</p>
+              <p className="mt-1 text-xs leading-relaxed text-copy-35">
                 {canManageSessions
                   ? "Create the first arrival window to begin checking people in."
                   : "Ask a full admin to configure a check-in session before arrival."}
@@ -426,16 +426,16 @@ export function AdminCheckIn({
                       setSelectedSessionId(session.id);
                       setSearch("");
                     }}
-                    className={`group w-full rounded-xl border p-4 text-left transition-colors ${active ? "border-primary/60 bg-primary/10" : "border-white/10 bg-white/[0.025] hover:border-white/25 hover:bg-white/[0.05]"}`}
+                    className={`group w-full rounded-xl border p-4 text-left transition-colors ${active ? "border-primary/60 bg-primary/10" : "border-ink/10 bg-ink/[0.025] hover:border-ink/25 hover:bg-ink/[0.05]"}`}
                     data-testid={`button-select-check-in-session-${session.id}`}
                   >
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
-                        <p className={`truncate text-sm font-bold ${active ? "text-primary" : "text-white"}`}>{session.name}</p>
-                        <p className="mt-1 text-xs text-white/50">{sessionDateLabel(session.sessionDate)}</p>
-                        <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-white/30">{session.conferenceYear}</p>
+                        <p className={`truncate text-sm font-bold ${active ? "text-primary" : "text-ink"}`}>{session.name}</p>
+                        <p className="mt-1 text-xs text-copy-50">{sessionDateLabel(session.sessionDate)}</p>
+                        <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-copy-30">{session.conferenceYear}</p>
                       </div>
-                      <ChevronRight className={`mt-1 h-4 w-4 shrink-0 ${active ? "text-primary" : "text-white/25 group-hover:text-white/55"}`} />
+                      <ChevronRight className={`mt-1 h-4 w-4 shrink-0 ${active ? "text-primary" : "text-copy-25 group-hover:text-copy-55"}`} />
                     </div>
                   </button>
                 );
@@ -446,23 +446,23 @@ export function AdminCheckIn({
 
         <div className="min-w-0 p-4 sm:p-6 lg:p-8">
           {!selectedSession ? (
-            <div className="flex min-h-[20rem] flex-col items-center justify-center rounded-xl border border-dashed border-white/10 px-6 text-center" data-testid="empty-check-in-selection">
-              <ClipboardCheck className="h-8 w-8 text-white/25" />
-              <p className="mt-4 text-lg font-bold text-white/70">Select a session to open its roster</p>
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/40">Session check-ins stay separated by date and conference year.</p>
+            <div className="flex min-h-[20rem] flex-col items-center justify-center rounded-xl border border-dashed border-ink/10 px-6 text-center" data-testid="empty-check-in-selection">
+              <ClipboardCheck className="h-8 w-8 text-copy-25" />
+              <p className="mt-4 text-lg font-bold text-copy-70">Select a session to open its roster</p>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-copy-40">Session check-ins stay separated by date and conference year.</p>
             </div>
           ) : (
             <>
-              <div className="flex flex-col gap-5 border-b border-white/10 pb-6 xl:flex-row xl:items-end xl:justify-between">
+              <div className="flex flex-col gap-5 border-b border-ink/10 pb-6 xl:flex-row xl:items-end xl:justify-between">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">{sessionTimeLabel(selectedSession.sessionDate)} · {selectedSession.conferenceYear}</p>
-                  <h3 className="mt-2 text-2xl font-bold text-white sm:text-3xl" data-testid={`text-active-check-in-session-${selectedSession.id}`}>{selectedSession.name}</h3>
-                  <p className="mt-1 text-sm text-white/45">{sessionDateLabel(selectedSession.sessionDate)}</p>
+                  <h3 className="mt-2 text-2xl font-bold text-ink sm:text-3xl" data-testid={`text-active-check-in-session-${selectedSession.id}`}>{selectedSession.name}</h3>
+                  <p className="mt-1 text-sm text-copy-45">{sessionDateLabel(selectedSession.sessionDate)}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
-                  <div className="rounded-xl border border-white/10 bg-white/[0.035] px-4 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">Present</p>
-                    <p className="mt-1 text-xl font-bold text-emerald-300" data-testid="text-check-in-present-count">
+                  <div className="rounded-xl border border-ink/10 bg-ink/[0.035] px-4 py-3">
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-copy-35">Present</p>
+                    <p className="mt-1 text-xl font-bold text-emerald-700 dark:text-emerald-300" data-testid="text-check-in-present-count">
                       {sessionCheckInsQuery.isLoading
                         ? "…"
                         : sessionCheckInsQuery.isError
@@ -476,7 +476,7 @@ export function AdminCheckIn({
                       variant="outline"
                       disabled={sessionCheckInsQuery.isLoading || sessionCheckInsQuery.isError || checkIns.length > 0 || deleteSessionMutation.isPending}
                       onClick={deleteSelectedSession}
-                      className="h-11 border-red-300/20 text-red-300 hover:bg-red-300/10 hover:text-red-200"
+                      className="h-11 border-red-300/20 text-red-700 dark:text-red-300 hover:bg-red-300/10 hover:text-red-700 dark:text-red-200"
                       data-testid={`button-delete-check-in-session-${selectedSession.id}`}
                     >
                       <Trash2 className="h-4 w-4" />
@@ -487,7 +487,7 @@ export function AdminCheckIn({
               </div>
 
               {deleteSessionMutation.isError && (
-                <p className="mt-4 rounded-lg border border-red-400/25 bg-red-400/5 px-4 py-3 text-sm text-red-200" role="alert" data-testid="error-delete-check-in-session">
+                <p className="mt-4 rounded-lg border border-red-400/25 bg-red-400/5 px-4 py-3 text-sm text-red-700 dark:text-red-200" role="alert" data-testid="error-delete-check-in-session">
                   {deleteSessionMutation.error && "status" in deleteSessionMutation.error && deleteSessionMutation.error.status === 409
                     ? "This session cannot be deleted while attendees are checked in. Undo those check-ins first."
                     : errorMessage(deleteSessionMutation.error, "The session could not be deleted.")}
@@ -496,39 +496,39 @@ export function AdminCheckIn({
 
               {sessionCheckInsQuery.isLoading ? (
                 <div className="mt-6 space-y-3" data-testid="loading-session-check-ins">
-                  {[1, 2, 3, 4].map((item) => <Skeleton key={item} className="h-20 rounded-xl bg-white/5" />)}
+                  {[1, 2, 3, 4].map((item) => <Skeleton key={item} className="h-20 rounded-xl bg-ink/5" />)}
                 </div>
               ) : sessionCheckInsQuery.isError ? (
                 <div className="mt-6 rounded-xl border border-red-400/20 bg-red-400/5 px-5 py-10 text-center" data-testid="error-session-check-ins">
-                  <CircleAlert className="mx-auto h-6 w-6 text-red-300" />
-                  <p className="mt-3 font-semibold text-red-200">This session roster could not be verified.</p>
-                  <p className="mt-2 text-sm text-red-200/65">{errorMessage(sessionCheckInsQuery.error, "The private check-in request failed.")}</p>
-                  <Button type="button" variant="outline" onClick={() => void sessionCheckInsQuery.refetch()} className="mt-5 border-red-200/20 text-red-100 hover:bg-red-200/10" data-testid="button-retry-session-check-ins">
+                  <CircleAlert className="mx-auto h-6 w-6 text-red-700 dark:text-red-300" />
+                  <p className="mt-3 font-semibold text-red-700 dark:text-red-200">This session roster could not be verified.</p>
+                  <p className="mt-2 text-sm text-red-700 dark:text-red-200/65">{errorMessage(sessionCheckInsQuery.error, "The private check-in request failed.")}</p>
+                  <Button type="button" variant="outline" onClick={() => void sessionCheckInsQuery.refetch()} className="mt-5 border-red-200/20 text-red-700 dark:text-red-100 hover:bg-red-200/10" data-testid="button-retry-session-check-ins">
                     Try again
                   </Button>
                 </div>
               ) : rosterQuery.isLoading ? (
                 <div className="mt-6 space-y-3" data-testid="loading-check-in-registrations">
-                  {[1, 2, 3].map((item) => <Skeleton key={item} className="h-20 rounded-xl bg-white/5" />)}
+                  {[1, 2, 3].map((item) => <Skeleton key={item} className="h-20 rounded-xl bg-ink/5" />)}
                 </div>
               ) : rosterQuery.isError ? (
                 <div className="mt-6 rounded-xl border border-red-400/20 bg-red-400/5 px-5 py-10 text-center" data-testid="error-check-in-registrations">
-                  <CircleAlert className="mx-auto h-6 w-6 text-red-300" />
-                  <p className="mt-3 font-semibold text-red-200">The attendee roster could not be loaded.</p>
-                  <p className="mt-2 text-sm text-red-200/65">{errorMessage(rosterQuery.error, "The private registrations request failed.")}</p>
+                  <CircleAlert className="mx-auto h-6 w-6 text-red-700 dark:text-red-300" />
+                  <p className="mt-3 font-semibold text-red-700 dark:text-red-200">The attendee roster could not be loaded.</p>
+                  <p className="mt-2 text-sm text-red-700 dark:text-red-200/65">{errorMessage(rosterQuery.error, "The private registrations request failed.")}</p>
                 </div>
               ) : (
                 <>
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="relative min-w-0 flex-1">
-                      <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
+                      <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-copy-35" />
                       <Input
                         type="search"
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
                         placeholder="Find by name"
                         aria-label="Search the session roster"
-                        className="h-12 border-white/10 bg-white/5 pl-11 text-white placeholder:text-white/30"
+                        className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-copy-30"
                         data-testid="input-check-in-search"
                       />
                     </div>
@@ -542,36 +542,36 @@ export function AdminCheckIn({
                           setScanError("");
                           setScannerOpen(true);
                         }}
-                        className="h-11 border-primary/30 text-white hover:bg-primary/10"
+                        className="h-11 border-primary/30 text-ink hover:bg-primary/10"
                         data-testid="button-open-qr-scanner"
                       >
                         <ScanLine className="h-4 w-4" />
                         Scan QR
                       </Button>
-                      <div className="flex items-center gap-2 px-1 text-xs text-white/45">
+                      <div className="flex items-center gap-2 px-1 text-xs text-copy-45">
                         <Users className="h-4 w-4" />
                         {filteredRegistrations.length} shown
                       </div>
                     </div>
                   </div>
                   {canSendReplacementQr && (
-                    <p className="mt-2 text-xs text-white/35">
+                    <p className="mt-2 text-xs text-copy-35">
                       Emailing a new QR code replaces and invalidates any older code for that attendee.
                     </p>
                   )}
 
                   {scannerOpen && (
-                    <div className="mt-5 rounded-xl border border-primary/25 bg-black/30 p-4 sm:p-5" data-testid="panel-qr-scanner">
+                    <div className="mt-5 rounded-xl border border-primary/25 bg-shade/30 p-4 sm:p-5" data-testid="panel-qr-scanner">
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <h4 className="font-bold text-white">Scan attendee QR</h4>
-                          <p className="mt-1 text-sm text-white/50">Allow camera access and center the attendee’s code in the frame.</p>
+                          <h4 className="font-bold text-ink">Scan attendee QR</h4>
+                          <p className="mt-1 text-sm text-copy-50">Allow camera access and center the attendee’s code in the frame.</p>
                         </div>
                         <Button
                           type="button"
                           variant="outline"
                           onClick={() => setScannerOpen(false)}
-                          className="shrink-0 border-white/15 text-white/75"
+                          className="shrink-0 border-ink/15 text-copy-75"
                           data-testid="button-close-qr-scanner"
                         >
                           Close
@@ -589,24 +589,24 @@ export function AdminCheckIn({
                     </div>
                   )}
                   {scanMessage && (
-                    <p className="mt-3 rounded-lg border border-emerald-300/20 bg-emerald-300/5 px-4 py-3 text-sm text-emerald-200" role="status" data-testid="status-qr-scan">
+                    <p className="mt-3 rounded-lg border border-emerald-300/20 bg-emerald-300/5 px-4 py-3 text-sm text-emerald-700 dark:text-emerald-200" role="status" data-testid="status-qr-scan">
                       {scanMessage}
                     </p>
                   )}
                   {scanError && (
-                    <p className="mt-3 rounded-lg border border-red-300/20 bg-red-300/5 px-4 py-3 text-sm text-red-200" role="alert" data-testid="error-qr-scan">
+                    <p className="mt-3 rounded-lg border border-red-300/20 bg-red-300/5 px-4 py-3 text-sm text-red-700 dark:text-red-200" role="alert" data-testid="error-qr-scan">
                       {scanError}
                     </p>
                   )}
 
                   {eligibleRegistrations.length === 0 ? (
-                    <div className="mt-6 rounded-xl border border-dashed border-white/10 px-6 py-14 text-center" data-testid="empty-session-roster">
-                      <Users className="mx-auto h-7 w-7 text-white/25" />
-                      <p className="mt-3 font-semibold text-white/65">No registrations for {selectedSession.conferenceYear}</p>
-                      <p className="mt-1 text-sm text-white/35">This session is ready, but its conference-year roster is empty.</p>
+                    <div className="mt-6 rounded-xl border border-dashed border-ink/10 px-6 py-14 text-center" data-testid="empty-session-roster">
+                      <Users className="mx-auto h-7 w-7 text-copy-25" />
+                      <p className="mt-3 font-semibold text-copy-65">No registrations for {selectedSession.conferenceYear}</p>
+                      <p className="mt-1 text-sm text-copy-35">This session is ready, but its conference-year roster is empty.</p>
                     </div>
                   ) : filteredRegistrations.length === 0 ? (
-                    <div className="mt-6 rounded-xl border border-dashed border-white/10 px-6 py-14 text-center text-sm text-white/40" data-testid="empty-check-in-search">
+                    <div className="mt-6 rounded-xl border border-dashed border-ink/10 px-6 py-14 text-center text-sm text-copy-40" data-testid="empty-check-in-search">
                       No attendees match “{search.trim()}”
                     </div>
                   ) : (
@@ -625,14 +625,14 @@ export function AdminCheckIn({
                         return (
                           <article
                             key={registration.id}
-                            className={`rounded-xl border p-4 transition-colors sm:p-5 ${isCheckedIn ? "border-emerald-300/25 bg-emerald-300/[0.055]" : "border-white/10 bg-white/[0.025]"}`}
+                            className={`rounded-xl border p-4 transition-colors sm:p-5 ${isCheckedIn ? "border-emerald-300/25 bg-emerald-300/[0.055]" : "border-ink/10 bg-ink/[0.025]"}`}
                             data-testid={`row-check-in-registration-${registration.id}`}
                           >
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                               <div className="min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <h4 className="truncate font-bold text-white">{registration.firstName} {registration.lastName}</h4>
-                                  {isCheckedIn && <Badge className="border border-emerald-300/20 bg-emerald-300/10 text-emerald-200">Present</Badge>}
+                                  <h4 className="truncate font-bold text-ink">{registration.firstName} {registration.lastName}</h4>
+                                  {isCheckedIn && <Badge className="border border-emerald-300/20 bg-emerald-300/10 text-emerald-700 dark:text-emerald-200">Present</Badge>}
                                 </div>
                               </div>
                               <div className="flex flex-col gap-2 sm:flex-row">
@@ -650,7 +650,7 @@ export function AdminCheckIn({
                                       });
                                     }}
                                     aria-label={`Email a new QR code to ${registration.firstName} ${registration.lastName}; this replaces any previous code`}
-                                    className="w-full border-white/15 text-white/75 hover:bg-white/5 sm:w-auto"
+                                    className="w-full border-ink/15 text-copy-75 hover:bg-ink/5 sm:w-auto"
                                     data-testid={`button-email-qr-registration-${registration.id}`}
                                   >
                                     <Mail className="h-4 w-4" />
@@ -666,7 +666,7 @@ export function AdminCheckIn({
                                     if (isCheckedIn) undoMutation.mutate({ sessionId: selectedSession.id, registrationId: registration.id });
                                     else checkInMutation.mutate({ sessionId: selectedSession.id, registrationId: registration.id });
                                   }}
-                                  className={isCheckedIn ? "w-full border-emerald-300/25 text-emerald-200 hover:bg-emerald-300/10 sm:w-auto" : "w-full rounded-full bg-primary text-white hover:bg-primary/90 sm:w-auto"}
+                                  className={isCheckedIn ? "w-full border-emerald-300/25 text-emerald-700 dark:text-emerald-200 hover:bg-emerald-300/10 sm:w-auto" : "w-full rounded-full bg-primary text-white hover:bg-primary/90 sm:w-auto"}
                                   data-testid={`${isCheckedIn ? "button-undo" : "button-check-in"}-registration-${registration.id}`}
                                 >
                                   {isCheckedIn ? <Undo2 className="h-4 w-4" /> : <Check className="h-4 w-4" />}
@@ -675,15 +675,15 @@ export function AdminCheckIn({
                               </div>
                             </div>
                             {qrEmailSentRegistrationId === registration.id && (
-                              <p className="mt-3 text-sm text-emerald-200" role="status">A new QR code was emailed to this attendee.</p>
+                              <p className="mt-3 text-sm text-emerald-700 dark:text-emerald-200" role="status">A new QR code was emailed to this attendee.</p>
                             )}
                             {qrEmailError && (
-                              <p className="mt-3 text-sm text-red-300" role="alert">
+                              <p className="mt-3 text-sm text-red-700 dark:text-red-300" role="alert">
                                 QR email failed: {errorMessage(sendQrMutation.error, "Please try again.")}
                               </p>
                             )}
-                            {checkInError && <p className="mt-3 text-sm text-red-300" role="alert">Check-in failed: {errorMessage(checkInMutation.error, "Please try again.")}</p>}
-                            {undoError && <p className="mt-3 text-sm text-red-300" role="alert">Undo failed: {errorMessage(undoMutation.error, "Please try again.")}</p>}
+                            {checkInError && <p className="mt-3 text-sm text-red-700 dark:text-red-300" role="alert">Check-in failed: {errorMessage(checkInMutation.error, "Please try again.")}</p>}
+                            {undoError && <p className="mt-3 text-sm text-red-700 dark:text-red-300" role="alert">Undo failed: {errorMessage(undoMutation.error, "Please try again.")}</p>}
                           </article>
                         );
                       })}

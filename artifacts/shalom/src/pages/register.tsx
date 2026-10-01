@@ -128,8 +128,8 @@ function getPortraitValidationMessage(file: File): string | null {
   return null;
 }
 
-const labelClass = "text-white/50 uppercase tracking-widest text-[10px] font-bold mb-2 block";
-const inputClass = "bg-transparent border-0 border-b border-white/20 rounded-none px-0 h-12 text-white placeholder:text-white/20 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-white transition-colors w-full";
+const labelClass = "text-copy-50 uppercase tracking-widest text-[10px] font-bold mb-2 block";
+const inputClass = "bg-transparent border-0 border-b border-ink/20 rounded-none px-0 h-12 text-ink placeholder:text-copy-20 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-ink transition-colors w-full";
 
 function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File) => void }) {
   const [preview, setPreview] = useState<string | null>(null);
@@ -156,10 +156,10 @@ function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File
     <div
       className={`group relative flex aspect-[3/4] w-full max-w-[200px] flex-col items-center justify-center overflow-hidden border transition-colors ${
         isDragging
-          ? "border-white bg-white/5"
+          ? "border-ink bg-ink/5"
           : value
-          ? "border-white/20 bg-transparent"
-          : "border-white/10 bg-transparent hover:border-white/30"
+          ? "border-ink/20 bg-transparent"
+          : "border-ink/10 bg-transparent hover:border-ink/30"
       }`}
       onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
       onDragLeave={() => setIsDragging(false)}
@@ -217,10 +217,10 @@ function PortraitUpload({ value, onChange }: { value?: File; onChange: (f?: File
             className="flex flex-col items-center gap-4 cursor-pointer p-6 text-center w-full h-full justify-center"
             onClick={() => inputRef.current?.click()}
           >
-            <Upload className="w-6 h-6 text-white/40 group-hover:text-white transition-colors" />
+            <Upload className="w-6 h-6 text-copy-40 group-hover:text-ink transition-colors" />
             <div>
-              <p className="text-white/80 text-sm font-medium">Upload Photo</p>
-              <p className="text-white/40 text-[10px] uppercase tracking-wider mt-2">JPG, PNG, WebP</p>
+              <p className="text-copy-80 text-sm font-medium">Upload Photo</p>
+              <p className="text-copy-40 text-[10px] uppercase tracking-wider mt-2">JPG, PNG, WebP</p>
             </div>
           </motion.div>
         )}
@@ -353,19 +353,19 @@ function ExistingRegistrationBadge() {
             animate={{ opacity: 1, y: 0 }}
             className="w-full space-y-12"
           >
-            <div className="border border-white/10 p-8 sm:p-16 space-y-8 relative overflow-hidden bg-white/5">
-              <CheckCircle2 className="h-10 w-10 text-white" />
+            <div className="border border-ink/10 p-8 sm:p-16 space-y-8 relative overflow-hidden bg-ink/5">
+              <CheckCircle2 className="h-10 w-10 text-ink" />
               <div>
-                <h1 className="text-4xl sm:text-5xl font-bold uppercase text-white mb-6" style={{ fontFamily: "var(--font-display)" }}>
+                <h1 className="text-4xl sm:text-5xl font-bold uppercase text-ink mb-6" style={{ fontFamily: "var(--font-display)" }}>
                   Your Badge Is On Its Way
                 </h1>
-                <p className="text-white/60 text-lg leading-relaxed max-w-xl">
+                <p className="text-copy-60 text-lg leading-relaxed max-w-xl">
                   Your personalized “I’m Attending” badge has been created and sent to your registration email.
                 </p>
               </div>
             </div>
             <div>
-              <Button asChild className="h-14 px-8 bg-white text-black hover:bg-white/90 rounded-none font-bold uppercase tracking-widest text-sm">
+              <Button asChild className="h-14 px-8 bg-ink text-inverse hover:bg-ink/90 rounded-none font-bold uppercase tracking-widest text-sm">
                 <Link href="/2026">Back to Shalom 2026</Link>
               </Button>
             </div>
@@ -376,7 +376,7 @@ function ExistingRegistrationBadge() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-white selection:text-black flex flex-col pb-20">
+    <div className="min-h-screen bg-background text-foreground selection:bg-ink selection:text-inverse flex flex-col pb-20">
       <SiteHeader />
 
       <main className="flex-1 container mx-auto max-w-3xl px-6 py-16 sm:py-24">
@@ -384,7 +384,7 @@ function ExistingRegistrationBadge() {
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-white/50"
+            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-copy-50"
           >
             Already registered for Shalom 2026?
           </motion.p>
@@ -392,7 +392,7 @@ function ExistingRegistrationBadge() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-6xl font-bold uppercase text-white mb-6"
+            className="text-4xl sm:text-6xl font-bold uppercase text-ink mb-6"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Create Your Badge
@@ -401,7 +401,7 @@ function ExistingRegistrationBadge() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="max-w-xl text-white/60 text-lg leading-relaxed"
+            className="max-w-xl text-copy-60 text-lg leading-relaxed"
           >
             Enter the same details you used to register, upload a portrait, and we’ll email you a personalized “I’m Attending” badge.
           </motion.p>
@@ -415,7 +415,7 @@ function ExistingRegistrationBadge() {
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-16">
               <div className="space-y-8">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-copy-40 border-b border-ink/10 pb-4">
                   01. Verification Details
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
@@ -480,28 +480,28 @@ function ExistingRegistrationBadge() {
               </div>
 
               <div className="space-y-8">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-copy-40 border-b border-ink/10 pb-4">
                   02. Badge Photo
                 </h2>
                 <div className="flex flex-col sm:flex-row gap-8 items-start">
                   <PortraitUpload value={portraitFile} onChange={setPortraitFile} />
-                  <div className="text-sm text-white/50 max-w-xs space-y-2 pt-2">
+                  <div className="text-sm text-copy-50 max-w-xs space-y-2 pt-2">
                     <p>Please provide a clear portrait photo.</p>
                     <p>This image will be used to generate your official attendee badge.</p>
-                    <p className="text-white/30 text-[10px] uppercase tracking-widest mt-6 block">Requirements</p>
-                    <p className="text-white/40 text-xs">Max size: 5MB<br/>Formats: JPG, PNG, WebP</p>
+                    <p className="text-copy-30 text-[10px] uppercase tracking-widest mt-6 block">Requirements</p>
+                    <p className="text-copy-40 text-xs">Max size: 5MB<br/>Formats: JPG, PNG, WebP</p>
                   </div>
                 </div>
               </div>
 
-              <div className="pt-8 border-t border-white/10 flex flex-col-reverse sm:flex-row gap-6 items-center justify-between">
-                <Button asChild type="button" variant="ghost" className="text-white/60 hover:bg-transparent hover:text-white rounded-none px-0 w-full sm:w-auto justify-start">
+              <div className="pt-8 border-t border-ink/10 flex flex-col-reverse sm:flex-row gap-6 items-center justify-between">
+                <Button asChild type="button" variant="ghost" className="text-copy-60 hover:bg-transparent hover:text-ink rounded-none px-0 w-full sm:w-auto justify-start">
                   <Link href="/2026">← Back to Conference Details</Link>
                 </Button>
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full sm:w-auto h-14 px-10 bg-white text-black hover:bg-white/90 rounded-none font-bold uppercase tracking-widest text-sm"
+                  className="w-full sm:w-auto h-14 px-10 bg-ink text-inverse hover:bg-ink/90 rounded-none font-bold uppercase tracking-widest text-sm"
                   data-testid="button-create-badge"
                 >
                   <AnimatePresence mode="wait">
@@ -710,22 +710,22 @@ function RegistrationForm() {
             animate={{ opacity: 1, y: 0 }}
             className="w-full space-y-12"
           >
-            <div className="border border-white/10 p-8 sm:p-16 space-y-8 relative overflow-hidden bg-white/5">
-              <CheckCircle2 className="h-10 w-10 text-white" />
+            <div className="border border-ink/10 p-8 sm:p-16 space-y-8 relative overflow-hidden bg-ink/5">
+              <CheckCircle2 className="h-10 w-10 text-ink" />
               <div>
                 <h1
-                  className="text-4xl sm:text-5xl font-bold uppercase text-white mb-6"
+                  className="text-4xl sm:text-5xl font-bold uppercase text-ink mb-6"
                   style={{ fontFamily: "var(--font-display)" }}
                 >
                   Thank You
                 </h1>
-                <p className="text-white/60 text-lg leading-relaxed max-w-xl">
+                <p className="text-copy-60 text-lg leading-relaxed max-w-xl">
                   Your registration{registeredPlusOne ? " and your plus one’s registration" : ""} for Shalom 2026 is confirmed. We look forward to worshipping with you.
                 </p>
               </div>
 
-              <div className="pt-8 border-t border-white/10">
-                <p className="text-white/50 text-sm leading-relaxed max-w-xl">
+              <div className="pt-8 border-t border-ink/10">
+                <p className="text-copy-50 text-sm leading-relaxed max-w-xl">
                   {registeredPlusOne
                     ? `Confirmation emails have been sent to both attendees${badgeDelivered ? ", including your personalized badge" : ""}.`
                     : badgeDelivered
@@ -735,7 +735,7 @@ function RegistrationForm() {
               </div>
             </div>
             <div>
-              <Button asChild className="h-14 px-8 bg-white text-black hover:bg-white/90 rounded-none font-bold uppercase tracking-widest text-sm">
+              <Button asChild className="h-14 px-8 bg-ink text-inverse hover:bg-ink/90 rounded-none font-bold uppercase tracking-widest text-sm">
                 <Link href="/">Return Home</Link>
               </Button>
             </div>
@@ -746,17 +746,17 @@ function RegistrationForm() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-white selection:text-black flex flex-col pb-20">
+    <div className="min-h-screen bg-background text-foreground selection:bg-ink selection:text-inverse flex flex-col pb-20">
       <SiteHeader />
 
       <Dialog open={showTextConsent} onOpenChange={setShowTextConsent}>
-        <DialogContent className="border-white/10 bg-background text-white sm:max-w-lg">
+        <DialogContent className="border-ink/10 bg-background text-ink sm:max-w-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3 text-xl uppercase tracking-wide">
               <MessageSquare className="h-5 w-5 text-primary" />
               Confirm Text Updates
             </DialogTitle>
-            <DialogDescription className="pt-3 text-left leading-relaxed text-white/60">
+            <DialogDescription className="pt-3 text-left leading-relaxed text-copy-60">
               Please confirm that you want to receive occasional text messages from
               Shalom about conference updates and reminders.
               <br />
@@ -776,7 +776,7 @@ function RegistrationForm() {
             <Button
               type="button"
               variant="outline"
-              className="rounded-none border-white/20 uppercase tracking-wider"
+              className="rounded-none border-ink/20 uppercase tracking-wider"
               onClick={() => void resolveTextConsent(false)}
             >
               No Thanks
@@ -797,7 +797,7 @@ function RegistrationForm() {
           <motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-white/50"
+            className="mb-4 text-xs font-bold uppercase tracking-[0.2em] text-copy-50"
           >
             Shalom 2026
           </motion.p>
@@ -805,7 +805,7 @@ function RegistrationForm() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-4xl sm:text-6xl font-bold uppercase text-white mb-6"
+            className="text-4xl sm:text-6xl font-bold uppercase text-ink mb-6"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Register
@@ -814,19 +814,19 @@ function RegistrationForm() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="mt-10 grid border-y border-white/10 sm:grid-cols-3"
+            className="mt-10 grid border-y border-ink/10 sm:grid-cols-3"
           >
-            <div className="flex items-center gap-3 border-b border-white/10 py-4 sm:border-b-0 sm:border-r sm:pr-5">
+            <div className="flex items-center gap-3 border-b border-ink/10 py-4 sm:border-b-0 sm:border-r sm:pr-5">
               <Calendar className="h-4 w-4 shrink-0 text-primary" />
-              <span className="text-sm font-medium text-white/80">Oct 9–10, 2026</span>
+              <span className="text-sm font-medium text-copy-80">Oct 9–10, 2026</span>
             </div>
-            <div className="flex items-center gap-3 border-b border-white/10 py-4 sm:border-b-0 sm:border-r sm:px-5">
+            <div className="flex items-center gap-3 border-b border-ink/10 py-4 sm:border-b-0 sm:border-r sm:px-5">
               <MapPin className="h-4 w-4 shrink-0 text-primary" />
-              <span className="text-sm font-medium text-white/80">Windsor Mill, MD</span>
+              <span className="text-sm font-medium text-copy-80">Windsor Mill, MD</span>
             </div>
             <div className="flex items-center gap-3 py-4 sm:pl-5">
               <Sparkles className="h-4 w-4 shrink-0 text-primary" />
-              <span className="text-sm font-medium text-white/80">John 14:26–27</span>
+              <span className="text-sm font-medium text-copy-80">John 14:26–27</span>
             </div>
           </motion.div>
         </div>
@@ -841,7 +841,7 @@ function RegistrationForm() {
               
               {/* Section: Personal Details */}
               <div className="space-y-8">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-copy-40 border-b border-ink/10 pb-4">
                   01. Personal Details
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-12 gap-y-8">
@@ -914,21 +914,21 @@ function RegistrationForm() {
                       control={form.control}
                       name="smsConsent"
                       render={({ field }) => (
-                        <FormItem className="flex flex-row items-start space-x-4 space-y-0 border border-white/10 p-4">
+                        <FormItem className="flex flex-row items-start space-x-4 space-y-0 border border-ink/10 p-4">
                           <FormControl>
                             <Checkbox
                               checked={field.value}
                               disabled={!hasPhone}
                               onCheckedChange={field.onChange}
-                              className="mt-1 rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
+                              className="mt-1 rounded-none border-ink/30 data-[state=checked]:bg-ink data-[state=checked]:text-inverse"
                               data-testid="checkbox-sms-consent"
                             />
                           </FormControl>
                           <div className="space-y-2">
-                            <FormLabel className="block cursor-pointer text-sm font-medium text-white">
+                            <FormLabel className="block cursor-pointer text-sm font-medium text-ink">
                               Yes, sign me up for Shalom text updates
                             </FormLabel>
-                            <p className="text-sm leading-relaxed text-white/50">
+                            <p className="text-sm leading-relaxed text-copy-50">
                               {hasPhone
                                 ? (
                                   <>
@@ -950,17 +950,17 @@ function RegistrationForm() {
                     control={form.control}
                     name="termsAccepted"
                     render={({ field }) => (
-                      <FormItem className="flex flex-row items-start space-x-4 space-y-0 border border-white/10 p-4">
+                      <FormItem className="flex flex-row items-start space-x-4 space-y-0 border border-ink/10 p-4">
                         <FormControl>
                           <Checkbox
                             checked={field.value}
                             onCheckedChange={field.onChange}
-                            className="mt-1 rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black"
+                            className="mt-1 rounded-none border-ink/30 data-[state=checked]:bg-ink data-[state=checked]:text-inverse"
                             data-testid="checkbox-terms-accepted"
                           />
                         </FormControl>
                         <div className="space-y-2">
-                          <FormLabel className="block cursor-pointer text-sm font-medium text-white">
+                          <FormLabel className="block cursor-pointer text-sm font-medium text-ink">
                             I agree to the{" "}
                             <Link href="/terms" className="text-primary underline underline-offset-4">
                               Terms &amp; Conditions
@@ -971,7 +971,7 @@ function RegistrationForm() {
                             </Link>
                             .
                           </FormLabel>
-                          <p className="text-sm leading-relaxed text-white/50">
+                          <p className="text-sm leading-relaxed text-copy-50">
                             Required to complete registration. SMS consent above is optional.
                           </p>
                           <FormMessage />
@@ -984,26 +984,26 @@ function RegistrationForm() {
 
               {/* Section: Volunteer */}
               <div className="space-y-8">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-copy-40 border-b border-ink/10 pb-4">
                   02. Volunteer
                 </h2>
                 <FormField
                   control={form.control}
                   name="volunteer"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-4 space-y-0 p-4 border border-white/10 hover:border-white/30 transition-colors">
+                    <FormItem className="flex flex-row items-start space-x-4 space-y-0 p-4 border border-ink/10 hover:border-ink/30 transition-colors">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          className="rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black mt-1"
+                          className="rounded-none border-ink/30 data-[state=checked]:bg-ink data-[state=checked]:text-inverse mt-1"
                         />
                       </FormControl>
                       <div className="space-y-1.5 leading-none">
-                        <FormLabel className="text-sm font-medium text-white cursor-pointer block">
+                        <FormLabel className="text-sm font-medium text-ink cursor-pointer block">
                           I would like to volunteer
                         </FormLabel>
-                        <p className="text-sm text-white/50">
+                        <p className="text-sm text-copy-50">
                           Help us make Shalom 2026 an unforgettable experience. We'll reach out with details.
                         </p>
                       </div>
@@ -1034,8 +1034,8 @@ function RegistrationForm() {
                                     onClick={() => field.onChange(role)}
                                     className={`px-4 py-3 text-sm font-medium border text-left transition-colors ${
                                       field.value === role
-                                        ? "border-white bg-white text-black"
-                                        : "border-white/10 text-white/60 hover:border-white/30 hover:text-white"
+                                        ? "border-ink bg-ink text-inverse"
+                                        : "border-ink/10 text-copy-60 hover:border-ink/30 hover:text-ink"
                                     }`}
                                   >
                                     {role}
@@ -1054,26 +1054,26 @@ function RegistrationForm() {
 
               {/* Section: Plus One */}
               <div className="space-y-8">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-copy-40 border-b border-ink/10 pb-4">
                   03. Plus One
                 </h2>
                 <FormField
                   control={form.control}
                   name="hasPlusOne"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-4 space-y-0 p-4 border border-white/10 hover:border-white/30 transition-colors">
+                    <FormItem className="flex flex-row items-start space-x-4 space-y-0 p-4 border border-ink/10 hover:border-ink/30 transition-colors">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          className="rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black mt-1"
+                          className="rounded-none border-ink/30 data-[state=checked]:bg-ink data-[state=checked]:text-inverse mt-1"
                         />
                       </FormControl>
                       <div className="space-y-1.5 leading-none">
-                        <FormLabel className="text-sm font-medium text-white cursor-pointer block">
+                        <FormLabel className="text-sm font-medium text-ink cursor-pointer block">
                           I’m registering a plus one
                         </FormLabel>
-                        <p className="text-sm text-white/50">
+                        <p className="text-sm text-copy-50">
                           Add one additional attendee to your registration.
                         </p>
                       </div>
@@ -1150,26 +1150,26 @@ function RegistrationForm() {
 
               {/* Section: Badge */}
               <div className="space-y-8">
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/40 border-b border-white/10 pb-4">
+                <h2 className="text-sm font-bold uppercase tracking-widest text-copy-40 border-b border-ink/10 pb-4">
                   04. Attendee Badge
                 </h2>
                 <FormField
                   control={form.control}
                   name="wantsAttendeeBadge"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-start space-x-4 space-y-0 p-4 border border-white/10 hover:border-white/30 transition-colors">
+                    <FormItem className="flex flex-row items-start space-x-4 space-y-0 p-4 border border-ink/10 hover:border-ink/30 transition-colors">
                       <FormControl>
                         <Checkbox
                           checked={field.value}
                           onCheckedChange={field.onChange}
-                          className="rounded-none border-white/30 data-[state=checked]:bg-white data-[state=checked]:text-black mt-1"
+                          className="rounded-none border-ink/30 data-[state=checked]:bg-ink data-[state=checked]:text-inverse mt-1"
                         />
                       </FormControl>
                       <div className="space-y-1.5 leading-none">
-                        <FormLabel className="text-sm font-medium text-white cursor-pointer block">
+                        <FormLabel className="text-sm font-medium text-ink cursor-pointer block">
                           I want a personalized "I'm Attending" badge
                         </FormLabel>
-                        <p className="text-sm text-white/50">
+                        <p className="text-sm text-copy-50">
                           Receive a custom digital badge with your portrait to share with friends.
                         </p>
                       </div>
@@ -1190,10 +1190,10 @@ function RegistrationForm() {
                           value={form.watch("portraitFile")}
                           onChange={(file) => form.setValue("portraitFile", file, { shouldValidate: true })}
                         />
-                        <div className="text-sm text-white/50 max-w-xs space-y-2 pt-2">
+                        <div className="text-sm text-copy-50 max-w-xs space-y-2 pt-2">
                           <p>Please provide a clear portrait photo.</p>
-                          <p className="text-white/30 text-[10px] uppercase tracking-widest mt-6 block">Requirements</p>
-                          <p className="text-white/40 text-xs">Max size: 5MB<br/>Formats: JPG, PNG, WebP</p>
+                          <p className="text-copy-30 text-[10px] uppercase tracking-widest mt-6 block">Requirements</p>
+                          <p className="text-copy-40 text-xs">Max size: 5MB<br/>Formats: JPG, PNG, WebP</p>
                         </div>
                       </div>
                       {form.formState.errors.portraitFile && (
@@ -1207,11 +1207,11 @@ function RegistrationForm() {
               </div>
 
               {/* Actions */}
-              <div className="pt-8 border-t border-white/10 flex justify-end">
+              <div className="pt-8 border-t border-ink/10 flex justify-end">
                 <Button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full sm:w-auto h-14 px-10 bg-white text-black hover:bg-white/90 rounded-none font-bold uppercase tracking-widest text-sm"
+                  className="w-full sm:w-auto h-14 px-10 bg-ink text-inverse hover:bg-ink/90 rounded-none font-bold uppercase tracking-widest text-sm"
                   data-testid="button-create-badge"
                 >
                   <AnimatePresence mode="wait">

@@ -25,7 +25,29 @@
 @import "tw-animate-css";
 @plugin "@tailwindcss/typography";
 
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme inline {
+  --color-ink: hsl(var(--ink));
+  --color-inverse: hsl(var(--inverse));
+  --color-header: hsl(var(--header));
+  --color-shade: hsl(var(--shade));
+  --color-copy-10: var(--copy-10);
+  --color-copy-15: var(--copy-15);
+  --color-copy-20: var(--copy-20);
+  --color-copy-25: var(--copy-25);
+  --color-copy-30: var(--copy-30);
+  --color-copy-35: var(--copy-35);
+  --color-copy-40: var(--copy-40);
+  --color-copy-45: var(--copy-45);
+  --color-copy-50: var(--copy-50);
+  --color-copy-55: var(--copy-55);
+  --color-copy-60: var(--copy-60);
+  --color-copy-65: var(--copy-65);
+  --color-copy-70: var(--copy-70);
+  --color-copy-75: var(--copy-75);
+  --color-copy-80: var(--copy-80);
+
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
   --color-border: hsl(var(--border));
@@ -71,8 +93,28 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-/* The site is dark-only. One set of tokens, no light/dark switch. */
+/* Dark theme tokens; light mode overrides the shared palette below. */
 :root {
+  --ink: 0 0% 100%;
+  --inverse: 0 0% 0%;
+  --header: 0 0% 0%;
+  --shade: 0 0% 0%;
+  --copy-10: rgba(255, 255, 255, 0.1);
+  --copy-15: rgba(255, 255, 255, 0.15);
+  --copy-20: rgba(255, 255, 255, 0.2);
+  --copy-25: rgba(255, 255, 255, 0.25);
+  --copy-30: rgba(255, 255, 255, 0.3);
+  --copy-35: rgba(255, 255, 255, 0.35);
+  --copy-40: rgba(255, 255, 255, 0.4);
+  --copy-45: rgba(255, 255, 255, 0.45);
+  --copy-50: rgba(255, 255, 255, 0.5);
+  --copy-55: rgba(255, 255, 255, 0.55);
+  --copy-60: rgba(255, 255, 255, 0.6);
+  --copy-65: rgba(255, 255, 255, 0.65);
+  --copy-70: rgba(255, 255, 255, 0.7);
+  --copy-75: rgba(255, 255, 255, 0.75);
+  --copy-80: rgba(255, 255, 255, 0.8);
+
   --button-outline: rgba(255,255,255, .10);
   --badge-outline: rgba(255,255,255, .05);
 
@@ -219,4 +261,51 @@
 
 @media (prefers-reduced-motion: reduce) {
   .home-hero *, .home-hero *::before { animation: none !important; }
+}
+
+/* Keep secondary copy readable on white while preserving dark-mode opacity. */
+:root[data-theme="light"] {
+  --background: 0 0% 100%;
+  --foreground: 240 15% 10%;
+  --border: 240 10% 86%;
+  --input: 240 10% 86%;
+  --card: 240 20% 98%;
+  --card-foreground: 240 15% 10%;
+  --card-border: 240 10% 86%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 240 15% 10%;
+  --popover-border: 240 10% 86%;
+  --muted: 240 12% 94%;
+  --muted-foreground: 240 8% 38%;
+  --primary: 16 90% 43%;
+  --secondary: 4 80% 42%;
+  --accent: 16 90% 43%;
+  --accent-foreground: 0 0% 100%;
+  --ink: 240 15% 10%;
+  --inverse: 0 0% 100%;
+  --header: 0 0% 100%;
+  --shade: 240 10% 85%;
+  --button-outline: rgba(20,20,29,.1);
+  --badge-outline: rgba(20,20,29,.05);
+  --elevate-1: rgba(20,20,29,.04);
+  --elevate-2: rgba(20,20,29,.09);
+  --copy-10: rgba(22, 22, 30, 0.65);
+  --copy-15: rgba(22, 22, 30, 0.65);
+  --copy-20: rgba(22, 22, 30, 0.65);
+  --copy-25: rgba(22, 22, 30, 0.65);
+  --copy-30: rgba(22, 22, 30, 0.65);
+  --copy-35: rgba(22, 22, 30, 0.65);
+  --copy-40: rgba(22, 22, 30, 0.65);
+  --copy-45: rgba(22, 22, 30, 0.65);
+  --copy-50: rgba(22, 22, 30, 0.65);
+  --copy-55: rgba(22, 22, 30, 0.65);
+  --copy-60: rgba(22, 22, 30, 0.65);
+  --copy-65: rgba(22, 22, 30, 0.65);
+  --copy-70: rgba(22, 22, 30, 0.7);
+  --copy-75: rgba(22, 22, 30, 0.75);
+  --copy-80: rgba(22, 22, 30, 0.8);
+}
+
+[data-theme="light"] .site-logo {
+  filter: invert(1) hue-rotate(180deg);
 }

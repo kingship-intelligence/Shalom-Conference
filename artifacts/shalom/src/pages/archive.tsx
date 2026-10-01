@@ -14,7 +14,7 @@ export default function Archive() {
         <section className="px-4 py-20 sm:px-6 sm:py-24">
           <div className="container mx-auto max-w-7xl">
             <div className="mx-auto mb-12 max-w-3xl text-center sm:mb-16 md:mx-0 md:text-left">
-              <h1 className="mb-6 text-4xl font-black uppercase tracking-tighter text-white sm:text-5xl md:text-7xl">
+              <h1 className="mb-6 text-4xl font-black uppercase tracking-tighter text-ink sm:text-5xl md:text-7xl">
                 Past years
               </h1>
               <p className="text-lg leading-relaxed text-muted-foreground sm:text-xl">
@@ -26,7 +26,7 @@ export default function Archive() {
               {archivedConferences.map((conference) => (
                 <article
                   key={conference.year}
-                  className="group overflow-hidden rounded-2xl border border-white/10 bg-card"
+                  className="group overflow-hidden rounded-2xl border border-ink/10 bg-card"
                 >
                   <div className="relative aspect-[16/9] overflow-hidden">
                     <img
@@ -34,14 +34,14 @@ export default function Archive() {
                       alt={`${conference.year} ${conference.theme}`}
                       loading="lazy"
                       decoding="async"
-                      className="h-full w-full object-cover opacity-70 transition duration-500 group-hover:scale-105 group-hover:opacity-90"
+                      className="h-full w-full object-cover opacity-100 transition duration-500 group-hover:scale-105 dark:opacity-70 dark:group-hover:opacity-90"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-background via-background/30 to-transparent" />
                     <div className="absolute bottom-5 left-5 right-5 text-center sm:bottom-6 sm:left-6 sm:right-6 sm:text-left">
                       <p className="mb-2 font-mono text-sm uppercase tracking-widest text-primary">
                         {conference.year}
                       </p>
-                      <h2 className="text-2xl font-black uppercase tracking-tight text-white sm:text-3xl">
+                      <h2 className="text-2xl font-black uppercase tracking-tight text-ink sm:text-3xl">
                         {conference.theme}
                       </h2>
                     </div>
@@ -64,7 +64,7 @@ export default function Archive() {
                     <Button
                       asChild
                       variant="outline"
-                      className="w-full max-w-xs rounded-full border-white/20 uppercase tracking-wider sm:w-auto"
+                      className="w-full max-w-xs rounded-full border-ink/20 uppercase tracking-wider sm:w-auto"
                     >
                       <Link href={`/archive/${conference.year}`}>
                         Shalom {conference.year} <ArrowRight className="h-4 w-4" />

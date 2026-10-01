@@ -76,7 +76,7 @@ export default function Testimonies() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="max-w-md w-full text-center space-y-8 p-8 rounded-3xl border border-white/10 bg-white/5 backdrop-blur-xl shadow-2xl"
+          className="max-w-md w-full text-center space-y-8 p-8 rounded-3xl border border-ink/10 bg-ink/5 backdrop-blur-xl shadow-2xl"
         >
           <div className="flex justify-center">
             <div className="h-20 w-20 rounded-full bg-primary/20 flex items-center justify-center text-primary">
@@ -85,12 +85,12 @@ export default function Testimonies() {
           </div>
           <div className="space-y-4">
             <h1
-              className="text-4xl font-bold italic text-white"
+              className="text-4xl font-bold italic text-ink"
               style={{ fontFamily: "var(--font-display)" }}
             >
               Thank You!
             </h1>
-            <p className="text-white/70 text-lg">
+            <p className="text-copy-70 text-lg">
               We got it. Thank you for telling us what God did.
             </p>
           </div>
@@ -101,7 +101,7 @@ export default function Testimonies() {
             >
               Share another
             </Button>
-            <Button asChild variant="ghost" className="w-full text-white/50 hover:text-white">
+            <Button asChild variant="ghost" className="w-full text-copy-50 hover:text-ink">
               <Link href="/">Back home</Link>
             </Button>
           </div>
@@ -121,14 +121,14 @@ export default function Testimonies() {
             animate={{ opacity: 1, y: 0 }}
             className="flex justify-center mb-8"
           >
-            <img src={shalomLogo} alt="SHALOM" className="h-16 w-auto" />
+            <img src={shalomLogo} alt="SHALOM" className="site-logo h-16 w-auto" />
           </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-6xl sm:text-7xl font-bold uppercase italic text-white mb-6"
+            className="text-6xl sm:text-7xl font-bold uppercase italic text-ink mb-6"
             style={{ fontFamily: "var(--font-display)" }}
           >
             Your Testimony
@@ -138,7 +138,7 @@ export default function Testimonies() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-white/70 text-lg mb-8"
+            className="text-copy-70 text-lg mb-8"
           >
             Did something happen at Shalom? Healing, a word, a decision, a change you can't
             explain? Tell us. It's anonymous, and it encourages the team more than you know.
@@ -149,7 +149,7 @@ export default function Testimonies() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="rounded-3xl border border-white/10 bg-white/5 p-8 backdrop-blur-xl shadow-2xl"
+          className="rounded-3xl border border-ink/10 bg-ink/5 p-8 backdrop-blur-xl shadow-2xl"
         >
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -158,7 +158,7 @@ export default function Testimonies() {
                 name="conferenceYear"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
+                    <FormLabel className="text-copy-50 uppercase tracking-widest text-xs font-bold">
                       Conference Year
                     </FormLabel>
                     <Select
@@ -167,13 +167,13 @@ export default function Testimonies() {
                     >
                       <FormControl>
                         <SelectTrigger
-                          className="bg-white/5 border-white/10 h-14 rounded-xl text-white placeholder:text-white/20 focus:ring-primary/20"
+                          className="bg-ink/5 border-ink/10 h-14 rounded-xl text-ink placeholder:text-copy-20 focus:ring-primary/20"
                           data-testid="select-year"
                         >
                           <SelectValue placeholder="Select a year" />
                         </SelectTrigger>
                       </FormControl>
-                      <SelectContent className="bg-background border-white/10 text-white">
+                      <SelectContent className="bg-background border-ink/10 text-ink">
                         {[2026, 2025, 2024, 2023, 2022, 2021, 2019].map((year) => (
                           <SelectItem key={year} value={year.toString()}>
                             {year}
@@ -191,14 +191,14 @@ export default function Testimonies() {
                 name="testimony"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-white/50 uppercase tracking-widest text-xs font-bold">
+                    <FormLabel className="text-copy-50 uppercase tracking-widest text-xs font-bold">
                       Testimony
                     </FormLabel>
                     <FormControl>
                       <Textarea
                         placeholder="What happened?"
                         {...field}
-                        className="bg-white/5 border-white/10 h-40 rounded-xl text-white placeholder:text-white/20 focus:border-primary/50 focus:ring-primary/20"
+                        className="bg-ink/5 border-ink/10 h-40 rounded-xl text-ink placeholder:text-copy-20 focus:border-primary/50 focus:ring-primary/20"
                         data-testid="textarea-testimony"
                       />
                     </FormControl>

@@ -11,7 +11,7 @@ export default function NotFound() {
       <main className="flex flex-1 items-center px-4 py-24 sm:px-6">
         <div className="container mx-auto max-w-3xl text-center">
           <p className="font-mono text-sm uppercase tracking-widest text-primary">404</p>
-          <h1 className="mt-4 text-4xl font-black uppercase tracking-tighter text-white sm:text-6xl">
+          <h1 className="mt-4 text-4xl font-black uppercase tracking-tighter text-ink sm:text-6xl">
             That page isn't here
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
@@ -28,7 +28,7 @@ export default function NotFound() {
               asChild
               size="lg"
               variant="outline"
-              className="rounded-full border-white/20 uppercase tracking-wider"
+              className="rounded-full border-ink/20 uppercase tracking-wider"
             >
               <Link href="/register">Register for Shalom</Link>
             </Button>

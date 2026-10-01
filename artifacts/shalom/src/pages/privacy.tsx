@@ -168,21 +168,21 @@ export default function Privacy() {
     <div className="min-h-screen bg-background text-foreground">
       <SiteHeader />
       <main>
-        <section className="border-b border-white/10 px-4 py-16 sm:px-6 sm:py-24">
+        <section className="border-b border-ink/10 px-4 py-16 sm:px-6 sm:py-24">
           <div className="mx-auto max-w-4xl">
             <div className="flex items-center gap-3 text-primary">
               <ShieldCheck className="h-6 w-6" />
               <p className="text-xs font-bold uppercase tracking-[0.28em]">Your information</p>
             </div>
-            <h1 className="mt-5 text-5xl font-black uppercase tracking-tight text-white sm:text-7xl">
+            <h1 className="mt-5 text-5xl font-black uppercase tracking-tight text-ink sm:text-7xl">
               Privacy Policy
             </h1>
-            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/60">
+            <p className="mt-6 max-w-2xl text-lg leading-relaxed text-copy-60">
               This policy explains how Shalom Conference handles information
               provided through our website, registrations, Prayer Chain,
               orders, and optional alerts.
             </p>
-            <p className="mt-5 text-sm font-semibold uppercase tracking-widest text-white/35">
+            <p className="mt-5 text-sm font-semibold uppercase tracking-widest text-copy-35">
               Effective September 20, 2026
             </p>
           </div>
@@ -193,28 +193,28 @@ export default function Privacy() {
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="border border-primary/25 bg-primary/5 p-5">
                 <Bell className="h-5 w-5 text-primary" />
-                <p className="mt-3 font-bold text-white">Alerts require your choice</p>
-                <p className="mt-2 text-sm leading-relaxed text-white/50">
+                <p className="mt-3 font-bold text-ink">Alerts require your choice</p>
+                <p className="mt-2 text-sm leading-relaxed text-copy-50">
                   Promotional email or text alerts require an affirmative opt-in.
                 </p>
               </div>
-              <div className="border border-white/10 bg-white/[0.03] p-5">
+              <div className="border border-ink/10 bg-ink/[0.03] p-5">
                 <Mail className="h-5 w-5 text-primary" />
-                <p className="mt-3 font-bold text-white">You can opt out</p>
-                <p className="mt-2 text-sm leading-relaxed text-white/50">
+                <p className="mt-3 font-bold text-ink">You can opt out</p>
+                <p className="mt-2 text-sm leading-relaxed text-copy-50">
                   Reply STOP to texts or use the unsubscribe option in marketing emails.
                 </p>
               </div>
             </div>
 
-            <article className="mt-4 space-y-10 border border-white/10 bg-white/[0.025] p-6 sm:p-10">
+            <article className="mt-4 space-y-10 border border-ink/10 bg-ink/[0.025] p-6 sm:p-10">
               {sections.map((section) => (
                 <section
                   key={section.title}
-                  className="border-b border-white/10 pb-10 last:border-0 last:pb-0"
+                  className="border-b border-ink/10 pb-10 last:border-0 last:pb-0"
                 >
-                  <h2 className="text-2xl font-bold text-white">{section.title}</h2>
-                  <div className="privacy-copy mt-4 space-y-4 text-sm leading-7 text-white/60 [&_a]:font-semibold [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 [&_strong]:text-white [&_ul]:ml-5 [&_ul]:list-disc [&_ul]:space-y-2">
+                  <h2 className="text-2xl font-bold text-ink">{section.title}</h2>
+                  <div className="privacy-copy mt-4 space-y-4 text-sm leading-7 text-copy-60 [&_a]:font-semibold [&_a]:text-primary [&_a]:underline [&_a]:underline-offset-4 [&_strong]:text-ink [&_ul]:ml-5 [&_ul]:list-disc [&_ul]:space-y-2">
                     {section.content}
                   </div>
                 </section>
@@ -224,7 +224,7 @@ export default function Privacy() {
             <Button
               asChild
               variant="outline"
-              className="mt-2 w-fit rounded-full border-white/20 bg-transparent text-white hover:bg-white/10 hover:text-white"
+              className="mt-2 w-fit rounded-full border-ink/20 bg-transparent text-ink hover:bg-ink/10 hover:text-ink"
             >
               <Link href="/">
                 <ArrowLeft className="mr-2 h-4 w-4" />
