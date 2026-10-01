@@ -275,7 +275,7 @@ export default function Home() {
                 className="relative mx-auto w-full max-w-[650px]"
               >
                 <div
-                  className="relative aspect-[16/10] overflow-hidden rounded-[50%] border border-white/25 bg-black shadow-[0_30px_100px_-32px_rgba(0,0,0,0.85)] ring-1 ring-white/10"
+                  className="relative aspect-[16/10] overflow-hidden rounded-[2rem] border border-white/25 bg-black shadow-[0_30px_100px_-32px_rgba(0,0,0,0.85)] ring-1 ring-white/10"
                   aria-hidden="true"
                   data-testid="video-home-hero"
                 >
