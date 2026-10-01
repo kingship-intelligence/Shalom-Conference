@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { motion, useMotionTemplate, useReducedMotion, useSpring, useTransform } from "framer-motion";
+import { motion, useInView, useMotionTemplate, useReducedMotion, useSpring, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Pause, Play } from "lucide-react";
 import { currentConference } from "@/data/conferences";
@@ -187,6 +187,86 @@ function HeroVideo({ enabled }: { enabled: boolean }) {
   );
 }
 
+function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { children: React.ReactNode; enabled: boolean; reducedMotion: boolean; onToggleMotion: () => void }) {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const inView = useInView(heroRef, { amount: 0.6 });
+  const [flipped, setFlipped] = useState(false);
+  const [autoFlipHandled, setAutoFlipHandled] = useState(false);
+
+  useEffect(() => {
+    if (!inView || !enabled || reducedMotion || autoFlipHandled) return;
+    const timer = window.setTimeout(() => {
+      setFlipped(true);
+      setAutoFlipHandled(true);
+    }, 4_000);
+    return () => window.clearTimeout(timer);
+  }, [inView, enabled, reducedMotion, autoFlipHandled]);
+
+  return (
+    <div ref={heroRef} className="relative mx-auto w-full max-w-xl" style={{ perspective: 1400 }}>
+      <motion.div
+        className="grid"
+        style={{ transformStyle: "preserve-3d" }}
+        animate={{ rotateY: flipped ? 180 : 0 }}
+        transition={{ duration: reducedMotion || !enabled ? 0 : 0.95, ease: [0.22, 1, 0.36, 1] }}
+      >
+        <div
+          aria-hidden={flipped}
+          inert={flipped}
+          onFocusCapture={() => setAutoFlipHandled(true)}
+          onPointerDownCapture={() => setAutoFlipHandled(true)}
+          className="col-start-1 row-start-1 self-center bg-white [backface-visibility:hidden]"
+          data-testid="hero-front"
+        >
+          {children}
+        </div>
+        <div
+          aria-hidden={!flipped}
+          inert={!flipped}
+          className="col-start-1 row-start-1 bg-white [backface-visibility:hidden] [transform:rotateY(180deg)]"
+          data-testid="hero-back"
+        >
+          <div className="relative aspect-video overflow-hidden rounded-[2rem] border border-black/10 bg-black shadow-lg" data-testid="video-home-hero">
+            <img src={HERO_POSTER} alt="" width={960} height={540} fetchPriority="high" className="absolute inset-0 h-full w-full object-cover" />
+            <HeroVideo enabled={enabled && flipped && inView} />
+            <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
+          </div>
+          {currentConference.scriptureText && (
+            <div className="mt-5 rounded-2xl border border-primary/20 bg-card p-5 text-foreground" data-testid="hero-scripture">
+              <p className="text-xs font-bold uppercase tracking-[0.2em] text-primary">{currentConference.scripture}</p>
+              <blockquote className="mt-3 text-sm leading-relaxed">“{currentConference.scriptureText}”</blockquote>
+            </div>
+          )}
+          <Link href="/register" className="mt-4 flex min-h-11 items-center justify-center gap-2 text-sm font-bold text-primary">
+            Register for Shalom <ArrowRight className="h-4 w-4" aria-hidden="true" />
+          </Link>
+        </div>
+      </motion.div>
+      <div className="mt-5 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => { setAutoFlipHandled(true); setFlipped((current) => !current); }}
+          aria-label={flipped ? "Back to the title" : "Flip"}
+          className="flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+        >
+          {flipped ? "Back to the title" : "Flip"} <ArrowRight className="h-3 w-3" aria-hidden="true" />
+        </button>
+        {!reducedMotion && (
+          <button
+            type="button"
+            onClick={onToggleMotion}
+            aria-label={enabled ? "Pause hero motion" : "Play hero motion"}
+            aria-pressed={!enabled}
+            className="flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary"
+          >
+            {enabled ? <Pause className="h-4 w-4" aria-hidden="true" /> : <Play className="h-4 w-4" aria-hidden="true" />}
+          </button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 function HeroFilm({ enabled, reducedMotion, desktop, onToggleMotion }: { enabled: boolean; reducedMotion: boolean; desktop: boolean; onToggleMotion: () => void }) {
   const spring = { stiffness: 120, damping: 24, mass: 0.7 };
   const pointerX = useSpring(0, spring);
@@ -307,14 +387,8 @@ export default function Home() {
     return () => desktop.removeEventListener?.("change", sync);
   }, []);
 
-  return (
-    <div className="min-h-screen bg-background text-foreground">
-      <SiteHeader />
-
-      <section className={`home-hero relative isolate flex flex-col items-center overflow-hidden bg-white px-6 pb-6 pt-10 text-[#13101c] sm:px-10 lg:min-h-[min(760px,calc(100svh-76px))] lg:flex-row lg:px-16 lg:py-24 ${!motionEnabled ? "hero-motion-paused" : ""}`}>
-        <div className="container relative z-10 mx-auto max-w-7xl">
-          <div className="grid items-center gap-8 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] lg:gap-12 xl:gap-16">
-            <motion.div
+  const heroContent = (
+    <motion.div
               initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
@@ -361,8 +435,24 @@ export default function Home() {
                 </Button>
               </div>
             </motion.div>
-            <HeroFilm enabled={motionEnabled} reducedMotion={prefersReducedMotion} desktop={isDesktop} onToggleMotion={() => setMotionPaused((paused) => !paused)} />
-          </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <SiteHeader />
+
+      <section className={`home-hero relative isolate flex flex-col items-center overflow-hidden bg-white px-6 pb-6 pt-10 text-[#13101c] sm:px-10 lg:min-h-[min(760px,calc(100svh-76px))] lg:flex-row lg:px-16 lg:py-24 ${!motionEnabled ? "hero-motion-paused" : ""}`}>
+        <div className="container relative z-10 mx-auto max-w-7xl">
+          {isDesktop ? (
+            <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] xl:gap-16">
+              {heroContent}
+              <HeroFilm enabled={motionEnabled} reducedMotion={prefersReducedMotion} desktop={isDesktop} onToggleMotion={() => setMotionPaused((paused) => !paused)} />
+            </div>
+          ) : (
+            <MobileHero enabled={motionEnabled} reducedMotion={prefersReducedMotion} onToggleMotion={() => setMotionPaused((paused) => !paused)}>
+              {heroContent}
+            </MobileHero>
+          )}
         </div>
         {isDesktop && !prefersReducedMotion && (
           <button
