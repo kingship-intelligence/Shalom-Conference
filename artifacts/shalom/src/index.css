@@ -266,7 +266,7 @@
   position: absolute;
   top: -140px;
   width: 1px;
-  background: linear-gradient(transparent, rgba(96, 128, 151, .65));
+  background: linear-gradient(transparent, hsl(var(--primary) / .75));
   animation: hero-rainfall linear infinite;
   animation-play-state: paused;
 }
