@@ -232,16 +232,17 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
 
   useEffect(() => {
     if (!inView || !enabled || reducedMotion || !autoAdvanceEnabled) return;
+    let flyerTimer: number | undefined;
     const videoTimer = window.setTimeout(() => {
       setPanel(1);
+      flyerTimer = window.setTimeout(() => {
+        setPanel(2);
+        setAutoAdvanceEnabled(false);
+      }, 8_000);
     }, 4_000);
-    const flyerTimer = window.setTimeout(() => {
-      setPanel(2);
-      setAutoAdvanceEnabled(false);
-    }, 12_000);
     return () => {
       window.clearTimeout(videoTimer);
-      window.clearTimeout(flyerTimer);
+      if (flyerTimer !== undefined) window.clearTimeout(flyerTimer);
     };
   }, [inView, enabled, reducedMotion, autoAdvanceEnabled]);
 
