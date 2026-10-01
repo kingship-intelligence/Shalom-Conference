@@ -229,22 +229,24 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
   const inView = useInView(heroRef, { amount: 0.6 });
   const [panel, setPanel] = useState<0 | 1 | 2>(0);
   const [autoAdvanceEnabled, setAutoAdvanceEnabled] = useState(true);
+  const [videoFlipComplete, setVideoFlipComplete] = useState(false);
 
   useEffect(() => {
     if (!inView || !enabled || reducedMotion || !autoAdvanceEnabled) return;
-    let flyerTimer: number | undefined;
     const videoTimer = window.setTimeout(() => {
       setPanel(1);
-      flyerTimer = window.setTimeout(() => {
-        setPanel(2);
-        setAutoAdvanceEnabled(false);
-      }, 8_000);
     }, 4_000);
-    return () => {
-      window.clearTimeout(videoTimer);
-      if (flyerTimer !== undefined) window.clearTimeout(flyerTimer);
-    };
+    return () => window.clearTimeout(videoTimer);
   }, [inView, enabled, reducedMotion, autoAdvanceEnabled]);
+
+  useEffect(() => {
+    if (!videoFlipComplete || !autoAdvanceEnabled) return;
+    const flyerTimer = window.setTimeout(() => {
+      setPanel(2);
+      setAutoAdvanceEnabled(false);
+    }, 8_000);
+    return () => window.clearTimeout(flyerTimer);
+  }, [videoFlipComplete, autoAdvanceEnabled]);
 
   const flipButtonLabel =
     panel === 0 ? "Flip to video" : panel === 1 ? "Flip to flyer" : "Back to the title";
@@ -256,6 +258,9 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
         style={{ transformStyle: "preserve-3d" }}
         animate={{ rotateY: panel === 0 ? 0 : 180 }}
         transition={{ duration: reducedMotion || !enabled ? 0 : 0.95, ease: [0.22, 1, 0.36, 1] }}
+        onAnimationComplete={() => {
+          if (panel === 1) setVideoFlipComplete(true);
+        }}
       >
         <div
           aria-hidden={panel !== 0}
