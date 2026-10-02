@@ -25,6 +25,7 @@ import { createCheckInQrCredential } from "../lib/check-in-qr";
 const router: IRouter = Router();
 const MAX_PORTRAIT_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PORTRAIT_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const MAX_BADGE_DELIVERIES = 3;
 
 class DuplicateRegistrationError extends Error {}
 
@@ -38,6 +39,15 @@ function createUploadToken(): string {
 
 function getBadgeUploadExpiry(): Date {
   return new Date(Date.now() + 15 * 60 * 1000);
+}
+
+function getBadgeDeliveryCount(
+  registration: typeof registrationsTable.$inferSelect,
+): number {
+  const storedCount = registration.badgeDeliveryCount ?? 0;
+  // badge_sent_at predates the counter. Treat a legacy delivered badge as the
+  // first delivery until that row is updated through the new flow.
+  return storedCount === 0 && registration.badgeSentAt ? 1 : storedCount;
 }
 
 function toRegistrationResponse(registration: typeof registrationsTable.$inferSelect) {
@@ -70,7 +80,7 @@ async function getAuthorizedBadgeRegistration(
 
   if (
     !registration ||
-    registration.badgeSentAt ||
+    getBadgeDeliveryCount(registration) >= MAX_BADGE_DELIVERIES ||
     !registration.badgeUploadTokenHash ||
     registration.badgeUploadTokenHash !== hashUploadToken(token) ||
     !registration.badgeUploadExpiresAt ||
@@ -232,9 +242,9 @@ router.post("/registrations/badge-request", async (req, res): Promise<void> => {
     return;
   }
 
-  if (registration.badgeSentAt) {
+  if (getBadgeDeliveryCount(registration) >= MAX_BADGE_DELIVERIES) {
     res.status(409).json({
-      error: "A badge has already been sent to this registration email. Please check the inbox and spam folder.",
+      error: "This registration has reached its limit of three attendee badges.",
     });
     return;
   }
@@ -386,6 +396,7 @@ router.post(
         .update(registrationsTable)
         .set({
           badgeSentAt: new Date(),
+          badgeDeliveryCount: getBadgeDeliveryCount(registration) + 1,
           badgeUploadTokenHash: null,
           badgeUploadExpiresAt: null,
         })

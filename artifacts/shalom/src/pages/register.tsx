@@ -335,10 +335,10 @@ function ExistingRegistrationBadge() {
         });
       } else if (error?.status === 409) {
         toast({
-          title: "Badge already sent",
+          title: "Badge limit reached",
           description:
             error?.data?.error ||
-            "A badge has already been sent to your registration email. Check your inbox and spam folder.",
+            "This registration has already created three attendee badges.",
           variant: "destructive",
         });
       } else {
@@ -411,7 +411,7 @@ function ExistingRegistrationBadge() {
             transition={{ delay: 0.2 }}
             className="max-w-xl text-copy-60 text-lg leading-relaxed"
           >
-            Enter the same details you used to register, upload a portrait, and we’ll email you a personalized “I’m Attending” badge.
+            Enter the same details you used to register, upload a portrait, and we’ll email you a personalized “I’m Attending” badge. Each registration can create up to three.
           </motion.p>
         </div>
 

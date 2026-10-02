@@ -18,6 +18,7 @@ export const registrationsTable = pgTable(
     badgeUploadTokenHash: text("badge_upload_token_hash"),
     badgeUploadExpiresAt: timestamp("badge_upload_expires_at", { withTimezone: true }),
     badgeSentAt: timestamp("badge_sent_at", { withTimezone: true }),
+    badgeDeliveryCount: integer("badge_delivery_count").notNull().default(0),
     checkInTokenHash: text("check_in_token_hash"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },

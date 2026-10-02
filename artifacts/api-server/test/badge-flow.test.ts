@@ -42,6 +42,7 @@ function fakeDb() {
                 id: state.nextId++,
                 createdAt: new Date(),
                 volunteer: false,
+                badgeDeliveryCount: 0,
                 ...values,
               };
               state.rows.push(row);
@@ -254,12 +255,31 @@ describe("attendee badge delivery flow", () => {
     assert.notEqual(body.badgeUploadToken, state.rows[0].badgeUploadTokenHash);
   });
 
-  it("does not issue badge access after a badge was already delivered", async () => {
+  it("allows another badge after a previous badge was delivered", async () => {
     await request(makeApp(), "POST", "/registrations", {
       ...registration,
       wantsAttendeeBadge: false,
     });
     state.rows[0].badgeSentAt = new Date();
+    state.rows[0].badgeDeliveryCount = 1;
+
+    const response = await request(makeApp(), "POST", "/registrations/badge-request", {
+      firstName: registration.firstName,
+      lastName: registration.lastName,
+      email: registration.email,
+      conferenceYear: registration.conferenceYear,
+    });
+
+    assert.equal(response.status, 200);
+  });
+
+  it("rejects a fourth badge request", async () => {
+    await request(makeApp(), "POST", "/registrations", {
+      ...registration,
+      wantsAttendeeBadge: false,
+    });
+    state.rows[0].badgeSentAt = new Date();
+    state.rows[0].badgeDeliveryCount = 3;
 
     const response = await request(makeApp(), "POST", "/registrations/badge-request", {
       firstName: registration.firstName,
@@ -269,7 +289,7 @@ describe("attendee badge delivery flow", () => {
     });
 
     assert.equal(response.status, 409);
-    assert.match((await response.json()).error, /already been sent/i);
+    assert.match((await response.json()).error, /limit of three/i);
   });
 
   it("authorizes portrait upload only with the issued token", async () => {
@@ -302,6 +322,7 @@ describe("attendee badge delivery flow", () => {
     assert.equal((await completed.json()).badgeDeliveryStatus, "delivered");
     assert.equal(reused.status, 401);
     assert.equal(sent.at(-1).attendeeBadge.toString(), "badge");
+    assert.equal(state.rows[0].badgeDeliveryCount, 1);
   });
 
   it("uses the safe fallback for invalid or oversized portraits", async () => {
