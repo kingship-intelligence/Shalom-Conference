@@ -330,7 +330,15 @@ function ExistingRegistrationBadge() {
       if (error?.status === 404) {
         toast({
           title: "Registration not found",
-          description: "Use the same first name, last name, and email address from your Shalom 2026 registration.",
+          description: "Use the same email address from your Shalom 2026 registration.",
+          variant: "destructive",
+        });
+      } else if (error?.status === 409) {
+        toast({
+          title: "Badge already sent",
+          description:
+            error?.data?.error ||
+            "A badge has already been sent to your registration email. Check your inbox and spam folder.",
           variant: "destructive",
         });
       } else {

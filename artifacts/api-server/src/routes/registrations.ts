@@ -200,28 +200,42 @@ router.post("/registrations/badge-request", async (req, res): Promise<void> => {
     return;
   }
 
-  // Names and email addresses are identifiers here, not passwords. Matching
-  // them exactly made legitimate registrations fail when someone changed
-  // capitalization or added a space while typing. Normalize both the stored
-  // value and the request while retaining all three fields as verification.
+  // Email + conference year identify a registration. Names are useful for
+  // disambiguating bad legacy data, but they are too fragile to be a hard
+  // lookup key: a nickname, middle name, or punctuation difference should not
+  // prevent a badge that is delivered only to the registered email address.
   const firstName = parsed.data.firstName.trim().toLowerCase();
   const lastName = parsed.data.lastName.trim().toLowerCase();
   const email = parsed.data.email.trim().toLowerCase();
 
-  const [registration] = await db
+  const matchingEmailRegistrations = await db
     .select()
     .from(registrationsTable)
     .where(
       and(
-        sql`lower(btrim(${registrationsTable.firstName})) = ${firstName}`,
-        sql`lower(btrim(${registrationsTable.lastName})) = ${lastName}`,
         sql`lower(btrim(${registrationsTable.email})) = ${email}`,
         eq(registrationsTable.conferenceYear, parsed.data.conferenceYear),
       ),
     );
 
-  if (!registration || registration.badgeSentAt) {
-    res.status(404).json({ error: "We couldn't find an eligible registration for those details." });
+  const registration =
+    matchingEmailRegistrations.length === 1
+      ? matchingEmailRegistrations[0]
+      : matchingEmailRegistrations.find(
+          (candidate) =>
+            candidate.firstName.trim().toLowerCase() === firstName &&
+            candidate.lastName.trim().toLowerCase() === lastName,
+        );
+
+  if (!registration) {
+    res.status(404).json({ error: "We couldn't find a Shalom 2026 registration for that email." });
+    return;
+  }
+
+  if (registration.badgeSentAt) {
+    res.status(409).json({
+      error: "A badge has already been sent to this registration email. Please check the inbox and spam folder.",
+    });
     return;
   }
 

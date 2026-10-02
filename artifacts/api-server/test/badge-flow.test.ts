@@ -233,15 +233,15 @@ describe("attendee badge delivery flow", () => {
     assert.equal(state.rows.length, 0);
   });
 
-  it("issues badge access when registration details differ only by case or outer whitespace", async () => {
+  it("uses the registered email when name formatting differs", async () => {
     await request(makeApp(), "POST", "/registrations", {
       ...registration,
       wantsAttendeeBadge: false,
     });
 
     const response = await request(makeApp(), "POST", "/registrations/badge-request", {
-      firstName: ` ${registration.firstName.toLowerCase()} `,
-      lastName: registration.lastName.toUpperCase(),
+      firstName: "Ada Marie",
+      lastName: "Lovelace-Byron",
       email: ` ${registration.email.toUpperCase()} `,
       conferenceYear: registration.conferenceYear,
     });
@@ -268,7 +268,8 @@ describe("attendee badge delivery flow", () => {
       conferenceYear: registration.conferenceYear,
     });
 
-    assert.equal(response.status, 404);
+    assert.equal(response.status, 409);
+    assert.match((await response.json()).error, /already been sent/i);
   });
 
   it("authorizes portrait upload only with the issued token", async () => {
