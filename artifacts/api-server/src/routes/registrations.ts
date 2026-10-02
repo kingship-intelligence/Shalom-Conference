@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { createHash, randomBytes } from "node:crypto";
-import { eq, and } from "drizzle-orm";
+import { eq, and, sql } from "drizzle-orm";
 import { db, registrationsTable } from "@workspace/db";
 import {
   CompleteRegistrationBadgeBody,
@@ -182,21 +182,40 @@ router.post("/registrations", async (req, res): Promise<void> => {
 });
 
 router.post("/registrations/badge-request", async (req, res): Promise<void> => {
-  const parsed = RequestExistingRegistrationBadgeBody.safeParse(req.body);
+  const badgeRequestBody =
+    req.body && typeof req.body === "object" && !Array.isArray(req.body)
+      ? {
+          ...req.body,
+          firstName:
+            typeof req.body.firstName === "string" ? req.body.firstName.trim() : req.body.firstName,
+          lastName:
+            typeof req.body.lastName === "string" ? req.body.lastName.trim() : req.body.lastName,
+          email: typeof req.body.email === "string" ? req.body.email.trim() : req.body.email,
+        }
+      : req.body;
+  const parsed = RequestExistingRegistrationBadgeBody.safeParse(badgeRequestBody);
   if (!parsed.success) {
     req.log.warn({ errors: parsed.error.message }, "Invalid existing registration badge request");
     res.status(400).json({ error: parsed.error.message });
     return;
   }
 
+  // Names and email addresses are identifiers here, not passwords. Matching
+  // them exactly made legitimate registrations fail when someone changed
+  // capitalization or added a space while typing. Normalize both the stored
+  // value and the request while retaining all three fields as verification.
+  const firstName = parsed.data.firstName.trim().toLowerCase();
+  const lastName = parsed.data.lastName.trim().toLowerCase();
+  const email = parsed.data.email.trim().toLowerCase();
+
   const [registration] = await db
     .select()
     .from(registrationsTable)
     .where(
       and(
-        eq(registrationsTable.firstName, parsed.data.firstName),
-        eq(registrationsTable.lastName, parsed.data.lastName),
-        eq(registrationsTable.email, parsed.data.email),
+        sql`lower(btrim(${registrationsTable.firstName})) = ${firstName}`,
+        sql`lower(btrim(${registrationsTable.lastName})) = ${lastName}`,
+        sql`lower(btrim(${registrationsTable.email})) = ${email}`,
         eq(registrationsTable.conferenceYear, parsed.data.conferenceYear),
       ),
     );

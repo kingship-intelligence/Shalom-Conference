@@ -95,7 +95,11 @@ mock.module("@workspace/db", {
   namedExports: { db: fakeDb(), registrationsTable: table },
 });
 mock.module("drizzle-orm", {
-  namedExports: { eq: () => ({}), and: () => ({}) },
+  namedExports: {
+    eq: () => ({}),
+    and: () => ({}),
+    sql: () => ({}),
+  },
 });
 mock.module(storagePath, {
   namedExports: {
@@ -229,16 +233,16 @@ describe("attendee badge delivery flow", () => {
     assert.equal(state.rows.length, 0);
   });
 
-  it("issues badge access for an existing registration", async () => {
+  it("issues badge access when registration details differ only by case or outer whitespace", async () => {
     await request(makeApp(), "POST", "/registrations", {
       ...registration,
       wantsAttendeeBadge: false,
     });
 
     const response = await request(makeApp(), "POST", "/registrations/badge-request", {
-      firstName: registration.firstName,
-      lastName: registration.lastName,
-      email: registration.email,
+      firstName: ` ${registration.firstName.toLowerCase()} `,
+      lastName: registration.lastName.toUpperCase(),
+      email: ` ${registration.email.toUpperCase()} `,
       conferenceYear: registration.conferenceYear,
     });
     const body = await response.json();
