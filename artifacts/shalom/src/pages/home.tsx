@@ -330,6 +330,7 @@ function MobileHero({ children, enabled, reducedMotion, onToggleMotion }: { chil
 }
 
 function HeroFilm({ enabled, reducedMotion, desktop, onToggleMotion }: { enabled: boolean; reducedMotion: boolean; desktop: boolean; onToggleMotion: () => void }) {
+  const [panel, setPanel] = useState<0 | 1 | 2>(0);
   const spring = { stiffness: 120, damping: 24, mass: 0.7 };
   const pointerX = useSpring(0, spring);
   const pointerY = useSpring(0, spring);
@@ -351,6 +352,17 @@ function HeroFilm({ enabled, reducedMotion, desktop, onToggleMotion }: { enabled
       reflectionOpacity.jump(0);
     }
   }, [enabled, desktop, pointerX, pointerY, reflectionOpacity]);
+
+  useEffect(() => {
+    if (!enabled || !desktop || reducedMotion) return;
+
+    const delay = panel === 0 ? 8_000 : 6_000;
+    const timer = window.setTimeout(() => {
+      setPanel((current) => ((current + 1) % 3) as 0 | 1 | 2);
+    }, delay);
+
+    return () => window.clearTimeout(timer);
+  }, [desktop, enabled, panel, reducedMotion]);
 
   const resetPointer = () => {
     pointerX.set(0);
@@ -390,29 +402,93 @@ function HeroFilm({ enabled, reducedMotion, desktop, onToggleMotion }: { enabled
           <motion.div
             className="relative aspect-video overflow-hidden rounded-[2rem] border border-black/10 bg-black shadow-[0_30px_80px_-32px_rgba(19,16,28,0.3)] lg:aspect-[16/11]"
             data-testid="video-home-hero"
-            style={{ z: 20 }}
+            style={{ z: 20, transformStyle: "preserve-3d" }}
             initial={reducedMotion || !desktop ? false : { clipPath: "inset(0 49% 0 49% round 2rem)" }}
             animate={{ clipPath: "inset(0 0% 0 0% round 2rem)" }}
             transition={{ duration: enabled ? 1.5 : 0, delay: enabled ? 0.25 : 0, ease: [0.76, 0, 0.24, 1] }}
           >
-            <motion.div className="absolute inset-0" style={{ x: footageX, y: footageY, scale: 1.06 }}>
-              <img
-                src={HERO_POSTER}
-                alt=""
-                width={960}
-                height={540}
-                fetchPriority="high"
-                decoding="async"
-                className="absolute inset-0 h-full w-full object-cover"
-              />
-              <HeroVideo enabled={enabled} />
+            <motion.div
+              className="absolute inset-0"
+              animate={{
+                opacity: panel === 0 ? 1 : 0,
+                rotateY: panel === 0 ? 0 : -90,
+              }}
+              transition={{ duration: enabled ? 0.65 : 0, ease: [0.22, 1, 0.36, 1] }}
+              style={{ backfaceVisibility: "hidden", transformStyle: "preserve-3d" }}
+              aria-hidden={panel !== 0}
+            >
+              <motion.div className="absolute inset-0" style={{ x: footageX, y: footageY, scale: 1.06 }}>
+                <img
+                  src={HERO_POSTER}
+                  alt=""
+                  width={960}
+                  height={540}
+                  fetchPriority="high"
+                  decoding="async"
+                  className="absolute inset-0 h-full w-full object-cover"
+                />
+                <HeroVideo enabled={enabled && panel === 0} />
+              </motion.div>
+              <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-br from-white/5 via-transparent to-black/15" />
             </motion.div>
-            <div className="pointer-events-none absolute inset-0 z-20 bg-gradient-to-br from-white/5 via-transparent to-black/15" />
+
+            <motion.div
+              className="absolute inset-0 flex flex-col items-center justify-center bg-[#13101c] px-8 text-center text-white sm:px-12"
+              animate={{
+                opacity: panel === 1 ? 1 : 0,
+                rotateY: panel === 1 ? 0 : panel < 1 ? 90 : -90,
+              }}
+              transition={{ duration: enabled ? 0.65 : 0, ease: [0.22, 1, 0.36, 1] }}
+              style={{ backfaceVisibility: "hidden" }}
+              aria-hidden={panel !== 1}
+              data-testid="desktop-hero-scripture"
+            >
+              <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f9591f]">
+                {currentConference.scripture}
+              </p>
+              <blockquote className="mt-5 max-w-xl text-base font-medium leading-relaxed sm:text-lg lg:text-xl">
+                “{currentConference.scriptureText}”
+              </blockquote>
+            </motion.div>
+
+            <motion.div
+              className="absolute inset-0 flex items-center justify-center bg-[#13101c] p-5 sm:p-7"
+              animate={{
+                opacity: panel === 2 ? 1 : 0,
+                rotateY: panel === 2 ? 0 : 90,
+              }}
+              transition={{ duration: enabled ? 0.65 : 0, ease: [0.22, 1, 0.36, 1] }}
+              style={{ backfaceVisibility: "hidden" }}
+              aria-hidden={panel !== 2}
+              data-testid="desktop-hero-flyer"
+            >
+              <img
+                src={HERO_FLYER}
+                alt={`Shalom ${currentConference.year} flyer: ${currentConference.theme}`}
+                className="h-full w-full object-contain"
+              />
+            </motion.div>
+
             <motion.div
               className="pointer-events-none absolute inset-0 z-30"
               style={{ background: reflection, opacity: reflectionOpacity }}
             />
             <div className="pointer-events-none absolute inset-0 z-30 rounded-[2rem] ring-1 ring-inset ring-white/20" />
+
+            <div className="absolute bottom-4 left-1/2 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/20 bg-black/55 px-3 py-2 backdrop-blur-sm">
+              {(["Video", "Passage", "Poster"] as const).map((label, index) => (
+                <button
+                  key={label}
+                  type="button"
+                  onClick={() => setPanel(index as 0 | 1 | 2)}
+                  aria-label={`Show ${label.toLowerCase()}`}
+                  aria-pressed={panel === index}
+                  className={`h-2.5 rounded-full transition-[width,background-color] ${
+                    panel === index ? "w-7 bg-white" : "w-2.5 bg-white/45 hover:bg-white/70"
+                  }`}
+                />
+              ))}
+            </div>
           </motion.div>
         </motion.div>
       </motion.div>
