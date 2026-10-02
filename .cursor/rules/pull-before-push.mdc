@@ -1,0 +1,15 @@
+---
+description: Synchronize with the remote branch before every push
+alwaysApply: true
+---
+
+# Pull Before Push
+
+Before every `git push` in this repository:
+
+1. Confirm the working tree and current branch with `git status`.
+2. Pull the latest version of that branch using rebase (for example, `git pull --rebase origin main`).
+3. Resolve and verify any conflicts before pushing.
+4. Push only after the pull/rebase succeeds.
+
+Never skip the pull because the local tracking status appears current; fetch from the remote as part of the pull.
