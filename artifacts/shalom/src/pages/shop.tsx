@@ -39,24 +39,28 @@ const PRODUCTS = [
     name: "The Comforter Tee",
     price: 30,
     image: tee1,
+    soldOut: true,
   },
   {
     id: "comforter-tee-shalom",
     name: "The Comforter Tee — Shalom Edition",
     price: 30,
     image: tee2,
+    soldOut: true,
   },
   {
     id: "comforter-crewneck",
     name: "The Comforter Crewneck",
     price: 40,
     image: crew1,
+    soldOut: false,
   },
   {
     id: "comforter-crewneck-shalom",
     name: "The Comforter Crewneck — Shalom Edition",
     price: 40,
     image: crew2,
+    soldOut: false,
   },
 ];
 
@@ -81,6 +85,11 @@ function ProductCard({ product, onAdd }: { product: typeof PRODUCTS[0]; onAdd: (
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <div className="absolute inset-0 bg-shade/0 transition-colors group-hover:bg-shade/10" />
+        {product.soldOut && (
+          <span className="absolute top-4 left-4 bg-ink px-4 py-2 text-xs font-bold uppercase tracking-widest text-inverse">
+            Sold Out
+          </span>
+        )}
       </div>
 
       <div className="flex flex-1 flex-col p-6 sm:p-8">
@@ -95,9 +104,10 @@ function ProductCard({ product, onAdd }: { product: typeof PRODUCTS[0]; onAdd: (
             {SIZES.map((s) => (
               <button
                 key={s}
+                disabled={product.soldOut}
                 onClick={() => setSize(s)}
                 className={cn(
-                  "flex h-12 w-12 items-center justify-center border text-sm font-bold transition-all",
+                  "flex h-12 w-12 items-center justify-center border text-sm font-bold transition-all disabled:cursor-not-allowed disabled:opacity-50",
                   size === s
                     ? "border-primary bg-primary text-white"
                     : "border-ink/20 bg-transparent text-ink hover:border-ink hover:bg-ink/5"
@@ -111,6 +121,7 @@ function ProductCard({ product, onAdd }: { product: typeof PRODUCTS[0]; onAdd: (
         </div>
 
         <Button
+          disabled={product.soldOut}
           onClick={() =>
             onAdd({
               id: `${product.id}-${size}`,
@@ -124,7 +135,7 @@ function ProductCard({ product, onAdd }: { product: typeof PRODUCTS[0]; onAdd: (
           className="mt-10 w-full rounded-none bg-ink text-inverse hover:bg-primary hover:text-white font-bold uppercase tracking-widest h-14"
           data-testid={`btn-add-${product.id}`}
         >
-          Add to Cart
+          {product.soldOut ? "Sold Out" : "Add to Cart"}
         </Button>
       </div>
     </div>
@@ -218,7 +229,7 @@ export default function Shop() {
               Wear The <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Fire</span>
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-copy-60 sm:text-lg">
-              The Comforter tee and crewneck, each in a standard and a Shalom edition. Preorders are open now.
+              The Comforter tee and crewneck, each in a standard and a Shalom edition. Tees are currently sold out. Crewneck preorders are open now.
             </p>
           </div>
         </section>
