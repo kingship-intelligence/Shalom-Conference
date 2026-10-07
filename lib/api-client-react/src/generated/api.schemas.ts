@@ -5,6 +5,38 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
+export type ConferenceSurveyInputWouldAttendAgain = typeof ConferenceSurveyInputWouldAttendAgain[keyof typeof ConferenceSurveyInputWouldAttendAgain];
+
+
+export const ConferenceSurveyInputWouldAttendAgain = {
+  yes: 'yes',
+  no: 'no',
+  maybe: 'maybe',
+} as const;
+
+export interface ConferenceSurveyInput {
+  /**
+     * @minimum 2026
+     * @maximum 2100
+     */
+  conferenceYear: number;
+  /**
+     * @minimum 1
+     * @maximum 5
+     */
+  rating: number;
+  /** @maxLength 3000 */
+  highlight?: string;
+  /** @maxLength 3000 */
+  improvements?: string;
+  wouldAttendAgain: ConferenceSurveyInputWouldAttendAgain;
+}
+
+export type ConferenceSurveyResponse = ConferenceSurveyInput & {
+  id: number;
+  createdAt: string;
+};
+
 export interface HealthStatus {
   status: string;
 }
@@ -312,6 +344,9 @@ export type AdminUserRole = typeof AdminUserRole[keyof typeof AdminUserRole];
 export const AdminUserRole = {
   admin: 'admin',
   checkin: 'checkin',
+  registration_viewer: 'registration_viewer',
+  new_converts: 'new_converts',
+  registration_checkin: 'registration_checkin',
 } as const;
 
 export interface AdminUser {
@@ -327,6 +362,9 @@ export type AdminUserInputRole = typeof AdminUserInputRole[keyof typeof AdminUse
 export const AdminUserInputRole = {
   admin: 'admin',
   checkin: 'checkin',
+  registration_viewer: 'registration_viewer',
+  new_converts: 'new_converts',
+  registration_checkin: 'registration_checkin',
 } as const;
 
 export interface AdminUserInput {
@@ -362,6 +400,9 @@ export type AdminLoginResponseRole = typeof AdminLoginResponseRole[keyof typeof 
 export const AdminLoginResponseRole = {
   admin: 'admin',
   checkin: 'checkin',
+  registration_viewer: 'registration_viewer',
+  new_converts: 'new_converts',
+  registration_checkin: 'registration_checkin',
 } as const;
 
 export interface AdminLoginResponse {
@@ -376,6 +417,9 @@ export type AdminSessionRole = typeof AdminSessionRole[keyof typeof AdminSession
 export const AdminSessionRole = {
   admin: 'admin',
   checkin: 'checkin',
+  registration_viewer: 'registration_viewer',
+  new_converts: 'new_converts',
+  registration_checkin: 'registration_checkin',
 } as const;
 
 export interface AdminSession {
@@ -460,4 +504,12 @@ export interface MerchOrderEmailError {
 export interface ErrorResponse {
   error: string;
 }
+
+export type GetRegistrationCount200 = {
+  count: number;
+};
+
+export type CreateConferenceSurvey201 = {
+  success: boolean;
+};
 

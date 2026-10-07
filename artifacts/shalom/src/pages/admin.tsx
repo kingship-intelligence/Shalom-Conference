@@ -1,4 +1,5 @@
 import AdminSection from "@/components/AdminSection";
+import { RegistrationCount, RegistrationList, SurveyResponses } from "@/components/StaffPanels";
 import NewConvertsAdmin from "@/components/NewConvertsAdmin";
 import { useCallback, useEffect, useState } from "react";
 import {
@@ -42,10 +43,15 @@ import { Check, User, UserCheck, Users, Mail, Phone, Calendar, MessageSquare, Ar
 import { AdminCheckIn } from "@/components/admin-check-in";
 
 const SESSION_KEY = "shalom_admin_auth";
-type AdminRole = "admin" | "checkin";
+type AdminRole = "admin" | "checkin" | "registration_viewer" | "new_converts" | "registration_checkin";
+
+const ROLE_LABELS: Record<AdminRole, string> = {
+  admin: "Full admin", checkin: "Check-in only", registration_viewer: "Registration count only",
+  new_converts: "New converts only", registration_checkin: "Registrations and check-in",
+};
 
 function isAdminRole(value: unknown): value is AdminRole {
-  return value === "admin" || value === "checkin";
+  return ["admin", "checkin", "registration_viewer", "new_converts", "registration_checkin"].includes(value as string);
 }
 
 const PRAYER_SLOT_LABELS: Record<string, string> = {
@@ -136,6 +142,7 @@ function exportPrayerChainCSV(signups: any[]) {
 }
 
 function useAdminAuth() {
+  const authQueryClient = useQueryClient();
   const [authed, setAuthed] = useState(false);
   const [role, setRole] = useState<AdminRole | null>(null);
   const [checking, setChecking] = useState(true);
@@ -214,6 +221,8 @@ function useAdminAuth() {
   }, []);
 
   const logout = useCallback((message = "") => {
+    void authQueryClient.cancelQueries();
+    authQueryClient.clear();
     sessionStorage.removeItem(SESSION_KEY);
     setRole(null);
     setAuthed(false);
@@ -222,7 +231,7 @@ function useAdminAuth() {
       method: "DELETE",
       credentials: "include",
     }).catch(() => {});
-  }, []);
+  }, [authQueryClient]);
 
   return { authed, role, checking, login, logout, loading, error };
 }
@@ -553,14 +562,14 @@ export default function Admin() {
     return <LoginScreen onLogin={login} loading={loading} error={error} />;
   }
 
-  if (role === "checkin") {
+  if (role && role !== "admin") {
     return (
       <div className="min-h-screen bg-background pb-16 text-foreground">
         <header className="px-4 py-6 sm:px-6">
           <div className="container mx-auto flex max-w-7xl items-center justify-between">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Staff access</p>
-              <h1 className="mt-1 text-2xl font-bold italic text-ink">CHECK-IN DESK</h1>
+              <h1 className="mt-1 text-2xl font-bold italic text-ink">{ROLE_LABELS[role]}</h1>
             </div>
             <div className="flex items-center gap-4">
               <Link href="/" className="text-sm font-bold uppercase tracking-widest text-copy-50 hover:text-ink">
@@ -579,13 +588,12 @@ export default function Admin() {
           </div>
         </header>
         <main className="container mx-auto max-w-7xl px-4 pt-3 sm:px-6">
-          <AdminSection title="Check-in desk" defaultOpen>
-          <AdminCheckIn
-            authed={authed}
-            canManageSessions={false}
-            canSendReplacementQr={false}
-          />
-          </AdminSection>
+          {(role === "registration_viewer" || role === "registration_checkin") && <RegistrationCount />}
+          {role === "registration_checkin" && <RegistrationList />}
+          {role === "new_converts" && <NewConvertsAdmin />}
+          {(role === "checkin" || role === "registration_checkin") && <AdminSection title="Check-in desk" defaultOpen>
+            <AdminCheckIn authed={authed} canManageSessions={false} canSendReplacementQr={false} />
+          </AdminSection>}
         </main>
       </div>
     );
@@ -677,7 +685,7 @@ export default function Admin() {
                       <span className="font-semibold text-ink">{adminUser.username}</span>
                       <div className="flex items-center gap-3">
                         <Badge variant="outline" className="border-ink/15 text-copy-60">
-                          {adminUser.role === "checkin" ? "Check-in only" : "Full admin"}
+                          {ROLE_LABELS[adminUser.role]}
                         </Badge>
                         <span className="text-xs text-copy-40">
                           Added {format(new Date(adminUser.createdAt), "MMM d, yyyy")}
@@ -697,7 +705,7 @@ export default function Admin() {
               <div>
                 <h3 className="text-sm font-bold uppercase tracking-widest text-copy-55">Create a staff login</h3>
                 <p className="mt-1 text-xs leading-relaxed text-copy-40">
-                  Check-in-only accounts can scan and record arrivals without seeing the rest of the admin portal.
+                  Choose access to registration counts, new converts, check-in, or registrations with check-in. Full admins can manage all areas and create accounts.
                 </p>
               </div>
               <div>
@@ -728,6 +736,9 @@ export default function Admin() {
                   className="h-11 w-full rounded-md border border-ink/10 bg-background px-3 text-sm text-ink"
                 >
                   <option value="checkin">Check-in only</option>
+                  <option value="registration_viewer">Registration count only</option>
+                  <option value="new_converts">New converts only</option>
+                  <option value="registration_checkin">Registrations and check-in</option>
                   <option value="admin">Full admin portal</option>
                 </select>
               </div>
@@ -775,9 +786,7 @@ export default function Admin() {
               >
                 {createAdminUserMutation.isPending
                   ? "Creating account…"
-                  : newAdminRole === "checkin"
-                    ? "Create check-in login"
-                    : "Create full admin"}
+                  : "Create account"}
               </Button>
             </form>
           </div>
@@ -1037,6 +1046,7 @@ export default function Admin() {
         </AdminSection>
 
           <AdminSection title="New believers"><NewConvertsAdmin /></AdminSection>
+          <AdminSection title="Conference survey"><SurveyResponses /></AdminSection>
 
           <AdminSection title="First Timers">
 <section data-testid="section-first-timers" className="space-y-6 lg:col-span-2">

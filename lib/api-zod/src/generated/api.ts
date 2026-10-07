@@ -529,7 +529,7 @@ export const ListFirstTimerResponsesResponse = zod.array(ListFirstTimerResponses
 export const GetAdminSessionResponse = zod.object({
   "ok": zod.boolean(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin'])
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin'])
 })
 
 
@@ -559,7 +559,7 @@ export const LoginAdminBody = zod.object({
 export const LoginAdminResponse = zod.object({
   "ok": zod.boolean(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin'])
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin'])
 })
 
 
@@ -569,7 +569,7 @@ export const LoginAdminResponse = zod.object({
 export const ListAdminUsersResponseItem = zod.object({
   "id": zod.number().int(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin']),
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin']),
   "createdAt": zod.coerce.date()
 })
 export const ListAdminUsersResponse = zod.array(ListAdminUsersResponseItem)
@@ -589,13 +589,13 @@ export const createAdminUserBodyPasswordMax = 200;
 export const CreateAdminUserBody = zod.object({
   "username": zod.string().min(createAdminUserBodyUsernameMin).max(createAdminUserBodyUsernameMax),
   "password": zod.string().min(createAdminUserBodyPasswordMin).max(createAdminUserBodyPasswordMax),
-  "role": zod.enum(['admin', 'checkin']).optional()
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin']).optional()
 })
 
 export const CreateAdminUserResponse = zod.object({
   "id": zod.number().int(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin']),
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin']),
   "createdAt": zod.coerce.date()
 })
 
@@ -709,5 +709,67 @@ export const ConfirmMerchOrderPaymentResponse = zod.object({
   "paymentConfirmedBy": zod.string().nullish(),
   "createdAt": zod.coerce.date()
 })
+
+
+/**
+ * @summary Registration total for full admins, registration viewers and registration/check-in staff
+ */
+export const GetRegistrationCountResponse = zod.object({
+  "count": zod.number().int()
+})
+
+
+/**
+ * @summary Submit anonymous conference feedback
+ */
+export const createConferenceSurveyBodyConferenceYearMin = 2026;
+export const createConferenceSurveyBodyConferenceYearMax = 2100;
+
+export const createConferenceSurveyBodyRatingMax = 5;
+
+export const createConferenceSurveyBodyHighlightMax = 3000;
+
+export const createConferenceSurveyBodyImprovementsMax = 3000;
+
+
+
+export const CreateConferenceSurveyBody = zod.object({
+  "conferenceYear": zod.number().int().min(createConferenceSurveyBodyConferenceYearMin).max(createConferenceSurveyBodyConferenceYearMax),
+  "rating": zod.number().int().min(1).max(createConferenceSurveyBodyRatingMax),
+  "highlight": zod.string().max(createConferenceSurveyBodyHighlightMax).optional(),
+  "improvements": zod.string().max(createConferenceSurveyBodyImprovementsMax).optional(),
+  "wouldAttendAgain": zod.enum(['yes', 'no', 'maybe'])
+})
+
+export const CreateConferenceSurveyResponse = zod.object({
+  "success": zod.boolean()
+})
+
+
+/**
+ * @summary Read conference feedback (full admin only)
+ */
+export const listConferenceSurveysResponseOneConferenceYearMin = 2026;
+export const listConferenceSurveysResponseOneConferenceYearMax = 2100;
+
+export const listConferenceSurveysResponseOneRatingMax = 5;
+
+export const listConferenceSurveysResponseOneHighlightMax = 3000;
+
+export const listConferenceSurveysResponseOneImprovementsMax = 3000;
+
+
+
+export const ListConferenceSurveysResponseItem = zod.object({
+  "conferenceYear": zod.number().int().min(listConferenceSurveysResponseOneConferenceYearMin).max(listConferenceSurveysResponseOneConferenceYearMax),
+  "rating": zod.number().int().min(1).max(listConferenceSurveysResponseOneRatingMax),
+  "highlight": zod.string().max(listConferenceSurveysResponseOneHighlightMax).optional(),
+  "improvements": zod.string().max(listConferenceSurveysResponseOneImprovementsMax).optional(),
+  "wouldAttendAgain": zod.enum(['yes', 'no', 'maybe'])
+}).and(zod.object({
+  "id": zod.number().int(),
+  "createdAt": zod.coerce.date()
+}))
+export const ListConferenceSurveysResponse = zod.array(ListConferenceSurveysResponseItem)
 
 

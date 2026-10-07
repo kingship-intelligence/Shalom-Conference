@@ -17,7 +17,7 @@ import {
   SkipRegistrationBadgeParams,
 } from "@workspace/api-zod";
 import { createAttendeeBadge } from "../lib/attendee-badge";
-import { hasAdminSession } from "../lib/admin-session";
+import { hasAdminSession, hasRegistrationAccess, hasRegistrationCountAccess } from "../lib/admin-session";
 import { badgeStorage } from "../lib/badge-storage";
 import { sendRegistrationConfirmation } from "../lib/email";
 import { createCheckInQrCredential } from "../lib/check-in-qr";
@@ -265,8 +265,17 @@ router.post("/registrations/badge-request", async (req, res): Promise<void> => {
   });
 });
 
+router.get("/registration-count", async (req, res): Promise<void> => {
+  if (!hasRegistrationCountAccess(req)) {
+    res.status(403).json({ error: "Registration count access is required." });
+    return;
+  }
+  const [result] = await db.select({ count: sql<number>`count(*)::int` }).from(registrationsTable);
+  res.json({ count: result.count });
+});
+
 router.get("/registrations", async (_req, res): Promise<void> => {
-  if (!hasAdminSession(_req)) {
+  if (!hasRegistrationAccess(_req)) {
     res.status(401).json({ error: "Admin sign-in is required." });
     return;
   }

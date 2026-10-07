@@ -12,4 +12,7 @@ export type AdminSessionRole = typeof AdminSessionRole[keyof typeof AdminSession
 export const AdminSessionRole = {
   admin: 'admin',
   checkin: 'checkin',
+  registration_viewer: 'registration_viewer',
+  new_converts: 'new_converts',
+  registration_checkin: 'registration_checkin',
 } as const;

@@ -115,6 +115,8 @@ mock.module(storagePath, {
 });
 mock.module(adminSessionPath, {
   namedExports: {
+    hasRegistrationAccess: (req) => req.headers["x-test-admin"] === "1",
+    hasRegistrationCountAccess: (req) => req.headers["x-test-admin"] === "1",
     hasAdminSession: (req) => req.headers["x-test-admin"] === "1",
   },
 });

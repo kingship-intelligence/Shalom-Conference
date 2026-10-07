@@ -45,6 +45,7 @@ export default function SiteFooter() {
               <MessageSquare className="h-4 w-4 shrink-0 text-primary" />
               Share Your Testimony
             </Link>
+            <Link href="/survey" className="mt-3 block text-sm font-medium text-muted-foreground hover:text-ink">Conference feedback survey</Link>
           </div>
           <div>
             <p className="mb-3 text-xs font-bold uppercase tracking-[0.25em] text-primary">Media</p>

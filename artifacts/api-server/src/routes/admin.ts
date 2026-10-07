@@ -15,6 +15,7 @@ import {
   establishAdminSession,
   getAdminSession,
   hasAdminSession,
+  isAdminRole,
 } from "../lib/admin-session";
 import { hashAdminPassword, verifyAdminPassword } from "../lib/admin-password";
 
@@ -169,7 +170,7 @@ router.post("/admin/login", async (req, res): Promise<void> => {
   }
 
   const role = user.role ?? "admin";
-  if (role !== "admin" && role !== "checkin") {
+  if (!isAdminRole(role)) {
     res.status(401).json({ error: "Invalid credentials." });
     return;
   }

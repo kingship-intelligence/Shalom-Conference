@@ -14,7 +14,7 @@ mock.module("@workspace/db", { namedExports: {
   },
 } });
 mock.module("drizzle-orm", { namedExports: { desc: () => ({}) } });
-mock.module(pathToFileURL(resolve("src/lib/admin-session.ts")).href, { namedExports: { hasAdminSession: req => req.headers["x-test-admin"] === "yes" } });
+mock.module(pathToFileURL(resolve("src/lib/admin-session.ts")).href, { namedExports: { hasNewConvertsAccess: req => req.headers["x-test-admin"] === "yes" } });
 const { default: router } = await import(pathToFileURL(resolve("src/routes/new-converts.ts")).href);
 async function request(method, body, admin = false) {
   const app = express();
@@ -46,4 +46,21 @@ it("protects follow-up records with admin authentication", async () => {
 });
 it("does not report success when storage fails", async () => {
   failInsert = true; assert.equal((await request("POST", valid)).status, 500); assert.equal(rows.length, 0);
+});
+
+it("saves yes and no local church answers and preserves unanswered submissions", async () => {
+  for (const hasLocalChurch of [true, false, null]) {
+    assert.equal((await request("POST", { ...valid, hasLocalChurch })).status, 201);
+    assert.equal(rows.at(-1).hasLocalChurch, hasLocalChurch);
+  }
+  assert.equal((await request("POST", valid)).status, 201);
+  assert.equal(rows.at(-1).hasLocalChurch, null);
+  const response = await request("GET", undefined, true);
+  assert.deepEqual(response.body.map(row => row.hasLocalChurch), [true, false, null, null]);
+});
+it("rejects invalid local church answers without saving", async () => {
+  for (const hasLocalChurch of ["yes", "false", 0, {}, []]) {
+    assert.equal((await request("POST", { ...valid, hasLocalChurch })).status, 400);
+  }
+  assert.equal(rows.length, 0);
 });

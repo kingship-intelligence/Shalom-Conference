@@ -11,9 +11,12 @@ import firstTimerResponsesRouter from "./first-timer-responses";
 
 import newConvertsRouter from "./new-converts";
 
+import conferenceSurveyRouter from "./conference-survey";
+
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(conferenceSurveyRouter);
 router.use(newConvertsRouter);
 router.use(registrationsRouter);
 router.use(checkInRouter);

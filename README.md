@@ -191,3 +191,19 @@ Registration creates database records and sends confirmation emails with QR-code
 `/newconverts` welcomes new believers and submits consented contact details to `POST /api/new-converts`. Signed-in administrators can view them in the New believers section of `/admin`; the GET endpoint requires the existing admin session.
 
 Before deploying this feature, apply `lib/db/migrations/20261007_new_converts.sql` to the target PostgreSQL database (or use the existing Drizzle schema push workflow). The migration only adds the `new_converts` table. No email is sent automatically.
+
+The new believers form also records whether someone already has a local church. Before deploying this update, apply `lib/db/migrations/20261007_new_converts_local_church.sql` (or use Drizzle schema push). Existing records keep an unanswered status.
+
+### Staff access and conference feedback
+
+Full administrators can create accounts in `/admin` with these access levels:
+
+- Full admin: all admin sections and account management.
+- Registration count only: total registered people, without attendee details.
+- New converts only: new believer follow-up records, including local church status.
+- Check-in only: minimal attendee roster, QR scanning, manual check-in and undo.
+- Registrations and check-in: registration details and count, plus the check-in desk.
+
+Only full admins can create/delete check-in sessions, send replacement QR emails, delete registrations, manage accounts, or read conference feedback. Create conference check-in sessions with a full admin account before staff use the check-in desk.
+
+`/survey` collects anonymous feedback for Shalom Conference 2026 (overall rating, highlights, improvements, and whether attendees would return). Full admins can read responses in the Conference survey section. Apply `lib/db/migrations/20261007_conference_survey.sql` and the local-church migration above before deploying, or use the existing Drizzle schema push workflow. New roles use the existing text role column and need no role-column migration.

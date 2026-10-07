@@ -24,7 +24,7 @@ export default function NewConverts() {
     try {
       const response = await fetch("/api/new-converts", {
         method: "POST", headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: data.get("name"), email: data.get("email"), phone: data.get("phone"), city: data.get("city"), consentToContact: data.get("consent") === "on" }),
+        body: JSON.stringify({ name: data.get("name"), email: data.get("email"), phone: data.get("phone"), city: data.get("city"), hasLocalChurch: data.get("hasLocalChurch") === "yes" ? true : data.get("hasLocalChurch") === "no" ? false : null, consentToContact: data.get("consent") === "on" }),
       });
       if (!response.ok) throw new Error("We couldn’t save your details. Please try again.");
       const result = await response.json();
@@ -84,6 +84,14 @@ export default function NewConverts() {
                   <div><label htmlFor="convert-email" className="mb-2 block text-sm font-medium">Email address</label><Input id="convert-email" name="email" type="email" autoComplete="email" maxLength={254} required className="h-12" /></div>
                   <div><label htmlFor="convert-phone" className="mb-2 block text-sm font-medium">Phone number <span className="text-muted-foreground">(optional)</span></label><Input id="convert-phone" name="phone" type="tel" autoComplete="tel" maxLength={40} className="h-12" /></div>
                   <div><label htmlFor="convert-city" className="mb-2 block text-sm font-medium">City / town <span className="text-muted-foreground">(optional)</span></label><Input id="convert-city" name="city" autoComplete="address-level2" maxLength={120} className="h-12" /></div>
+                  <div>
+                    <label htmlFor="convert-local-church" className="mb-2 block text-sm font-medium">Do you already have a local church? <span className="text-muted-foreground">(optional)</span></label>
+                    <select id="convert-local-church" name="hasLocalChurch" defaultValue="" className="h-12 w-full rounded-md border border-input bg-background px-3 text-sm">
+                      <option value="">Select an answer</option>
+                      <option value="yes">Yes</option>
+                      <option value="no">No</option>
+                    </select>
+                  </div>
                   <label className="flex cursor-pointer items-start gap-3 text-sm leading-relaxed"><input name="consent" type="checkbox" required className="mt-1 h-5 w-5 shrink-0 accent-[var(--color-primary)]" /><span>I agree that the Shalom team may contact me by email or the phone number I provide to support me in my faith journey.</span></label>
                   <p className="text-xs leading-relaxed text-muted-foreground">Your details are for the Shalom follow-up team. Read our <Link href="/privacy" className="underline underline-offset-4">privacy policy</Link>.</p>
                   {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400">{error}</p>}

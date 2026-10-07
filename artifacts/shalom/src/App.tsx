@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { lazy, Suspense } from "react";
 import { ThemeProvider } from "@/components/ThemeProvider";
 
+const Survey = lazy(() => import("@/pages/survey"));
 const NewConverts = lazy(() => import("@/pages/new-converts"));
 const Home = lazy(() => import("@/pages/home"));
 const NotFound = lazy(() => import("@/pages/not-found"));
@@ -26,6 +27,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={Home} />
+      <Route path="/survey" component={Survey} />
       <Route path="/newconverts" component={NewConverts} />
       <Route path="/register" component={Register} />
       <Route path="/prayer-charge" component={PrayerCharge} />

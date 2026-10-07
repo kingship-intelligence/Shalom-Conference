@@ -12,4 +12,7 @@ export type AdminUserInputRole = typeof AdminUserInputRole[keyof typeof AdminUse
 export const AdminUserInputRole = {
   admin: 'admin',
   checkin: 'checkin',
+  registration_viewer: 'registration_viewer',
+  new_converts: 'new_converts',
+  registration_checkin: 'registration_checkin',
 } as const;

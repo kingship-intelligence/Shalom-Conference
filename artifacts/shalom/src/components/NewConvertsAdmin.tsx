@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
 
-type Convert = { id: number; name: string; email: string; phone: string; city: string; createdAt: string };
+type Convert = { id: number; name: string; email: string; phone: string; city: string; hasLocalChurch?: boolean | null; createdAt: string };
 export default function NewConvertsAdmin() {
   const query = useQuery<Convert[]>({
     queryKey: ["new-converts"],
@@ -23,6 +23,7 @@ export default function NewConvertsAdmin() {
       <a href={`mailto:${person.email}`} className="mt-2 block break-all text-primary underline">{person.email}</a>
       {person.phone && <p className="mt-2 break-words">{person.phone}</p>}
       {person.city && <p className="mt-2 break-words text-muted-foreground">{person.city}</p>}
+      <p className="mt-2 text-sm text-muted-foreground">Already has a local church: {person.hasLocalChurch === true ? "Yes" : person.hasLocalChurch === false ? "No" : "Not provided"}</p>
       <p className="mt-3 text-xs text-muted-foreground">Requested follow-up · {new Date(person.createdAt).toLocaleDateString()}</p>
     </article>)}</div>
   </section>;

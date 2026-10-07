@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 const COOKIE_NAME = "shalom_admin_session";
 const MAX_AGE_SECONDS = 60 * 60 * 8;
 
-export type AdminRole = "admin" | "checkin";
+export type AdminRole = "admin" | "checkin" | "registration_viewer" | "new_converts" | "registration_checkin";
 
 export type AdminSession = {
   username: string;
@@ -78,7 +78,8 @@ export function hasAdminSession(req: Request): boolean {
 }
 
 export function hasCheckInAccess(req: Request): boolean {
-  return getAdminSession(req) !== null;
+  const role = getAdminSession(req)?.role;
+  return role === "admin" || role === "checkin" || role === "registration_checkin";
 }
 
 export function getAdminIdentity(req: Request): string | null {
@@ -102,7 +103,7 @@ export function getAdminSession(req: Request): AdminSession | null {
     !Number.isInteger(issuedAt) ||
     !encodedUsername ||
     !signature ||
-    (role !== "admin" && role !== "checkin") ||
+    !isAdminRole(role) ||
     Date.now() / 1000 - issuedAt > MAX_AGE_SECONDS
   ) {
     return null;
@@ -117,4 +118,19 @@ export function getAdminSession(req: Request): AdminSession | null {
   }
   const username = decodeIdentity(encodedUsername);
   return username ? { username, role } : null;
+}
+export function isAdminRole(value: unknown): value is AdminRole {
+  return ["admin", "checkin", "registration_viewer", "new_converts", "registration_checkin"].includes(value as string);
+}
+export function hasRegistrationAccess(req: Request): boolean {
+  const role = getAdminSession(req)?.role;
+  return role === "admin" || role === "registration_checkin";
+}
+export function hasRegistrationCountAccess(req: Request): boolean {
+  const role = getAdminSession(req)?.role;
+  return hasRegistrationAccess(req) || role === "registration_viewer";
+}
+export function hasNewConvertsAccess(req: Request): boolean {
+  const role = getAdminSession(req)?.role;
+  return role === "admin" || role === "new_converts";
 }

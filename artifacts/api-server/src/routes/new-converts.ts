@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { desc } from "drizzle-orm";
 import { db, newConvertsTable } from "@workspace/db";
-import { hasAdminSession } from "../lib/admin-session";
+import { hasNewConvertsAccess } from "../lib/admin-session";
 
 const router: IRouter = Router();
 
@@ -11,17 +11,22 @@ router.post("/new-converts", async (req, res): Promise<void> => {
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
   const phone = typeof body?.phone === "string" ? body.phone.trim() : "";
   const city = typeof body?.city === "string" ? body.city.trim() : "";
+  if (body?.hasLocalChurch != null && typeof body.hasLocalChurch !== "boolean") {
+    res.status(400).json({ error: "Please select yes or no for your local church." });
+    return;
+  }
+  const hasLocalChurch = body?.hasLocalChurch ?? null;
   if (!name || name.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || email.length > 254 || phone.length > 40 || city.length > 120 || body?.consentToContact !== true) {
     res.status(400).json({ error: "Please enter your name, a valid email, and permission for us to contact you." });
     return;
   }
-  await db.insert(newConvertsTable).values({ name, email, phone, city, consentToContact: true });
+  await db.insert(newConvertsTable).values({ name, email, phone, city, hasLocalChurch, consentToContact: true });
   res.status(201).json({ success: true });
 });
 
 router.get("/new-converts", async (req, res): Promise<void> => {
   res.setHeader("Cache-Control", "no-store");
-  if (!hasAdminSession(req)) {
+  if (!hasNewConvertsAccess(req)) {
     res.status(401).json({ error: "Admin sign-in is required." });
     return;
   }

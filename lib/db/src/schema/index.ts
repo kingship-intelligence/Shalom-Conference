@@ -41,3 +41,4 @@ export * from "./prayer-charge-survey-responses";
 export * from "./admin-users";
 
 export * from "./new-converts";
+export * from "./conference-survey";

@@ -270,4 +270,24 @@ describe("admin account management", () => {
     assert.equal(deniedUsersList.status, 403);
     assert.equal(deniedUserCreate.status, 403);
   });
+  it("creates scoped staff accounts that can log in but cannot manage accounts", async () => {
+    const primaryLogin = await signIn(bootstrapCredentials);
+    const cookie = primaryLogin.headers.get("set-cookie").split(";")[0];
+    for (const role of ["registration_viewer", "new_converts", "registration_checkin"]) {
+      const credentials = { username: `${role}@example.org`, password: "a-long-staff-password" };
+      const created = await request("POST", "/admin/users", { ...credentials, role }, { cookie });
+      assert.equal(created.status, 201);
+      assert.equal((await created.json()).role, role);
+      const login = await signIn(credentials);
+      assert.equal(login.status, 200);
+      assert.equal((await login.json()).role, role);
+      const staffCookie = login.headers.get("set-cookie").split(";")[0];
+      const session = await request("GET", "/admin/session", undefined, { cookie: staffCookie });
+      assert.equal((await session.json()).role, role);
+      assert.equal((await request("GET", "/admin/users", undefined, { cookie: staffCookie })).status, 403);
+      assert.equal((await request("POST", "/admin/users", { username: "forbidden", password: "a-long-password" }, { cookie: staffCookie })).status, 403);
+    }
+    assert.equal((await request("POST", "/admin/users", { username: "bad-role", password: "a-long-password", role: "owner" }, { cookie })).status, 400);
+  });
+
 });

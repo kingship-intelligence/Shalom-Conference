@@ -40,10 +40,14 @@ import type {
   CheckInRosterRegistration,
   CheckInSession,
   CheckInSessionInput,
+  ConferenceSurveyInput,
+  ConferenceSurveyResponse,
+  CreateConferenceSurvey201,
   ErrorResponse,
   ExistingRegistrationBadgeInput,
   FirstTimerResponse,
   FirstTimerResponseInput,
+  GetRegistrationCount200,
   HealthStatus,
   MerchOrder,
   MerchOrderEmailError,
@@ -3047,3 +3051,286 @@ export const useConfirmMerchOrderPayment = <TError = ErrorType<ErrorResponse | v
       return useMutation(getConfirmMerchOrderPaymentMutationOptions(options), queryClient);
     }
 
+export const getGetRegistrationCountUrl = () => {
+
+
+
+
+  return `/api/registration-count`
+}
+
+/**
+ * @summary Registration total for full admins, registration viewers and registration/check-in staff
+ */
+export const getRegistrationCount = async ( options?: Parameters<typeof customFetch>[1]): Promise<GetRegistrationCount200> => {
+
+  return customFetch<GetRegistrationCount200>(getGetRegistrationCountUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getGetRegistrationCountQueryKey = () => {
+    return [
+    `/api/registration-count`
+    ] as const;
+    }
+
+
+export const getGetRegistrationCountQueryOptions = <TData = Awaited<ReturnType<typeof getRegistrationCount>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegistrationCount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetRegistrationCountQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getRegistrationCount>>> = ({ signal }) => getRegistrationCount({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getRegistrationCount>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetRegistrationCountQueryResult = NonNullable<Awaited<ReturnType<typeof getRegistrationCount>>>
+export type GetRegistrationCountQueryError = ErrorType<void>
+
+
+export function useGetRegistrationCount<TData = Awaited<ReturnType<typeof getRegistrationCount>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegistrationCount>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRegistrationCount>>,
+          TError,
+          Awaited<ReturnType<typeof getRegistrationCount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRegistrationCount<TData = Awaited<ReturnType<typeof getRegistrationCount>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegistrationCount>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getRegistrationCount>>,
+          TError,
+          Awaited<ReturnType<typeof getRegistrationCount>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetRegistrationCount<TData = Awaited<ReturnType<typeof getRegistrationCount>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegistrationCount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Registration total for full admins, registration viewers and registration/check-in staff
+ */
+
+export function useGetRegistrationCount<TData = Awaited<ReturnType<typeof getRegistrationCount>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getRegistrationCount>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetRegistrationCountQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getCreateConferenceSurveyUrl = () => {
+
+
+
+
+  return `/api/conference-survey`
+}
+
+/**
+ * @summary Submit anonymous conference feedback
+ */
+export const createConferenceSurvey = async (conferenceSurveyInput: ConferenceSurveyInput, options?: Parameters<typeof customFetch>[1]): Promise<CreateConferenceSurvey201> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<CreateConferenceSurvey201>(getCreateConferenceSurveyUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(conferenceSurveyInput)
+  }
+);}
+
+
+
+
+
+export const getCreateConferenceSurveyMutationKey = () => ['createConferenceSurvey'] as const;
+
+export const getCreateConferenceSurveyMutationOptions = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createConferenceSurvey>>, TError,CreateConferenceSurveyMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof createConferenceSurvey>>, TError,CreateConferenceSurveyMutationVariables, TContext> => {
+
+const mutationKey = getCreateConferenceSurveyMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createConferenceSurvey>>, CreateConferenceSurveyMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  createConferenceSurvey(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateConferenceSurveyMutationResult = NonNullable<Awaited<ReturnType<typeof createConferenceSurvey>>>
+    export type CreateConferenceSurveyMutationBody = BodyType<ConferenceSurveyInput>
+    export type CreateConferenceSurveyMutationError = ErrorType<void>
+    export type CreateConferenceSurveyMutationVariables = {data: BodyType<ConferenceSurveyInput>}
+
+    /**
+ * @summary Submit anonymous conference feedback
+ */
+export const useCreateConferenceSurvey = <TError = ErrorType<void>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createConferenceSurvey>>, TError,CreateConferenceSurveyMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createConferenceSurvey>>,
+        TError,
+        CreateConferenceSurveyMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCreateConferenceSurveyMutationOptions(options), queryClient);
+    }
+
+export const getListConferenceSurveysUrl = () => {
+
+
+
+
+  return `/api/conference-survey`
+}
+
+/**
+ * @summary Read conference feedback (full admin only)
+ */
+export const listConferenceSurveys = async ( options?: Parameters<typeof customFetch>[1]): Promise<ConferenceSurveyResponse[]> => {
+
+  return customFetch<ConferenceSurveyResponse[]>(getListConferenceSurveysUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListConferenceSurveysQueryKey = () => {
+    return [
+    `/api/conference-survey`
+    ] as const;
+    }
+
+
+export const getListConferenceSurveysQueryOptions = <TData = Awaited<ReturnType<typeof listConferenceSurveys>>, TError = ErrorType<void>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listConferenceSurveys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListConferenceSurveysQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listConferenceSurveys>>> = ({ signal }) => listConferenceSurveys({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listConferenceSurveys>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListConferenceSurveysQueryResult = NonNullable<Awaited<ReturnType<typeof listConferenceSurveys>>>
+export type ListConferenceSurveysQueryError = ErrorType<void>
+
+
+export function useListConferenceSurveys<TData = Awaited<ReturnType<typeof listConferenceSurveys>>, TError = ErrorType<void>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listConferenceSurveys>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listConferenceSurveys>>,
+          TError,
+          Awaited<ReturnType<typeof listConferenceSurveys>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListConferenceSurveys<TData = Awaited<ReturnType<typeof listConferenceSurveys>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listConferenceSurveys>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listConferenceSurveys>>,
+          TError,
+          Awaited<ReturnType<typeof listConferenceSurveys>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListConferenceSurveys<TData = Awaited<ReturnType<typeof listConferenceSurveys>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listConferenceSurveys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Read conference feedback (full admin only)
+ */
+
+export function useListConferenceSurveys<TData = Awaited<ReturnType<typeof listConferenceSurveys>>, TError = ErrorType<void>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listConferenceSurveys>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListConferenceSurveysQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}

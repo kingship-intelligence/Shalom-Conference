@@ -6,6 +6,7 @@ export const newConvertsTable = pgTable("new_converts", {
   email: text("email").notNull(),
   phone: text("phone").notNull().default(""),
   city: text("city").notNull().default(""),
+  hasLocalChurch: boolean("has_local_church"),
   consentToContact: boolean("consent_to_contact").notNull(),
   createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
 });
