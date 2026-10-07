@@ -11,6 +11,7 @@ const prophetShamarBennettImage =
   "/images/2026/speakers/prophet-shamar-bennett.webp";
 const tomideOlulanaImage = "/images/2026/speakers/tomide-olulana.webp";
 const femiOpeyemiImage = "/images/2026/speakers/femi-opeyemi.webp";
+const dejiSaxImage = "/images/2026/speakers/deji-sax.webp";
 
 export type Conference = {
   year: string;
@@ -163,6 +164,11 @@ She has ministered alongside notable gospel artists, including CalledOut Music, 
         bio: `Femi Opeyemi is a gifted, spirit-filled gospel singer, songwriter, and worship leader whose passion for music began at the age of 12. Raised in a Christian family, he has grown into a dedicated minister whose music and worship ministry bring hope, encouragement, and spiritual inspiration to many. In 2019, Femi released his soul-stirring single, “Iwo Loba,” a heartfelt expression of his love for God and his commitment to sharing the message of faith through music. Known for his powerful ministrations and sincere worship, he continues to impact lives across the nation.
 
 Beyond music ministry, Femi is a compassionate medical scientist. His devotion to God, family, and service remains a source of inspiration to everyone around him.`,
+      },
+      {
+        name: "Deji Sax",
+        role: "Music Minister",
+        image: dejiSaxImage,
       },
       {
         name: "Reveille Music",
