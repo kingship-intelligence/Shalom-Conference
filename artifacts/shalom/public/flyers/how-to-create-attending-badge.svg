@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-labelledby="title description">
+  <title id="title">How to create your Shalom 2026 I'm Attending badge</title>
+  <desc id="description">Five steps: open the badge creator, verify your registration, add a portrait, create the badge, and check your email.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#100611"/>
+      <stop offset=".5" stop-color="#280719"/>
+      <stop offset="1" stop-color="#0b0710"/>
+    </linearGradient>
+    <linearGradient id="orange" x1="0" y1="0" x2="1" y2=".25">
+      <stop offset="0" stop-color="#ffb341"/>
+      <stop offset=".45" stop-color="#ff6a20"/>
+      <stop offset="1" stop-color="#ef2d15"/>
+    </linearGradient>
+    <radialGradient id="topGlow" cx="82%" cy="3%" r="68%">
+      <stop offset="0" stop-color="#ff8a18" stop-opacity=".85"/>
+      <stop offset=".35" stop-color="#e51b0c" stop-opacity=".42"/>
+      <stop offset="1" stop-color="#340817" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="bottomGlow" cx="0" cy="100%" r="65%">
+      <stop offset="0" stop-color="#f23812" stop-opacity=".55"/>
+      <stop offset=".55" stop-color="#8f0b19" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#160711" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="crosses" width="112" height="112" patternUnits="userSpaceOnUse">
+      <path d="M56 16v80M38 39h36M47 53l9-9 9 9M47 82l9 9 9-9" fill="none" stroke="#fff" stroke-width="2" opacity=".055"/>
+    </pattern>
+    <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="14" stdDeviation="20" flood-color="#000" flood-opacity=".34"/>
+    </filter>
+  </defs>
+
+  <rect width="1080" height="1350" fill="url(#bg)"/>
+  <rect width="1080" height="1350" fill="url(#topGlow)"/>
+  <rect width="1080" height="1350" fill="url(#bottomGlow)"/>
+  <rect width="1080" height="1350" fill="url(#crosses)"/>
+
+  <g font-family="Arial, Helvetica, sans-serif">
+    <text x="70" y="58" fill="#fff" font-size="30" font-weight="900" letter-spacing="5">SHALOM 2026</text>
+    <text x="1007" y="58" text-anchor="end" fill="#ffb341" font-size="18" font-weight="700" letter-spacing="4">THE COMFORTER</text>
+    <rect x="70" y="85" width="937" height="2" rx="1" fill="#fff" opacity=".16"/>
+
+    <text x="70" y="176" fill="#fff" font-size="72" font-weight="900" font-style="italic" letter-spacing="-2">CREATE YOUR</text>
+    <text x="70" y="270" fill="url(#orange)" font-size="96" font-weight="900" font-style="italic" letter-spacing="-4">I'M ATTENDING</text>
+    <text x="70" y="357" fill="#fff" font-size="72" font-weight="900" font-style="italic" letter-spacing="8">BADGE</text>
+    <text x="677" y="330" fill="#f6d7cb" font-size="19" font-weight="700" letter-spacing=".8">ALREADY REGISTERED?</text>
+    <text x="677" y="361" fill="#fff" opacity=".7" font-size="18">Follow these five quick steps.</text>
+
+    <text x="70" y="457" fill="#ff9b2f" font-size="15" font-weight="800" letter-spacing="4">HOW IT WORKS</text>
+
+    <g transform="translate(70 482)">
+      <g>
+        <rect width="650" height="112" rx="22" fill="#fff" opacity=".075" stroke="#fff" stroke-opacity=".12"/>
+        <circle cx="54" cy="56" r="29" fill="url(#orange)"/>
+        <text x="54" y="63" text-anchor="middle" fill="#180811" font-size="21" font-weight="900">01</text>
+        <text x="104" y="47" fill="#fff" font-size="22" font-weight="900" letter-spacing="1.4">OPEN THE BADGE CREATOR</text>
+        <text x="104" y="80" fill="#fff" opacity=".65" font-size="17">Scan the code or use the link below.</text>
+      </g>
+      <g transform="translate(0 124)">
+        <rect width="650" height="112" rx="22" fill="#fff" opacity=".075" stroke="#fff" stroke-opacity=".12"/>
+        <circle cx="54" cy="56" r="29" fill="url(#orange)"/>
+        <text x="54" y="63" text-anchor="middle" fill="#180811" font-size="21" font-weight="900">02</text>
+        <text x="104" y="47" fill="#fff" font-size="22" font-weight="900" letter-spacing="1.4">VERIFY YOUR REGISTRATION</text>
+        <text x="104" y="80" fill="#fff" opacity=".65" font-size="17">Use the email address you registered with.</text>
+      </g>
+      <g transform="translate(0 248)">
+        <rect width="650" height="112" rx="22" fill="#fff" opacity=".075" stroke="#fff" stroke-opacity=".12"/>
+        <circle cx="54" cy="56" r="29" fill="url(#orange)"/>
+        <text x="54" y="63" text-anchor="middle" fill="#180811" font-size="21" font-weight="900">03</text>
+        <text x="104" y="47" fill="#fff" font-size="22" font-weight="900" letter-spacing="1.4">ADD A CLEAR PORTRAIT</text>
+        <text x="104" y="80" fill="#fff" opacity=".65" font-size="17">JPG, PNG or WebP - maximum 5 MB.</text>
+      </g>
+      <g transform="translate(0 372)">
+        <rect width="650" height="112" rx="22" fill="#fff" opacity=".075" stroke="#fff" stroke-opacity=".12"/>
+        <circle cx="54" cy="56" r="29" fill="url(#orange)"/>
+        <text x="54" y="63" text-anchor="middle" fill="#180811" font-size="21" font-weight="900">04</text>
+        <text x="104" y="47" fill="#fff" font-size="22" font-weight="900" letter-spacing="1.4">CREATE YOUR BADGE</text>
+        <text x="104" y="80" fill="#fff" opacity=".65" font-size="17">Tap Create My Badge and give it a moment.</text>
+      </g>
+      <g transform="translate(0 496)">
+        <rect width="650" height="112" rx="22" fill="#fff" opacity=".075" stroke="#fff" stroke-opacity=".12"/>
+        <circle cx="54" cy="56" r="29" fill="url(#orange)"/>
+        <text x="54" y="63" text-anchor="middle" fill="#180811" font-size="21" font-weight="900">05</text>
+        <text x="104" y="47" fill="#fff" font-size="22" font-weight="900" letter-spacing="1.4">CHECK YOUR EMAIL</text>
+        <text x="104" y="80" fill="#fff" opacity=".65" font-size="17">Download your badge, post it and tag us.</text>
+      </g>
+    </g>
+
+    <g transform="translate(755 492)" filter="url(#shadow)">
+      <rect width="270" height="326" rx="30" fill="#fff"/>
+      <image x="19" y="19" width="232" height="232" href="how-to-create-attending-badge-qr.png"/>
+      <text x="135" y="282" text-anchor="middle" fill="#13101c" font-size="17" font-weight="900" letter-spacing="2">SCAN TO START</text>
+      <text x="135" y="306" text-anchor="middle" fill="#13101c" opacity=".58" font-size="13">Camera app - QR code</text>
+    </g>
+
+    <g transform="translate(755 850)">
+      <rect width="270" height="240" rx="26" fill="#fff" opacity=".075" stroke="#fff" stroke-opacity=".14"/>
+      <text x="28" y="42" fill="#ff9b2f" font-size="14" font-weight="900" letter-spacing="3">PHOTO TIPS</text>
+      <circle cx="32" cy="81" r="4" fill="#ff7c25"/>
+      <text x="48" y="87" fill="#fff" opacity=".78" font-size="16">Face the camera</text>
+      <circle cx="32" cy="120" r="4" fill="#ff7c25"/>
+      <text x="48" y="126" fill="#fff" opacity=".78" font-size="16">Use good lighting</text>
+      <circle cx="32" cy="159" r="4" fill="#ff7c25"/>
+      <text x="48" y="165" fill="#fff" opacity=".78" font-size="16">Keep your face clear</text>
+      <circle cx="32" cy="198" r="4" fill="#ff7c25"/>
+      <text x="48" y="204" fill="#fff" opacity=".78" font-size="16">Portrait works best</text>
+    </g>
+
+    <rect x="0" y="1190" width="1080" height="160" fill="url(#orange)"/>
+    <text x="70" y="1242" fill="#170911" font-size="16" font-weight="900" letter-spacing="3">UP TO 3 BADGES PER REGISTRATION</text>
+    <text x="70" y="1294" fill="#170911" font-size="27" font-weight="900">shalomconference.com/register?badge=1</text>
+    <text x="1008" y="1274" text-anchor="end" fill="#170911" font-size="16" font-weight="800">OCT 9-10, 2026</text>
+    <text x="1008" y="1303" text-anchor="end" fill="#170911" opacity=".75" font-size="15">WINDSOR MILL, MD</text>
+  </g>
+</svg>
