@@ -1,3 +1,5 @@
+import AdminSection from "@/components/AdminSection";
+import NewConvertsAdmin from "@/components/NewConvertsAdmin";
 import { useCallback, useEffect, useState } from "react";
 import {
   getListRegistrationsQueryKey,
@@ -577,11 +579,13 @@ export default function Admin() {
           </div>
         </header>
         <main className="container mx-auto max-w-7xl px-4 pt-3 sm:px-6">
+          <AdminSection title="Check-in desk" defaultOpen>
           <AdminCheckIn
             authed={authed}
             canManageSessions={false}
             canSendReplacementQr={false}
           />
+          </AdminSection>
         </main>
       </div>
     );
@@ -624,10 +628,11 @@ export default function Admin() {
         </div>
       </header>
 
-      <main className="container mx-auto max-w-7xl px-4 mt-8">
-        <section
+      <main className="container mx-auto mt-8 max-w-7xl space-y-4 px-4">
+        <AdminSection title="Admin Accounts">
+<section
           data-testid="section-admin-accounts"
-          className="mb-12 rounded-2xl border border-ink/10 bg-ink/[0.03] p-5 sm:p-7"
+          className="space-y-6"
         >
           <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-primary pt-4">
             <div className="flex items-center gap-3">
@@ -777,16 +782,20 @@ export default function Admin() {
             </form>
           </div>
         </section>
+        </AdminSection>
 
+        <AdminSection title="Check-in desk">
         <AdminCheckIn
           authed={authed}
           canManageSessions
           canSendReplacementQr
         />
+        </AdminSection>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+        <div className="space-y-4">
           {/* Registrations Section */}
-          <section data-testid="section-registrations" className="space-y-6">
+          <AdminSection title="Registrations">
+<section data-testid="section-registrations" className="space-y-6">
             <div className="flex items-center justify-between border-t-2 border-primary pt-4">
               <h2 className="text-2xl font-bold text-ink uppercase tracking-wider">Registrations</h2>
               <div className="flex items-center gap-3">
@@ -967,9 +976,11 @@ export default function Admin() {
               </div>
             )}
           </section>
+        </AdminSection>
 
           {/* Testimonies Section */}
-          <section data-testid="section-testimonies" className="space-y-6">
+          <AdminSection title="Testimonies">
+<section data-testid="section-testimonies" className="space-y-6">
             <div className="flex items-center justify-between border-t-2 border-secondary pt-4">
               <h2 className="text-2xl font-bold text-ink uppercase tracking-wider">Testimonies</h2>
               <Badge className="bg-secondary text-white">
@@ -1023,8 +1034,12 @@ export default function Admin() {
               </div>
             )}
           </section>
+        </AdminSection>
 
-          <section data-testid="section-first-timers" className="space-y-6 lg:col-span-2">
+          <AdminSection title="New believers"><NewConvertsAdmin /></AdminSection>
+
+          <AdminSection title="First Timers">
+<section data-testid="section-first-timers" className="space-y-6 lg:col-span-2">
             <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-secondary pt-4">
               <div className="flex items-center gap-3">
                 <UserCheck className="h-5 w-5 text-secondary" />
@@ -1116,8 +1131,10 @@ export default function Admin() {
               </div>
             )}
           </section>
+        </AdminSection>
 
-          <section data-testid="section-prayer-charge-survey" className="space-y-6 lg:col-span-2">
+          <AdminSection title="Prayer Charge reflections">
+<section data-testid="section-prayer-charge-survey" className="space-y-6 lg:col-span-2">
             <div className="flex flex-wrap items-end justify-between gap-4 border-t-2 border-secondary pt-4">
               <div>
                 <div className="flex items-center gap-3">
@@ -1284,8 +1301,10 @@ export default function Admin() {
               </>
             )}
           </section>
+        </AdminSection>
 
-          <section data-testid="section-prayer-chain" className="space-y-6 lg:col-span-2">
+          <AdminSection title="Prayer chain">
+<section data-testid="section-prayer-chain" className="space-y-6 lg:col-span-2">
             <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-primary pt-4">
               <div className="flex items-center gap-3">
                 <Clock3 className="h-5 w-5 text-primary" />
@@ -1398,8 +1417,10 @@ export default function Admin() {
               </div>
             )}
           </section>
+        </AdminSection>
 
-          <section data-testid="section-merch-orders" className="space-y-6 lg:col-span-2">
+          <AdminSection title="Merch preorders">
+<section data-testid="section-merch-orders" className="space-y-6 lg:col-span-2">
             <div className="flex items-center justify-between border-t-2 border-primary pt-4">
               <div className="flex items-center gap-3">
                 <ShoppingBag className="h-5 w-5 text-primary" />
@@ -1508,6 +1529,7 @@ export default function Admin() {
               </div>
             )}
           </section>
+        </AdminSection>
         </div>
       </main>
     </div>

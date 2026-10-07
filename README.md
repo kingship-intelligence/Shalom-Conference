@@ -185,3 +185,9 @@ Registration creates database records and sends confirmation emails with QR-code
 - Admin authentication requires `SESSION_SECRET`; without it, login cannot establish a session.
 - The first admin can be bootstrapped with `ADMIN_USERNAME` and `ADMIN_PASSWORD`. After that, full administrators can create additional admin or check-in accounts.
 - Do not hand-edit generated files under `lib/api-client-react/src/generated` or `lib/api-zod/src/generated`; update `lib/api-spec/openapi.yaml` and run codegen instead.
+
+### New believers follow-up
+
+`/newconverts` welcomes new believers and submits consented contact details to `POST /api/new-converts`. Signed-in administrators can view them in the New believers section of `/admin`; the GET endpoint requires the existing admin session.
+
+Before deploying this feature, apply `lib/db/migrations/20261007_new_converts.sql` to the target PostgreSQL database (or use the existing Drizzle schema push workflow). The migration only adds the `new_converts` table. No email is sent automatically.

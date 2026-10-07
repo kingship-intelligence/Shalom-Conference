@@ -9,9 +9,12 @@ import prayerChainSignupsRouter from "./prayer-chain-signups";
 import prayerChargeSurveyRouter from "./prayer-charge-survey-responses";
 import firstTimerResponsesRouter from "./first-timer-responses";
 
+import newConvertsRouter from "./new-converts";
+
 const router: IRouter = Router();
 
 router.use(healthRouter);
+router.use(newConvertsRouter);
 router.use(registrationsRouter);
 router.use(checkInRouter);
 router.use(testimoniesRouter);
