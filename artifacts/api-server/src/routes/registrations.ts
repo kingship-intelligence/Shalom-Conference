@@ -25,7 +25,7 @@ import { createCheckInQrCredential } from "../lib/check-in-qr";
 const router: IRouter = Router();
 const MAX_PORTRAIT_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PORTRAIT_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
-const MAX_BADGE_DELIVERIES = 3;
+const MAX_BADGE_DELIVERIES = 5;
 
 class DuplicateRegistrationError extends Error {}
 
@@ -244,7 +244,7 @@ router.post("/registrations/badge-request", async (req, res): Promise<void> => {
 
   if (getBadgeDeliveryCount(registration) >= MAX_BADGE_DELIVERIES) {
     res.status(409).json({
-      error: "This registration has reached its limit of three attendee badges.",
+      error: "This registration has reached its limit of five attendee badges.",
     });
     return;
   }

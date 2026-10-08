@@ -275,13 +275,13 @@ describe("attendee badge delivery flow", () => {
     assert.equal(response.status, 200);
   });
 
-  it("rejects a fourth badge request", async () => {
+  it("rejects a sixth badge request", async () => {
     await request(makeApp(), "POST", "/registrations", {
       ...registration,
       wantsAttendeeBadge: false,
     });
     state.rows[0].badgeSentAt = new Date();
-    state.rows[0].badgeDeliveryCount = 3;
+    state.rows[0].badgeDeliveryCount = 5;
 
     const response = await request(makeApp(), "POST", "/registrations/badge-request", {
       firstName: registration.firstName,
@@ -291,7 +291,7 @@ describe("attendee badge delivery flow", () => {
     });
 
     assert.equal(response.status, 409);
-    assert.match((await response.json()).error, /limit of three/i);
+    assert.match((await response.json()).error, /limit of five/i);
   });
 
   it("authorizes portrait upload only with the issued token", async () => {

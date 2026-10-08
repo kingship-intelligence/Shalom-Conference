@@ -21,13 +21,17 @@ const PHOTO_AREA = {
   radius: 42,
 } as const;
 
+// Modern phones commonly capture 48 MP photos. Keep a finite decompression
+// limit for safety while allowing normal high-resolution portraits.
+const MAX_PORTRAIT_PIXELS = 100_000_000;
+
 export async function createAttendeeBadge(input: {
   portrait: Buffer;
   firstName: string;
   lastName: string;
   conferenceYear: number;
 }): Promise<Buffer> {
-  const portrait = await sharp(input.portrait, { limitInputPixels: 20_000_000 })
+  const portrait = await sharp(input.portrait, { limitInputPixels: MAX_PORTRAIT_PIXELS })
     .rotate()
     .resize(PHOTO_AREA.width, PHOTO_AREA.height, { fit: "cover", position: "center" })
     .composite([
