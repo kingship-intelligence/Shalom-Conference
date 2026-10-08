@@ -278,6 +278,21 @@
   to { transform: translate3d(-130px, 1000px, 0) rotate(10deg); }
 }
 
+.hero-typewriter-cursor {
+  display: inline-block;
+  width: .08em;
+  height: .78em;
+  margin-left: .08em;
+  background: hsl(var(--primary));
+  vertical-align: .02em;
+  animation: hero-cursor-blink 850ms step-end infinite;
+}
+
+@keyframes hero-cursor-blink {
+  0%, 48% { opacity: 1; }
+  49%, 100% { opacity: 0; }
+}
+
 .home-scroll-story {
   overflow: clip;
 }

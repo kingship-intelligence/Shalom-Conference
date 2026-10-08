@@ -24,6 +24,7 @@ const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
 const HERO_POSTER = "/images/home/shalom-hero-poster.webp";
 const HERO_FLYER = currentConference.flyer ?? currentConference.image;
 const HERO_CROSSFADE_MS = 700; // keep in step with duration-700 on the video elements
+const HERO_TITLE = `SHALOM ${currentConference.year}\n${currentConference.theme.toUpperCase()}`;
 // Countdown target comes from the conference data so there is one place to update.
 const CONFERENCE_START = currentConference.startsAt
   ? new Date(currentConference.startsAt).getTime()
@@ -47,6 +48,52 @@ function HeroRain({ enabled }: { enabled: boolean }) {
         }} />
       ))}
     </div>
+  );
+}
+
+function HeroTypewriterTitle({
+  enabled,
+  reducedMotion,
+}: {
+  enabled: boolean;
+  reducedMotion: boolean;
+}) {
+  const [visibleCharacters, setVisibleCharacters] = useState(
+    reducedMotion ? HERO_TITLE.length : 0,
+  );
+
+  useEffect(() => {
+    if (reducedMotion) {
+      setVisibleCharacters(HERO_TITLE.length);
+      return;
+    }
+    if (!enabled || visibleCharacters >= HERO_TITLE.length) return;
+
+    const nextCharacter = HERO_TITLE[visibleCharacters];
+    const timer = window.setTimeout(
+      () => setVisibleCharacters((count) => count + 1),
+      nextCharacter === "\n" ? 240 : 72,
+    );
+    return () => window.clearTimeout(timer);
+  }, [enabled, reducedMotion, visibleCharacters]);
+
+  const lines = HERO_TITLE.slice(0, visibleCharacters).split("\n");
+
+  return (
+    <h1
+      className="hero-title mb-5 text-[clamp(2.8rem,12vw,4.5rem)] font-bold uppercase leading-[0.92] tracking-tight text-black sm:text-7xl lg:mb-7 lg:text-[4.75rem] xl:text-[5.5rem] 2xl:text-[6.5rem] italic"
+      style={{ fontFamily: "var(--font-display)" }}
+      aria-label={HERO_TITLE.replace("\n", " ")}
+    >
+      {lines.map((line, index) => (
+        <span key={index} className="block min-h-[0.92em]" aria-hidden="true">
+          {line}
+          {!reducedMotion && index === lines.length - 1 && (
+            <span className="hero-typewriter-cursor" />
+          )}
+        </span>
+      ))}
+    </h1>
   );
 }
 
@@ -532,22 +579,7 @@ export default function Home() {
               transition={{ duration: 0.7 }}
               className="mx-auto flex max-w-3xl flex-col items-center text-center lg:mx-0 lg:items-start lg:text-left"
             >
-              <h1
-                className="hero-title mb-5 text-[clamp(2.8rem,12vw,4.5rem)] font-bold uppercase leading-[0.92] tracking-tight text-black sm:text-7xl lg:mb-7 lg:text-[4.75rem] xl:text-[5.5rem] 2xl:text-[6.5rem] italic"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                {`${currentConference.year}:${currentConference.theme}`.split(" ").map((word, index) => (
-                  <motion.span
-                    key={`${word}-${index}`}
-                    className="block"
-                    initial={prefersReducedMotion ? false : { opacity: 0, y: 28 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, delay: 0.15 + index * 0.12 }}
-                  >
-                    {word}
-                  </motion.span>
-                ))}
-              </h1>
+              <HeroTypewriterTitle enabled={motionEnabled} reducedMotion={prefersReducedMotion} />
               <p className="mb-6 max-w-xl text-base font-medium leading-relaxed text-slate-600 lg:mb-8 lg:text-lg">
                 Two nights of worship and prayer for students and young adults, built
                 around the Holy Spirit.
