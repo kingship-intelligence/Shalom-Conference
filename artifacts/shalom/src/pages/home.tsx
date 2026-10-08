@@ -24,7 +24,7 @@ const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
 const HERO_POSTER = "/images/home/shalom-hero-poster.webp";
 const HERO_FLYER = currentConference.flyer ?? currentConference.image;
 const HERO_CROSSFADE_MS = 700; // keep in step with duration-700 on the video elements
-const HERO_TITLE = `SHALOM ${currentConference.year}\n${currentConference.theme.toUpperCase()}`;
+const HERO_TITLE = `${currentConference.year}: ${currentConference.theme.toUpperCase()}`;
 // Countdown target comes from the conference data so there is one place to update.
 const CONFERENCE_START = currentConference.startsAt
   ? new Date(currentConference.startsAt).getTime()
