@@ -43,15 +43,15 @@ import { Check, User, UserCheck, Users, Mail, Phone, Calendar, MessageSquare, Ar
 import { AdminCheckIn } from "@/components/admin-check-in";
 
 const SESSION_KEY = "shalom_admin_auth";
-type AdminRole = "admin" | "checkin" | "registration_viewer" | "new_converts" | "registration_checkin";
+type AdminRole = "admin" | "checkin" | "registration_viewer" | "new_converts" | "registration_checkin" | "merch";
 
 const ROLE_LABELS: Record<AdminRole, string> = {
   admin: "Full admin", checkin: "Check-in only", registration_viewer: "Registration count only",
-  new_converts: "New converts only", registration_checkin: "Registrations and check-in",
+  merch: "Merch only", new_converts: "New converts only", registration_checkin: "Registrations and check-in",
 };
 
 function isAdminRole(value: unknown): value is AdminRole {
-  return ["admin", "checkin", "registration_viewer", "new_converts", "registration_checkin"].includes(value as string);
+  return ["admin", "checkin", "registration_viewer", "new_converts", "registration_checkin", "merch"].includes(value as string);
 }
 
 const PRAYER_SLOT_LABELS: Record<string, string> = {
@@ -362,7 +362,7 @@ export default function Admin() {
   });
   const merchOrdersQuery = useListMerchOrders({
     query: {
-      enabled: fullAdmin,
+      enabled: authed && (role === "admin" || role === "merch"),
       queryKey: getListMerchOrdersQueryKey(),
       retry: 2,
       refetchOnWindowFocus: true,
@@ -550,6 +550,120 @@ export default function Admin() {
     adminUsersQuery.error,
   ]);
 
+  const merchPanel = (
+          <AdminSection title="Merch preorders">
+<section data-testid="section-merch-orders" className="space-y-6 lg:col-span-2">
+            <div className="flex items-center justify-between border-t-2 border-primary pt-4">
+              <div className="flex items-center gap-3">
+                <ShoppingBag className="h-5 w-5 text-primary" />
+                <h2 className="text-2xl font-bold text-ink uppercase tracking-wider">Merch preorders</h2>
+              </div>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-primary text-white">
+                  {merchOrdersQuery.isLoading ? "..." : merchOrders.length}
+                </Badge>
+                <span className="hidden text-xs uppercase tracking-wider text-amber-700 dark:text-amber-300/80 sm:inline">
+                  {awaitingVerificationCount} to review
+                </span>
+                <span className="hidden text-xs uppercase tracking-wider text-emerald-700 dark:text-emerald-300/80 sm:inline">
+                  {verifiedCount} confirmed
+                </span>
+                {merchOrders.length > 0 && (
+                  <button
+                    onClick={() => exportMerchOrdersCSV(merchOrders)}
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-copy-50 hover:text-ink transition-colors"
+                    title="Export merch orders"
+                  >
+                    <Download className="h-4 w-4" />
+                    Export
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {merchOrdersQuery.isLoading ? (
+              <div className="space-y-4">
+                {[1, 2].map((i) => <Skeleton key={i} className="h-36 w-full rounded-xl bg-ink/5" />)}
+              </div>
+            ) : merchOrders.length === 0 ? (
+              <div className="text-center py-16 text-copy-30 rounded-2xl border border-dashed border-ink/10">
+                No merch preorders yet
+              </div>
+            ) : (
+              <div className="grid gap-4 md:grid-cols-2">
+                {merchOrders.map((order) => (
+                  <article key={order.id} className="rounded-xl border border-ink/10 bg-ink/5 p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="font-bold text-ink">#{order.id} · {order.name}</p>
+                        <p className="mt-1 text-sm text-copy-50">{order.email}</p>
+                        {order.phone && <p className="mt-1 text-sm text-copy-50">{order.phone}</p>}
+                      </div>
+                      {order.status === "awaiting_verification" ? (
+                        <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-300/20">
+                          Awaiting verification
+                        </Badge>
+                      ) : (
+                        <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-300/20">
+                          Payment confirmed
+                        </Badge>
+                      )}
+                    </div>
+                    <div className="mt-4 space-y-1 border-y border-ink/10 py-4 text-sm text-copy-75">
+                      {order.items.map((item) => (
+                        <p key={`${item.productName}-${item.size}`}>{item.quantity} × {item.productName} · {item.size}</p>
+                      ))}
+                    </div>
+                    <div className="mt-4 flex items-end justify-between gap-4">
+                      <div>
+                        <p className="text-xs uppercase tracking-wider text-copy-40">Cash App reference</p>
+                        <p className="mt-1 font-mono text-sm text-primary">{order.paymentReference}</p>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-xl font-black text-primary">${Number(order.total).toFixed(2)}</p>
+                        <p className="mt-1 text-[10px] uppercase tracking-wider text-copy-30">
+                          {format(new Date(order.createdAt), "MMM d, h:mm a")}
+                        </p>
+                      </div>
+                    </div>
+                    {order.paymentConfirmedAt && order.paymentConfirmedBy && (
+                      <div className="mt-4 rounded-lg border border-emerald-300/15 bg-emerald-300/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-200/80">
+                        <p className="font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300/60">Confirmation history</p>
+                        <p className="mt-1">
+                          Payment confirmed by <span className="font-semibold text-emerald-700 dark:text-emerald-200">{order.paymentConfirmedBy}</span>
+                          {" "}on {format(new Date(order.paymentConfirmedAt), "MMM d, yyyy 'at' h:mm a")}
+                        </p>
+                      </div>
+                    )}
+                    {order.status === "awaiting_verification" && (
+                      <Button
+                        type="button"
+                        size="sm"
+                        className="mt-4 w-full rounded-full bg-emerald-600 text-ink hover:bg-emerald-500"
+                        disabled={verifyPaymentMutation.isPending}
+                        onClick={() => {
+                          if (window.confirm(`Confirm the Cash App payment for order #${order.id}?`)) {
+                            verifyPaymentMutation.mutate({ id: order.id });
+                          }
+                        }}
+                      >
+                        <Check className="h-4 w-4" />
+                        {verifyPaymentMutation.isPending ? "Confirming…" : "Confirm payment"}
+                      </Button>
+                    )}
+                    {verifyPaymentMutation.isError && verifyPaymentMutation.variables?.id === order.id && (
+                      <p className="mt-3 text-sm text-red-700 dark:text-red-300">
+                        Payment confirmation could not be completed. Please try again.
+                      </p>
+                    )}
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+        </AdminSection>
+  );
+
   if (checking) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-background text-sm font-bold uppercase tracking-widest text-copy-50">
@@ -591,6 +705,7 @@ export default function Admin() {
           {(role === "registration_viewer" || role === "registration_checkin") && <RegistrationCount />}
           {role === "registration_checkin" && <RegistrationList />}
           {role === "new_converts" && <NewConvertsAdmin />}
+          {role === "merch" && merchPanel}
           {(role === "checkin" || role === "registration_checkin") && <AdminSection title="Check-in desk" defaultOpen>
             <AdminCheckIn authed={authed} canManageSessions={false} canSendReplacementQr={false} />
           </AdminSection>}
@@ -735,6 +850,7 @@ export default function Admin() {
                   onChange={(event) => setNewAdminRole(event.target.value as AdminRole)}
                   className="h-11 w-full rounded-md border border-ink/10 bg-background px-3 text-sm text-ink"
                 >
+                  <option value="merch">Merch only</option>
                   <option value="checkin">Check-in only</option>
                   <option value="registration_viewer">Registration count only</option>
                   <option value="new_converts">New converts only</option>
@@ -1429,117 +1545,7 @@ export default function Admin() {
           </section>
         </AdminSection>
 
-          <AdminSection title="Merch preorders">
-<section data-testid="section-merch-orders" className="space-y-6 lg:col-span-2">
-            <div className="flex items-center justify-between border-t-2 border-primary pt-4">
-              <div className="flex items-center gap-3">
-                <ShoppingBag className="h-5 w-5 text-primary" />
-                <h2 className="text-2xl font-bold text-ink uppercase tracking-wider">Merch preorders</h2>
-              </div>
-              <div className="flex items-center gap-3">
-                <Badge className="bg-primary text-white">
-                  {merchOrdersQuery.isLoading ? "..." : merchOrders.length}
-                </Badge>
-                <span className="hidden text-xs uppercase tracking-wider text-amber-700 dark:text-amber-300/80 sm:inline">
-                  {awaitingVerificationCount} to review
-                </span>
-                <span className="hidden text-xs uppercase tracking-wider text-emerald-700 dark:text-emerald-300/80 sm:inline">
-                  {verifiedCount} confirmed
-                </span>
-                {merchOrders.length > 0 && (
-                  <button
-                    onClick={() => exportMerchOrdersCSV(merchOrders)}
-                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-copy-50 hover:text-ink transition-colors"
-                    title="Export merch orders"
-                  >
-                    <Download className="h-4 w-4" />
-                    Export
-                  </button>
-                )}
-              </div>
-            </div>
-
-            {merchOrdersQuery.isLoading ? (
-              <div className="space-y-4">
-                {[1, 2].map((i) => <Skeleton key={i} className="h-36 w-full rounded-xl bg-ink/5" />)}
-              </div>
-            ) : merchOrders.length === 0 ? (
-              <div className="text-center py-16 text-copy-30 rounded-2xl border border-dashed border-ink/10">
-                No merch preorders yet
-              </div>
-            ) : (
-              <div className="grid gap-4 md:grid-cols-2">
-                {merchOrders.map((order) => (
-                  <article key={order.id} className="rounded-xl border border-ink/10 bg-ink/5 p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="font-bold text-ink">#{order.id} · {order.name}</p>
-                        <p className="mt-1 text-sm text-copy-50">{order.email}</p>
-                        {order.phone && <p className="mt-1 text-sm text-copy-50">{order.phone}</p>}
-                      </div>
-                      {order.status === "awaiting_verification" ? (
-                        <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-300/20">
-                          Awaiting verification
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-300/20">
-                          Payment confirmed
-                        </Badge>
-                      )}
-                    </div>
-                    <div className="mt-4 space-y-1 border-y border-ink/10 py-4 text-sm text-copy-75">
-                      {order.items.map((item) => (
-                        <p key={`${item.productName}-${item.size}`}>{item.quantity} × {item.productName} · {item.size}</p>
-                      ))}
-                    </div>
-                    <div className="mt-4 flex items-end justify-between gap-4">
-                      <div>
-                        <p className="text-xs uppercase tracking-wider text-copy-40">Cash App reference</p>
-                        <p className="mt-1 font-mono text-sm text-primary">{order.paymentReference}</p>
-                      </div>
-                      <div className="text-right">
-                        <p className="text-xl font-black text-primary">${Number(order.total).toFixed(2)}</p>
-                        <p className="mt-1 text-[10px] uppercase tracking-wider text-copy-30">
-                          {format(new Date(order.createdAt), "MMM d, h:mm a")}
-                        </p>
-                      </div>
-                    </div>
-                    {order.paymentConfirmedAt && order.paymentConfirmedBy && (
-                      <div className="mt-4 rounded-lg border border-emerald-300/15 bg-emerald-300/5 px-3 py-2 text-xs text-emerald-700 dark:text-emerald-200/80">
-                        <p className="font-semibold uppercase tracking-wider text-emerald-700 dark:text-emerald-300/60">Confirmation history</p>
-                        <p className="mt-1">
-                          Payment confirmed by <span className="font-semibold text-emerald-700 dark:text-emerald-200">{order.paymentConfirmedBy}</span>
-                          {" "}on {format(new Date(order.paymentConfirmedAt), "MMM d, yyyy 'at' h:mm a")}
-                        </p>
-                      </div>
-                    )}
-                    {order.status === "awaiting_verification" && (
-                      <Button
-                        type="button"
-                        size="sm"
-                        className="mt-4 w-full rounded-full bg-emerald-600 text-ink hover:bg-emerald-500"
-                        disabled={verifyPaymentMutation.isPending}
-                        onClick={() => {
-                          if (window.confirm(`Confirm the Cash App payment for order #${order.id}?`)) {
-                            verifyPaymentMutation.mutate({ id: order.id });
-                          }
-                        }}
-                      >
-                        <Check className="h-4 w-4" />
-                        {verifyPaymentMutation.isPending ? "Confirming…" : "Confirm payment"}
-                      </Button>
-                    )}
-                    {verifyPaymentMutation.isError && verifyPaymentMutation.variables?.id === order.id && (
-                      <p className="mt-3 text-sm text-red-700 dark:text-red-300">
-                        Payment confirmation could not be completed. Please try again.
-                      </p>
-                    )}
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
-        </AdminSection>
+          {merchPanel}
         </div>
       </main>
     </div>

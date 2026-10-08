@@ -347,6 +347,7 @@ export const AdminUserRole = {
   registration_viewer: 'registration_viewer',
   new_converts: 'new_converts',
   registration_checkin: 'registration_checkin',
+  merch: 'merch',
 } as const;
 
 export interface AdminUser {
@@ -365,6 +366,7 @@ export const AdminUserInputRole = {
   registration_viewer: 'registration_viewer',
   new_converts: 'new_converts',
   registration_checkin: 'registration_checkin',
+  merch: 'merch',
 } as const;
 
 export interface AdminUserInput {
@@ -403,6 +405,7 @@ export const AdminLoginResponseRole = {
   registration_viewer: 'registration_viewer',
   new_converts: 'new_converts',
   registration_checkin: 'registration_checkin',
+  merch: 'merch',
 } as const;
 
 export interface AdminLoginResponse {
@@ -420,6 +423,7 @@ export const AdminSessionRole = {
   registration_viewer: 'registration_viewer',
   new_converts: 'new_converts',
   registration_checkin: 'registration_checkin',
+  merch: 'merch',
 } as const;
 
 export interface AdminSession {

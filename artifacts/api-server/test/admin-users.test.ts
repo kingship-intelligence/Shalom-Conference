@@ -273,7 +273,7 @@ describe("admin account management", () => {
   it("creates scoped staff accounts that can log in but cannot manage accounts", async () => {
     const primaryLogin = await signIn(bootstrapCredentials);
     const cookie = primaryLogin.headers.get("set-cookie").split(";")[0];
-    for (const role of ["registration_viewer", "new_converts", "registration_checkin"]) {
+    for (const role of ["registration_viewer", "new_converts", "registration_checkin", "merch"]) {
       const credentials = { username: `${role}@example.org`, password: "a-long-staff-password" };
       const created = await request("POST", "/admin/users", { ...credentials, role }, { cookie });
       assert.equal(created.status, 201);

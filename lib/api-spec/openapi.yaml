@@ -1238,7 +1238,7 @@ components:
       properties:
         id:        { type: integer }
         username:  { type: string }
-        role:      { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin] }
+        role:      { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin, merch] }
         createdAt: { type: string, format: date-time }
     AdminUserInput:
       type: object
@@ -1246,7 +1246,7 @@ components:
       properties:
         username: { type: string, minLength: 3, maxLength: 254 }
         password: { type: string, minLength: 12, maxLength: 200 }
-        role:     { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin] }
+        role:     { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin, merch] }
     AdminLoginInput:
       type: object
       required: [username, password]
@@ -1259,14 +1259,14 @@ components:
       properties:
         ok:       { type: boolean }
         username: { type: string }
-        role:     { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin] }
+        role:     { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin, merch] }
     AdminSession:
       type: object
       required: [ok, username, role]
       properties:
         ok:       { type: boolean }
         username: { type: string }
-        role:     { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin] }
+        role:     { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin, merch] }
     AdminLogoutResponse:
       type: object
       required: [ok]

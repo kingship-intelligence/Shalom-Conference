@@ -15,4 +15,5 @@ export const AdminUserRole = {
   registration_viewer: 'registration_viewer',
   new_converts: 'new_converts',
   registration_checkin: 'registration_checkin',
+  merch: 'merch',
 } as const;

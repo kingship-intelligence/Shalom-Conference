@@ -11,7 +11,7 @@ import {
   sendMerchOrderPaymentConfirmed,
   sendMerchOrderReceived,
 } from "../lib/email";
-import { getAdminIdentity, hasAdminSession } from "../lib/admin-session";
+import { getAdminIdentity, hasMerchAccess } from "../lib/admin-session";
 
 const router: IRouter = Router();
 
@@ -104,7 +104,7 @@ router.post("/merch-orders", async (req, res): Promise<void> => {
 });
 
 router.get("/merch-orders", async (req, res): Promise<void> => {
-  if (!hasAdminSession(req)) {
+  if (!hasMerchAccess(req)) {
     res.status(401).json({ error: "Admin sign-in is required." });
     return;
   }
@@ -116,7 +116,7 @@ router.get("/merch-orders", async (req, res): Promise<void> => {
 });
 
 router.patch("/merch-orders/:id/verify", async (req, res): Promise<void> => {
-  if (!hasAdminSession(req)) {
+  if (!hasMerchAccess(req)) {
     res.status(401).json({ error: "Admin sign-in is required." });
     return;
   }

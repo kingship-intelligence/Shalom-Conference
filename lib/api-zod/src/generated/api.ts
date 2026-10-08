@@ -529,7 +529,7 @@ export const ListFirstTimerResponsesResponse = zod.array(ListFirstTimerResponses
 export const GetAdminSessionResponse = zod.object({
   "ok": zod.boolean(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin'])
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'merch'])
 })
 
 
@@ -559,7 +559,7 @@ export const LoginAdminBody = zod.object({
 export const LoginAdminResponse = zod.object({
   "ok": zod.boolean(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin'])
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'merch'])
 })
 
 
@@ -569,7 +569,7 @@ export const LoginAdminResponse = zod.object({
 export const ListAdminUsersResponseItem = zod.object({
   "id": zod.number().int(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin']),
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'merch']),
   "createdAt": zod.coerce.date()
 })
 export const ListAdminUsersResponse = zod.array(ListAdminUsersResponseItem)
@@ -589,13 +589,13 @@ export const createAdminUserBodyPasswordMax = 200;
 export const CreateAdminUserBody = zod.object({
   "username": zod.string().min(createAdminUserBodyUsernameMin).max(createAdminUserBodyUsernameMax),
   "password": zod.string().min(createAdminUserBodyPasswordMin).max(createAdminUserBodyPasswordMax),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin']).optional()
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'merch']).optional()
 })
 
 export const CreateAdminUserResponse = zod.object({
   "id": zod.number().int(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin']),
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'merch']),
   "createdAt": zod.coerce.date()
 })
 

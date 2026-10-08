@@ -4,7 +4,7 @@ import type { Request, Response } from "express";
 const COOKIE_NAME = "shalom_admin_session";
 const MAX_AGE_SECONDS = 60 * 60 * 8;
 
-export type AdminRole = "admin" | "checkin" | "registration_viewer" | "new_converts" | "registration_checkin";
+export type AdminRole = "admin" | "checkin" | "registration_viewer" | "new_converts" | "registration_checkin" | "merch";
 
 export type AdminSession = {
   username: string;
@@ -120,7 +120,7 @@ export function getAdminSession(req: Request): AdminSession | null {
   return username ? { username, role } : null;
 }
 export function isAdminRole(value: unknown): value is AdminRole {
-  return ["admin", "checkin", "registration_viewer", "new_converts", "registration_checkin"].includes(value as string);
+  return ["admin", "checkin", "registration_viewer", "new_converts", "registration_checkin", "merch"].includes(value as string);
 }
 export function hasRegistrationAccess(req: Request): boolean {
   const role = getAdminSession(req)?.role;
@@ -133,4 +133,9 @@ export function hasRegistrationCountAccess(req: Request): boolean {
 export function hasNewConvertsAccess(req: Request): boolean {
   const role = getAdminSession(req)?.role;
   return role === "admin" || role === "new_converts";
+}
+
+export function hasMerchAccess(req: Request): boolean {
+  const role = getAdminSession(req)?.role;
+  return role === "admin" || role === "merch";
 }
