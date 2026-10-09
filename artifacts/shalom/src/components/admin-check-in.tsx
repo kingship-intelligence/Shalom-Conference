@@ -631,7 +631,7 @@ export function AdminCheckIn({
                             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                               <div className="min-w-0">
                                 <div className="flex flex-wrap items-center gap-2">
-                                  <h4 className="truncate font-bold text-ink">{registration.firstName} {registration.lastName}</h4>
+                                  <h4 className="truncate font-bold text-slate-900 dark:text-white">{registration.firstName} {registration.lastName}</h4>
                                   {isCheckedIn && <Badge className="border border-emerald-300/20 bg-emerald-300/10 text-emerald-700 dark:text-emerald-200">Present</Badge>}
                                 </div>
                               </div>
