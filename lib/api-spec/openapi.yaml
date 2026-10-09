@@ -929,7 +929,7 @@ paths:
       operationId: getRegistrationCount
       summary: Registration total for full admins, registration viewers and registration/check-in staff
       responses:
-        '200':
+        "200":
           description: Registration count
           content:
             application/json:
@@ -938,7 +938,7 @@ paths:
                 required: [count]
                 properties:
                   count: { type: integer }
-        '403':
+        "403":
           description: Registration count access required
   /conference-survey:
     post:
@@ -949,9 +949,9 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ConferenceSurveyInput'
+              $ref: "#/components/schemas/ConferenceSurveyInput"
       responses:
-        '201':
+        "201":
           description: Feedback saved
           content:
             application/json:
@@ -960,21 +960,21 @@ paths:
                 required: [success]
                 properties:
                   success: { type: boolean }
-        '400':
+        "400":
           description: Invalid feedback
     get:
       operationId: listConferenceSurveys
       summary: Read conference feedback (full admin only)
       responses:
-        '200':
+        "200":
           description: Conference feedback
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/ConferenceSurveyResponse'
-        '403':
+                  $ref: "#/components/schemas/ConferenceSurveyResponse"
+        "403":
           description: Full admin access required
 
 components:
@@ -990,7 +990,7 @@ components:
         wouldAttendAgain: { type: string, enum: [yes, no, maybe] }
     ConferenceSurveyResponse:
       allOf:
-        - $ref: '#/components/schemas/ConferenceSurveyInput'
+        - $ref: "#/components/schemas/ConferenceSurveyInput"
         - type: object
           required: [id, createdAt]
           properties:
@@ -1006,21 +1006,22 @@ components:
         - status
     Registration:
       type: object
-      required: [id, firstName, lastName, email, conferenceYear, volunteer, createdAt]
+      required:
+        [id, firstName, lastName, email, conferenceYear, volunteer, createdAt]
       properties:
-        id:             { type: integer }
-        firstName:      { type: string }
-        lastName:       { type: string }
-        email:          { type: string }
-        phone:          { type: ["string", "null"] }
-        smsConsent:     { type: boolean }
+        id: { type: integer }
+        firstName: { type: string }
+        lastName: { type: string }
+        email: { type: string }
+        phone: { type: ["string", "null"] }
+        smsConsent: { type: boolean }
         conferenceYear: { type: integer }
-        volunteer:      { type: boolean }
-        volunteerRole:  { type: ["string", "null"] }
+        volunteer: { type: boolean }
+        volunteerRole: { type: ["string", "null"] }
         badgeDeliveryStatus:
           type: string
           enum: [delivered, fallback]
-        createdAt:      { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
     RegistrationCreated:
       allOf:
         - $ref: "#/components/schemas/Registration"
@@ -1032,14 +1033,18 @@ components:
       type: object
       required: [firstName, lastName, email, conferenceYear]
       properties:
-        firstName:      { type: string, minLength: 1 }
-        lastName:       { type: string, minLength: 1 }
-        email:          { type: string, format: email }
-        phone:          { type: string }
-        smsConsent:     { type: boolean, description: Whether the attendee opted in to receive SMS updates. }
+        firstName: { type: string, minLength: 1 }
+        lastName: { type: string, minLength: 1 }
+        email: { type: string, format: email }
+        phone: { type: string }
+        smsConsent:
+          {
+            type: boolean,
+            description: Whether the attendee opted in to receive SMS updates.,
+          }
         conferenceYear: { type: integer }
-        volunteer:      { type: boolean }
-        volunteerRole:  { type: string }
+        volunteer: { type: boolean }
+        volunteerRole: { type: string }
         wantsAttendeeBadge:
           type: boolean
           description: Whether a portrait will be uploaded to create an attendee badge.
@@ -1081,9 +1086,9 @@ components:
       type: object
       required: [id, firstName, lastName, conferenceYear]
       properties:
-        id:             { type: integer }
-        firstName:      { type: string }
-        lastName:       { type: string }
+        id: { type: integer }
+        firstName: { type: string }
+        lastName: { type: string }
         conferenceYear: { type: integer }
     CheckInQrScanInput:
       type: object
@@ -1091,7 +1096,7 @@ components:
       properties:
         payload:
           type: string
-          pattern: '^shalom-checkin:v1:[A-Za-z0-9_-]{43}$'
+          pattern: "^shalom-checkin:v1:[A-Za-z0-9_-]{43}$"
           description: Opaque attendee QR payload; contains no attendee details or database identifiers.
     PlusOneInput:
       type: object
@@ -1099,16 +1104,16 @@ components:
       required: [firstName, lastName, email]
       properties:
         firstName: { type: string, minLength: 1 }
-        lastName:  { type: string, minLength: 1 }
-        email:     { type: string, format: email }
-        phone:     { type: string }
+        lastName: { type: string, minLength: 1 }
+        email: { type: string, format: email }
+        phone: { type: string }
     ExistingRegistrationBadgeInput:
       type: object
       required: [firstName, lastName, email, conferenceYear]
       properties:
-        firstName:      { type: string, minLength: 1 }
-        lastName:       { type: string, minLength: 1 }
-        email:          { type: string, format: email }
+        firstName: { type: string, minLength: 1 }
+        lastName: { type: string, minLength: 1 }
+        email: { type: string, format: email }
         conferenceYear: { type: integer }
     BadgeAccess:
       type: object
@@ -1120,21 +1125,21 @@ components:
       type: object
       required: [token, name, size, contentType]
       properties:
-        token:       { type: string, minLength: 32 }
-        name:        { type: string, minLength: 1, maxLength: 200 }
-        size:        { type: integer, minimum: 1, maximum: 5242880 }
+        token: { type: string, minLength: 32 }
+        name: { type: string, minLength: 1, maxLength: 200 }
+        size: { type: integer, minimum: 1, maximum: 5242880 }
         contentType: { type: string, enum: [image/jpeg, image/png, image/webp] }
     BadgeUploadUrl:
       type: object
       required: [uploadURL, objectPath]
       properties:
-        uploadURL:  { type: string, format: uri }
+        uploadURL: { type: string, format: uri }
         objectPath: { type: string }
     BadgeCompleteInput:
       type: object
       required: [token, objectPath]
       properties:
-        token:      { type: string, minLength: 32 }
+        token: { type: string, minLength: 32 }
         objectPath: { type: string, minLength: 1 }
     BadgeSkipInput:
       type: object
@@ -1145,26 +1150,26 @@ components:
       type: object
       required: [id, name, email, conferenceYear, testimony, createdAt]
       properties:
-        id:             { type: integer }
-        name:           { type: string }
-        email:          { type: string }
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
         conferenceYear: { type: integer }
-        testimony:      { type: string }
-        createdAt:      { type: string, format: date-time }
+        testimony: { type: string }
+        createdAt: { type: string, format: date-time }
     TestimonyInput:
       type: object
       required: [conferenceYear, testimony]
       properties:
         conferenceYear: { type: integer }
-        testimony:      { type: string, minLength: 10 }
+        testimony: { type: string, minLength: 10 }
     PrayerChainSignup:
       type: object
       required: [id, name, email, phone, timeSlots, createdAt]
       properties:
-        id:        { type: integer }
-        name:      { type: string }
-        email:     { type: string, format: email }
-        phone:     { type: string }
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string, format: email }
+        phone: { type: string }
         timeSlots:
           type: array
           items: { type: string }
@@ -1173,7 +1178,7 @@ components:
       type: object
       required: [name, email, phone, timeSlots]
       properties:
-        name:  { type: string, minLength: 1, maxLength: 160 }
+        name: { type: string, minLength: 1, maxLength: 160 }
         email: { type: string, format: email }
         phone: { type: string, minLength: 7, maxLength: 40 }
         timeSlots:
@@ -1198,47 +1203,61 @@ components:
               - "11:00"
     PrayerChargeSurveyResponse:
       type: object
-      required: [id, rating, meaningfulMoment, suggestion, wouldAttendAgain, createdAt]
+      required:
+        [id, rating, meaningfulMoment, suggestion, wouldAttendAgain, createdAt]
       properties:
-        id:                { type: integer }
-        rating:            { type: integer, minimum: 1, maximum: 5 }
-        meaningfulMoment:  { type: string }
-        suggestion:        { type: string }
-        wouldAttendAgain:  { type: string, enum: [yes, maybe, no] }
-        createdAt:         { type: string, format: date-time }
+        id: { type: integer }
+        rating: { type: integer, minimum: 1, maximum: 5 }
+        meaningfulMoment: { type: string }
+        suggestion: { type: string }
+        wouldAttendAgain: { type: string, enum: [yes, maybe, no] }
+        createdAt: { type: string, format: date-time }
     PrayerChargeSurveyResponseInput:
       type: object
       required: [rating, wouldAttendAgain]
       properties:
-        rating:           { type: integer, minimum: 1, maximum: 5 }
+        rating: { type: integer, minimum: 1, maximum: 5 }
         meaningfulMoment: { type: string, maxLength: 1200 }
-        suggestion:       { type: string, maxLength: 1200 }
+        suggestion: { type: string, maxLength: 1200 }
         wouldAttendAgain: { type: string, enum: [yes, maybe, no] }
     FirstTimerResponse:
       type: object
       required: [id, name, email, isFirstTime, conferenceYear, createdAt]
       properties:
-        id:             { type: integer }
-        name:           { type: string }
-        email:          { type: string, format: email }
-        isFirstTime:    { type: boolean }
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string, format: email }
+        isFirstTime: { type: boolean }
         conferenceYear: { type: integer }
-        createdAt:      { type: string, format: date-time }
+        createdAt: { type: string, format: date-time }
     FirstTimerResponseInput:
       type: object
       required: [name, email, isFirstTime, conferenceYear]
       properties:
-        name:           { type: string, minLength: 1, maxLength: 160 }
-        email:          { type: string, format: email, maxLength: 254 }
-        isFirstTime:    { type: boolean }
+        name: { type: string, minLength: 1, maxLength: 160 }
+        email: { type: string, format: email, maxLength: 254 }
+        isFirstTime: { type: boolean }
         conferenceYear: { type: integer, minimum: 2000, maximum: 2100 }
     AdminUser:
       type: object
       required: [id, username, role, createdAt]
       properties:
-        id:        { type: integer }
-        username:  { type: string }
-        role:      { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin, merch] }
+        id: { type: integer }
+        username: { type: string }
+        role:
+          {
+            type: string,
+            enum:
+              [
+                admin,
+                checkin,
+                registration_viewer,
+                new_converts,
+                registration_checkin,
+                first_timers,
+                merch,
+              ],
+          }
         createdAt: { type: string, format: date-time }
     AdminUserInput:
       type: object
@@ -1246,7 +1265,20 @@ components:
       properties:
         username: { type: string, minLength: 3, maxLength: 254 }
         password: { type: string, minLength: 12, maxLength: 200 }
-        role:     { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin, merch] }
+        role:
+          {
+            type: string,
+            enum:
+              [
+                admin,
+                checkin,
+                registration_viewer,
+                new_converts,
+                registration_checkin,
+                first_timers,
+                merch,
+              ],
+          }
     AdminLoginInput:
       type: object
       required: [username, password]
@@ -1257,16 +1289,42 @@ components:
       type: object
       required: [ok, username, role]
       properties:
-        ok:       { type: boolean }
+        ok: { type: boolean }
         username: { type: string }
-        role:     { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin, merch] }
+        role:
+          {
+            type: string,
+            enum:
+              [
+                admin,
+                checkin,
+                registration_viewer,
+                new_converts,
+                registration_checkin,
+                first_timers,
+                merch,
+              ],
+          }
     AdminSession:
       type: object
       required: [ok, username, role]
       properties:
-        ok:       { type: boolean }
+        ok: { type: boolean }
         username: { type: string }
-        role:     { type: string, enum: [admin, checkin, registration_viewer, new_converts, registration_checkin, merch] }
+        role:
+          {
+            type: string,
+            enum:
+              [
+                admin,
+                checkin,
+                registration_viewer,
+                new_converts,
+                registration_checkin,
+                first_timers,
+                merch,
+              ],
+          }
     AdminLogoutResponse:
       type: object
       required: [ok]
@@ -1281,7 +1339,8 @@ components:
         quantity: { type: integer, minimum: 1 }
     MerchOrder:
       type: object
-      required: [id, name, email, paymentReference, items, total, status, createdAt]
+      required:
+        [id, name, email, paymentReference, items, total, status, createdAt]
       properties:
         id: { type: integer }
         name: { type: string }

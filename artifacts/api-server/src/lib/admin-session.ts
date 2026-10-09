@@ -4,7 +4,14 @@ import type { Request, Response } from "express";
 const COOKIE_NAME = "shalom_admin_session";
 const MAX_AGE_SECONDS = 60 * 60 * 8;
 
-export type AdminRole = "admin" | "checkin" | "registration_viewer" | "new_converts" | "registration_checkin" | "merch";
+export type AdminRole =
+  | "admin"
+  | "checkin"
+  | "registration_viewer"
+  | "new_converts"
+  | "registration_checkin"
+  | "first_timers"
+  | "merch";
 
 export type AdminSession = {
   username: string;
@@ -79,7 +86,9 @@ export function hasAdminSession(req: Request): boolean {
 
 export function hasCheckInAccess(req: Request): boolean {
   const role = getAdminSession(req)?.role;
-  return role === "admin" || role === "checkin" || role === "registration_checkin";
+  return (
+    role === "admin" || role === "checkin" || role === "registration_checkin"
+  );
 }
 
 export function getAdminIdentity(req: Request): string | null {
@@ -113,14 +122,25 @@ export function getAdminSession(req: Request): AdminSession | null {
   const expected = sign(tokenData, secret);
   const actualBuffer = Buffer.from(signature);
   const expectedBuffer = Buffer.from(expected);
-  if (actualBuffer.length !== expectedBuffer.length || !timingSafeEqual(actualBuffer, expectedBuffer)) {
+  if (
+    actualBuffer.length !== expectedBuffer.length ||
+    !timingSafeEqual(actualBuffer, expectedBuffer)
+  ) {
     return null;
   }
   const username = decodeIdentity(encodedUsername);
   return username ? { username, role } : null;
 }
 export function isAdminRole(value: unknown): value is AdminRole {
-  return ["admin", "checkin", "registration_viewer", "new_converts", "registration_checkin", "merch"].includes(value as string);
+  return [
+    "admin",
+    "checkin",
+    "registration_viewer",
+    "new_converts",
+    "registration_checkin",
+    "first_timers",
+    "merch",
+  ].includes(value as string);
 }
 export function hasRegistrationAccess(req: Request): boolean {
   const role = getAdminSession(req)?.role;
@@ -134,8 +154,12 @@ export function hasNewConvertsAccess(req: Request): boolean {
   const role = getAdminSession(req)?.role;
   return role === "admin" || role === "new_converts";
 }
-
 export function hasMerchAccess(req: Request): boolean {
   const role = getAdminSession(req)?.role;
   return role === "admin" || role === "merch";
+}
+
+export function hasFirstTimersAccess(req: Request): boolean {
+  const role = getAdminSession(req)?.role;
+  return role === "admin" || role === "first_timers";
 }

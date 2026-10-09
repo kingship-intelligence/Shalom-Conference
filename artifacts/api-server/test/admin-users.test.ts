@@ -28,17 +28,28 @@ function fakeDb() {
     select(fields) {
       return {
         from() {
-          const project = (rows) => fields
-            ? rows.map((row) => Object.fromEntries(Object.keys(fields).map((key) => [key, row[key]])))
-            : rows;
+          const project = (rows) =>
+            fields
+              ? rows.map((row) =>
+                  Object.fromEntries(
+                    Object.keys(fields).map((key) => [key, row[key]]),
+                  ),
+                )
+              : rows;
           const query = {
-            where: async (condition) => project(
-              state.rows.filter((row) => row[condition.column.name] === condition.value),
-            ),
+            where: async (condition) =>
+              project(
+                state.rows.filter(
+                  (row) => row[condition.column.name] === condition.value,
+                ),
+              ),
             limit: async (count) => project(state.rows.slice(0, count)),
-            orderBy: async () => project([...state.rows].sort(
-              (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
-            )),
+            orderBy: async () =>
+              project(
+                [...state.rows].sort(
+                  (a, b) => b.createdAt.getTime() - a.createdAt.getTime(),
+                ),
+              ),
           };
           return query;
         },
@@ -50,7 +61,11 @@ function fakeDb() {
           const builder = {
             returning: async (fields) => {
               const row = insertRow(values);
-              return [Object.fromEntries(Object.keys(fields).map((key) => [key, row[key]]))];
+              return [
+                Object.fromEntries(
+                  Object.keys(fields).map((key) => [key, row[key]]),
+                ),
+              ];
             },
             then(resolve, reject) {
               return Promise.resolve(insertRow(values)).then(resolve, reject);
@@ -161,7 +176,10 @@ describe("admin account management", () => {
     const created = await request(
       "POST",
       "/admin/users",
-      { username: "Second.Admin@example.com", password: "a-long-new-admin-password" },
+      {
+        username: "Second.Admin@example.com",
+        password: "a-long-new-admin-password",
+      },
       { cookie },
     );
 
@@ -193,7 +211,9 @@ describe("admin account management", () => {
 
     const login = await signIn(bootstrapCredentials);
     const cookie = login.headers.get("set-cookie").split(";")[0];
-    const session = await request("GET", "/admin/session", undefined, { cookie });
+    const session = await request("GET", "/admin/session", undefined, {
+      cookie,
+    });
     assert.equal(session.status, 200);
     assert.deepEqual(await session.json(), {
       ok: true,
@@ -212,7 +232,10 @@ describe("admin account management", () => {
     const duplicate = await request(
       "POST",
       "/admin/users",
-      { username: " PRIMARY.ADMIN@EXAMPLE.COM ", password: "another-long-password" },
+      {
+        username: " PRIMARY.ADMIN@EXAMPLE.COM ",
+        password: "another-long-password",
+      },
       { cookie },
     );
     assert.equal(duplicate.status, 409);
@@ -223,7 +246,9 @@ describe("admin account management", () => {
     });
     assert.equal(wrongPassword.status, 401);
 
-    const logout = await request("DELETE", "/admin/session", undefined, { cookie });
+    const logout = await request("DELETE", "/admin/session", undefined, {
+      cookie,
+    });
     assert.equal(logout.status, 200);
     assert.deepEqual(await logout.json(), { ok: true });
     assert.match(logout.headers.get("set-cookie"), /Expires=Thu, 01 Jan 1970/i);
@@ -273,21 +298,63 @@ describe("admin account management", () => {
   it("creates scoped staff accounts that can log in but cannot manage accounts", async () => {
     const primaryLogin = await signIn(bootstrapCredentials);
     const cookie = primaryLogin.headers.get("set-cookie").split(";")[0];
-    for (const role of ["registration_viewer", "new_converts", "registration_checkin", "merch"]) {
-      const credentials = { username: `${role}@example.org`, password: "a-long-staff-password" };
-      const created = await request("POST", "/admin/users", { ...credentials, role }, { cookie });
+    for (const role of [
+      "registration_viewer",
+      "new_converts",
+      "registration_checkin",
+      "first_timers",
+      "merch",
+    ]) {
+      const credentials = {
+        username: `${role}@example.org`,
+        password: "a-long-staff-password",
+      };
+      const created = await request(
+        "POST",
+        "/admin/users",
+        { ...credentials, role },
+        { cookie },
+      );
       assert.equal(created.status, 201);
       assert.equal((await created.json()).role, role);
       const login = await signIn(credentials);
       assert.equal(login.status, 200);
       assert.equal((await login.json()).role, role);
       const staffCookie = login.headers.get("set-cookie").split(";")[0];
-      const session = await request("GET", "/admin/session", undefined, { cookie: staffCookie });
+      const session = await request("GET", "/admin/session", undefined, {
+        cookie: staffCookie,
+      });
       assert.equal((await session.json()).role, role);
-      assert.equal((await request("GET", "/admin/users", undefined, { cookie: staffCookie })).status, 403);
-      assert.equal((await request("POST", "/admin/users", { username: "forbidden", password: "a-long-password" }, { cookie: staffCookie })).status, 403);
+      assert.equal(
+        (
+          await request("GET", "/admin/users", undefined, {
+            cookie: staffCookie,
+          })
+        ).status,
+        403,
+      );
+      assert.equal(
+        (
+          await request(
+            "POST",
+            "/admin/users",
+            { username: "forbidden", password: "a-long-password" },
+            { cookie: staffCookie },
+          )
+        ).status,
+        403,
+      );
     }
-    assert.equal((await request("POST", "/admin/users", { username: "bad-role", password: "a-long-password", role: "owner" }, { cookie })).status, 400);
+    assert.equal(
+      (
+        await request(
+          "POST",
+          "/admin/users",
+          { username: "bad-role", password: "a-long-password", role: "owner" },
+          { cookie },
+        )
+      ).status,
+      400,
+    );
   });
-
 });

@@ -27,7 +27,11 @@ function fakeDb() {
               if (duplicate) {
                 throw { code: "23505" };
               }
-              const row = { id: state.nextId++, createdAt: new Date(), ...values };
+              const row = {
+                id: state.nextId++,
+                createdAt: new Date(),
+                ...values,
+              };
               state.rows.push(row);
               return [row];
             },
@@ -47,7 +51,9 @@ function fakeDb() {
   };
 }
 
-const routePath = pathToFileURL(resolve("src/routes/first-timer-responses.ts")).href;
+const routePath = pathToFileURL(
+  resolve("src/routes/first-timer-responses.ts"),
+).href;
 mock.module("@workspace/db", {
   namedExports: { db: fakeDb(), firstTimerResponsesTable: table },
 });
@@ -86,10 +92,12 @@ async function request(method, path, body, headers = {}) {
   }
 }
 
-function adminCookie(username = "admin@shalomconference.com") {
+function adminCookie(username = "admin@shalomconference.com", role) {
   const issuedAt = Math.floor(Date.now() / 1000);
   const encodedUsername = Buffer.from(username, "utf8").toString("base64url");
-  const tokenData = `${issuedAt}.${encodedUsername}`;
+  const tokenData = role
+    ? `${issuedAt}.${encodedUsername}.${role}`
+    : `${issuedAt}.${encodedUsername}`;
   const signature = createHmac("sha256", process.env.SESSION_SECRET)
     .update(tokenData)
     .digest("hex");
@@ -111,7 +119,11 @@ describe("first-timer responses", () => {
   });
 
   it("normalizes and saves a valid response", async () => {
-    const response = await request("POST", "/first-timer-responses", validResponse);
+    const response = await request(
+      "POST",
+      "/first-timer-responses",
+      validResponse,
+    );
     const body = await response.json();
 
     assert.equal(response.status, 201);
@@ -145,7 +157,7 @@ describe("first-timer responses", () => {
     assert.equal(state.rows.length, 1);
   });
 
-  it("keeps the response list private and available to an authenticated admin", async () => {
+  it("keeps the response list private and available to admins and first-timer staff", async () => {
     await request("POST", "/first-timer-responses", validResponse);
 
     const unauthorized = await request("GET", "/first-timer-responses");
@@ -159,5 +171,21 @@ describe("first-timer responses", () => {
     );
     assert.equal(authorized.status, 200);
     assert.equal((await authorized.json()).length, 1);
+
+    const scopedStaff = await request(
+      "GET",
+      "/first-timer-responses",
+      undefined,
+      { cookie: adminCookie("first-timers@example.org", "first_timers") },
+    );
+    assert.equal(scopedStaff.status, 200);
+
+    const unrelatedStaff = await request(
+      "GET",
+      "/first-timer-responses",
+      undefined,
+      { cookie: adminCookie("checkin@example.org", "checkin") },
+    );
+    assert.equal(unrelatedStaff.status, 401);
   });
 });

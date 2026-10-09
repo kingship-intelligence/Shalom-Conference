@@ -6,7 +6,7 @@ import {
   CreateFirstTimerResponseResponse,
   ListFirstTimerResponsesResponse,
 } from "@workspace/api-zod";
-import { hasAdminSession } from "../lib/admin-session";
+import { hasFirstTimersAccess } from "../lib/admin-session";
 
 const router: IRouter = Router();
 
@@ -15,7 +15,10 @@ router.post("/first-timer-responses", async (req, res): Promise<void> => {
     typeof req.body === "object" && req.body !== null
       ? {
           ...req.body,
-          name: typeof req.body.name === "string" ? req.body.name.trim() : req.body.name,
+          name:
+            typeof req.body.name === "string"
+              ? req.body.name.trim()
+              : req.body.name,
           email:
             typeof req.body.email === "string"
               ? req.body.email.trim().toLowerCase()
@@ -24,7 +27,10 @@ router.post("/first-timer-responses", async (req, res): Promise<void> => {
       : req.body;
   const parsed = CreateFirstTimerResponseBody.safeParse(normalizedBody);
   if (!parsed.success) {
-    req.log.warn({ errors: parsed.error.message }, "Invalid first-timer response body");
+    req.log.warn(
+      { errors: parsed.error.message },
+      "Invalid first-timer response body",
+    );
     res.status(400).json({ error: parsed.error.message });
     return;
   }
@@ -46,7 +52,8 @@ router.post("/first-timer-responses", async (req, res): Promise<void> => {
       error.code === "23505"
     ) {
       res.status(409).json({
-        error: "A response for this email has already been submitted for this conference.",
+        error:
+          "A response for this email has already been submitted for this conference.",
       });
       return;
     }
@@ -55,7 +62,7 @@ router.post("/first-timer-responses", async (req, res): Promise<void> => {
 });
 
 router.get("/first-timer-responses", async (req, res): Promise<void> => {
-  if (!hasAdminSession(req)) {
+  if (!hasFirstTimersAccess(req)) {
     res.status(401).json({ error: "Admin sign-in is required." });
     return;
   }
