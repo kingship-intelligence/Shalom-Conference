@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link } from "wouter";
-import { motion, useInView, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Pause, Play } from "lucide-react";
 import { currentConference } from "@/data/conferences";
@@ -19,11 +19,7 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
   </motion.div>
 );
 
-const HERO_SEGMENT_COUNT = 15;
 const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
-const HERO_POSTER = "/images/home/shalom-hero-poster.webp";
-const HERO_FLYER = currentConference.flyer ?? currentConference.image;
-const HERO_CROSSFADE_MS = 700;
 const HERO_TITLE_PREFIX = `${currentConference.year}: `;
 const HERO_TITLE_THEME = currentConference.theme.toUpperCase();
 const HERO_TITLE = `${HERO_TITLE_PREFIX}${HERO_TITLE_THEME}`;
@@ -31,34 +27,6 @@ const HERO_TITLE = `${HERO_TITLE_PREFIX}${HERO_TITLE_THEME}`;
 const CONFERENCE_START = currentConference.startsAt
   ? new Date(currentConference.startsAt).getTime()
   : null;
-
-const heroSegmentSrc = (segment: number) =>
-  `/videos/shalom-hero-segments/segment-${String(segment + 1).padStart(2, "0")}.mp4`;
-
-function HeroFirefall({ enabled }: { enabled: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const inView = useInView(ref);
-  return (
-    <div ref={ref} aria-hidden="true" className="hero-firefall" data-running={enabled && inView}>
-      {Array.from({ length: 28 }, (_, index) => (
-        <span
-          key={index}
-          className={`${index > 15 ? "fire-tongue fire-tongue-desktop" : "fire-tongue"} ${
-            index % 2 === 0 ? "fire-tongue-left" : "fire-tongue-right"
-          }`}
-          style={{
-            left: `${(index * 43 + 5) % 100}%`,
-            width: `${18 + (index % 5) * 3}px`,
-            height: `${40 + (index % 6) * 5}px`,
-            animationDuration: `${5.2 + (index % 7) * 0.5}s`,
-            animationDelay: `${-index * 0.53}s`,
-            opacity: 0.38 + (index % 4) * 0.08,
-          }}
-        />
-      ))}
-    </div>
-  );
-}
 
 function HeroTypewriterTitle({
   enabled,
@@ -94,7 +62,7 @@ function HeroTypewriterTitle({
 
   return (
     <h1
-      className="hero-title mb-5 whitespace-nowrap text-[clamp(1.9rem,8.5vw,2.5rem)] font-bold uppercase leading-[0.92] tracking-tight text-black sm:text-[2.5rem] lg:mb-8 lg:text-[3rem] xl:text-[4rem] 2xl:text-[4.4rem] italic"
+      className="hero-title mb-7 whitespace-nowrap text-[clamp(1.75rem,7.8vw,2.3rem)] font-bold uppercase leading-[0.92] tracking-tight text-black sm:text-[3rem] lg:mb-10 lg:text-[5rem] xl:text-[6.25rem] 2xl:text-[7rem] italic"
       style={{ fontFamily: "var(--font-display)" }}
       aria-label={HERO_TITLE.replace("\n", " ")}
     >
@@ -199,162 +167,6 @@ function ConferenceCountdown() {
   );
 }
 
-function HeroVideo({ enabled }: { enabled: boolean }) {
-  const players = [useRef<HTMLVideoElement>(null), useRef<HTMLVideoElement>(null)];
-  const [active, setActive] = useState(0);
-  const [segments, setSegments] = useState<[number, number]>([0, 1]);
-
-  const play = useCallback((video: HTMLVideoElement | null) => {
-    if (!video) return;
-    video.defaultMuted = true;
-    video.muted = true;
-    video.play().catch(() => {
-      // The poster remains visible if autoplay is unavailable.
-    });
-  }, []);
-
-  useEffect(() => {
-    const visible = players[active].current;
-    if (!enabled) {
-      players.forEach((player) => player.current?.pause());
-      return;
-    }
-    if (!visible) return;
-
-    const tryPlay = () => play(visible);
-    tryPlay();
-    visible.addEventListener("canplay", tryPlay);
-    return () => visible.removeEventListener("canplay", tryPlay);
-    // The player refs remain stable for the lifetime of the component.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [active, enabled, play]);
-
-  const swapTimer = useRef<number | null>(null);
-  useEffect(
-    () => () => {
-      if (swapTimer.current !== null) window.clearTimeout(swapTimer.current);
-    },
-    [],
-  );
-
-  const handleEnded = (index: number) => {
-    if (!enabled || index !== active) return;
-    const next = index === 0 ? 1 : 0;
-    play(players[next].current);
-    setActive(next);
-    swapTimer.current = window.setTimeout(() => {
-      setSegments((current) => {
-        const updated: [number, number] = [...current];
-        updated[index] = (current[next] + 1) % HERO_SEGMENT_COUNT;
-        return updated;
-      });
-    }, HERO_CROSSFADE_MS + 50);
-  };
-
-  return (
-    <>
-      {players.map((ref, index) => (
-        <video
-          key={index}
-          ref={ref}
-          src={heroSegmentSrc(segments[index])}
-          muted
-          playsInline
-          preload="auto"
-          poster={index === 0 ? HERO_POSTER : undefined}
-          onEnded={() => handleEnded(index)}
-          aria-hidden="true"
-          className={`absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-out ${
-            index === active ? "opacity-100" : "opacity-0"
-          }`}
-        />
-      ))}
-    </>
-  );
-}
-
-function HeroFeature({ enabled, reducedMotion }: { enabled: boolean; reducedMotion: boolean }) {
-  const [showVideo, setShowVideo] = useState(false);
-
-  useEffect(() => {
-    if (!enabled || reducedMotion) return;
-    const timer = window.setTimeout(() => setShowVideo((current) => !current), 8_000);
-    return () => window.clearTimeout(timer);
-  }, [enabled, reducedMotion, showVideo]);
-
-  return (
-    <motion.div
-      initial={reducedMotion ? false : { opacity: 0, y: 24 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: enabled ? 0.8 : 0, delay: enabled ? 0.2 : 0 }}
-      className="relative mx-auto min-h-[510px] w-full max-w-[680px] xl:min-h-[570px] 2xl:min-h-[650px]"
-    >
-      <div className="absolute inset-x-0 top-0 bottom-14" style={{ perspective: 1400 }}>
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          animate={{
-            opacity: showVideo ? 0 : 1,
-            rotateY: showVideo ? 90 : 0,
-          }}
-          transition={{ duration: enabled ? 0.6 : 0, ease: [0.22, 1, 0.36, 1] }}
-          style={{ backfaceVisibility: "hidden" }}
-          aria-hidden={showVideo}
-        >
-          <div className="w-full max-w-[360px] rounded-2xl border border-primary/20 bg-white/85 p-2 shadow-[0_20px_55px_-35px_rgba(19,16,28,0.45)] xl:max-w-[420px] 2xl:max-w-[480px]">
-            <img
-              src={HERO_FLYER}
-              alt={`Shalom ${currentConference.year} flyer: ${currentConference.theme}`}
-              className="h-auto w-full object-contain"
-            />
-          </div>
-        </motion.div>
-
-        <motion.div
-          className="absolute inset-0 flex items-center justify-center"
-          animate={{
-            opacity: showVideo ? 1 : 0,
-            rotateY: showVideo ? 0 : -90,
-          }}
-          transition={{ duration: enabled ? 0.6 : 0, ease: [0.22, 1, 0.36, 1] }}
-          style={{ backfaceVisibility: "hidden" }}
-          aria-hidden={!showVideo}
-        >
-          <div className="relative aspect-video w-full overflow-hidden rounded-2xl border border-primary/20 bg-black shadow-[0_24px_65px_-36px_rgba(19,16,28,0.55)]">
-            <img
-              src={HERO_POSTER}
-              alt=""
-              width={960}
-              height={540}
-              className="absolute inset-0 h-full w-full object-cover"
-            />
-            <HeroVideo enabled={enabled && showVideo} />
-          </div>
-        </motion.div>
-      </div>
-
-      <div className="absolute bottom-0 left-1/2 flex -translate-x-1/2 items-center gap-2 rounded-full border border-primary/20 bg-white/90 p-2 shadow-sm backdrop-blur-sm">
-        {(["Flyer", "Video"] as const).map((label, index) => {
-          const selected = showVideo === (index === 1);
-          return (
-            <button
-              key={label}
-              type="button"
-              onClick={() => setShowVideo(index === 1)}
-              aria-label={`Show ${label.toLowerCase()}`}
-              aria-pressed={selected}
-              className={`min-h-10 rounded-full px-4 text-xs font-bold uppercase tracking-widest transition-colors ${
-                selected ? "bg-primary text-white" : "text-slate-600 hover:bg-primary/10"
-              }`}
-            >
-              {label}
-            </button>
-          );
-        })}
-      </div>
-    </motion.div>
-  );
-}
-
 export default function Home() {
   // framer's hook tracks prefers-reduced-motion and updates live.
   const prefersReducedMotion = useReducedMotion() ?? false;
@@ -378,14 +190,20 @@ export default function Home() {
               initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.7 }}
-              className="mx-auto flex max-w-3xl flex-col items-center text-center lg:mx-0 lg:items-start lg:text-left"
+              className="mx-auto flex max-w-6xl flex-col items-center text-center"
             >
               <HeroTypewriterTitle enabled={motionEnabled} reducedMotion={prefersReducedMotion} />
-              <p className="mb-6 max-w-xl text-base font-medium leading-relaxed text-slate-600 lg:mb-9 lg:text-xl xl:text-2xl">
-                Two nights of worship and prayer for students and young adults, built
-                around the Holy Spirit.
-              </p>
-              <div className="flex flex-wrap justify-center gap-3 lg:justify-start">
+              {currentConference.scriptureText && (
+                <div className="mb-9 max-w-4xl">
+                  <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
+                    {currentConference.scripture}
+                  </p>
+                  <blockquote className="mt-5 text-lg font-medium leading-relaxed text-slate-700 sm:text-xl lg:text-2xl xl:text-3xl">
+                    “{currentConference.scriptureText}”
+                  </blockquote>
+                </div>
+              )}
+              <div className="flex flex-wrap justify-center gap-3">
                 <Button
                   asChild
                   size="lg"
@@ -405,19 +223,6 @@ export default function Home() {
                   <Link href="/2026">See the lineup</Link>
                 </Button>
               </div>
-              {currentConference.scriptureText && (
-                <div
-                  className="mt-10 hidden max-w-xl rounded-2xl border border-primary/20 bg-white/85 p-6 text-left text-[#13101c] shadow-[0_20px_55px_-35px_rgba(19,16,28,0.35)] lg:block 2xl:p-8"
-                  data-testid="desktop-hero-scripture"
-                >
-                  <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
-                    {currentConference.scripture}
-                  </p>
-                  <blockquote className="mt-4 text-base font-medium leading-relaxed text-slate-700 xl:text-lg">
-                    “{currentConference.scriptureText}”
-                  </blockquote>
-                </div>
-              )}
             </motion.div>
   );
 
@@ -428,14 +233,8 @@ export default function Home() {
       <main className="home-scroll-story">
       <ScrollPage enabled={motionEnabled}>
       <section className={`home-hero relative isolate flex flex-col items-center overflow-hidden bg-white px-6 pb-6 pt-10 text-[#13101c] sm:px-10 lg:min-h-[min(760px,calc(100svh-76px))] lg:flex-row lg:px-16 lg:py-16 2xl:min-h-[min(900px,calc(100svh-76px))] ${!motionEnabled ? "hero-motion-paused" : ""}`}>
-        <HeroFirefall enabled={motionEnabled} />
         <div className="container relative z-10 mx-auto w-full max-w-[1500px]">
-          {isDesktop ? (
-            <div className="grid items-center gap-12 lg:grid-cols-[minmax(0,1.08fr)_minmax(0,0.92fr)] xl:gap-16">
-              {heroContent}
-              <HeroFeature enabled={motionEnabled} reducedMotion={prefersReducedMotion} />
-            </div>
-          ) : heroContent}
+          {heroContent}
         </div>
         {isDesktop && !prefersReducedMotion && (
           <button

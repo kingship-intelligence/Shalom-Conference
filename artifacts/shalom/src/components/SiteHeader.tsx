@@ -45,7 +45,7 @@ export default function SiteHeader() {
           <Button
             asChild
             size="sm"
-            className="rounded-full bg-primary hover:bg-primary/90 text-white font-bold uppercase tracking-widest border-none px-6 h-10"
+            className="hidden h-10 rounded-full border-none bg-primary px-6 font-bold uppercase tracking-widest text-white hover:bg-primary/90 sm:inline-flex"
           >
             <Link href="/register">Register</Link>
           </Button>
@@ -87,6 +87,13 @@ export default function SiteHeader() {
                   {l.label}
                 </Link>
               ))}
+              <Link
+                href="/register"
+                onClick={() => setMenuOpen(false)}
+                className="mt-2 flex min-h-11 items-center justify-center rounded-full bg-primary px-6 text-sm font-bold uppercase tracking-widest text-white"
+              >
+                Register
+              </Link>
             </div>
           </motion.div>
         )}
