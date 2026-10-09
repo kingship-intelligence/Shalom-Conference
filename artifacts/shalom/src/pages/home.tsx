@@ -24,7 +24,9 @@ const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
 const HERO_POSTER = "/images/home/shalom-hero-poster.webp";
 const HERO_FLYER = currentConference.flyer ?? currentConference.image;
 const HERO_CROSSFADE_MS = 700; // keep in step with duration-700 on the video elements
-const HERO_TITLE = `${currentConference.year}: ${currentConference.theme.toUpperCase()}`;
+const HERO_TITLE_PREFIX = `${currentConference.year}: `;
+const HERO_TITLE_THEME = currentConference.theme.toUpperCase();
+const HERO_TITLE = `${HERO_TITLE_PREFIX}${HERO_TITLE_THEME}`;
 // Countdown target comes from the conference data so there is one place to update.
 const CONFERENCE_START = currentConference.startsAt
   ? new Date(currentConference.startsAt).getTime()
@@ -77,7 +79,11 @@ function HeroTypewriterTitle({
     return () => window.clearTimeout(timer);
   }, [enabled, reducedMotion, visibleCharacters]);
 
-  const lines = HERO_TITLE.slice(0, visibleCharacters).split("\n");
+  const visiblePrefix = HERO_TITLE_PREFIX.slice(0, visibleCharacters);
+  const visibleTheme = HERO_TITLE_THEME.slice(
+    0,
+    Math.max(0, visibleCharacters - HERO_TITLE_PREFIX.length),
+  );
 
   return (
     <h1
@@ -85,16 +91,15 @@ function HeroTypewriterTitle({
       style={{ fontFamily: "var(--font-display)" }}
       aria-label={HERO_TITLE.replace("\n", " ")}
     >
-      {lines.map((line, index) => (
-        <span key={index} className="block min-h-[0.92em]" aria-hidden="true">
-          {line}
-          {!reducedMotion &&
-            visibleCharacters < HERO_TITLE.length &&
-            index === lines.length - 1 && (
-            <span className="hero-typewriter-cursor" />
-          )}
+      <span className="block min-h-[0.92em]" aria-hidden="true">
+        {visiblePrefix}
+        <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          {visibleTheme}
         </span>
-      ))}
+        {!reducedMotion && visibleCharacters < HERO_TITLE.length && (
+          <span className="hero-typewriter-cursor" />
+        )}
+      </span>
     </h1>
   );
 }
