@@ -88,7 +88,9 @@ function HeroTypewriterTitle({
       {lines.map((line, index) => (
         <span key={index} className="block min-h-[0.92em]" aria-hidden="true">
           {line}
-          {!reducedMotion && index === lines.length - 1 && (
+          {!reducedMotion &&
+            visibleCharacters < HERO_TITLE.length &&
+            index === lines.length - 1 && (
             <span className="hero-typewriter-cursor" />
           )}
         </span>
