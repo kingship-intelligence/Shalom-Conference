@@ -28,6 +28,7 @@ export type Conference = {
   scriptureText?: string;
   image: string;
   flyer?: string;
+  schedulePdf?: string;
   /** Omit for archived years where the programme is not on record. */
   schedule?: Array<{
     time: string;
@@ -62,6 +63,7 @@ export const conferences: Conference[] = [
       "But the Comforter, which is the Holy Ghost, whom the Father will send in my name, he shall teach you all things, and bring all things to your remembrance. Peace I leave with you, my peace I give unto you.",
     image: shalom2026FlyerImage,
     flyer: shalom2026FlyerImage,
+    schedulePdf: "/programs/shalom-program-2026.pdf",
     schedule: [
       {
         time: "Friday | 7:00 PM",

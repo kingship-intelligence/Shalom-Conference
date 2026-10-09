@@ -332,6 +332,19 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                         <ArrowRight className="ml-2 h-5 w-5" />
                       </Link>
                     </Button>
+                    {conference.schedulePdf ? (
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="lg"
+                        className="min-h-12 w-full max-w-xs rounded-full border-ink/20 px-8 text-base font-semibold text-ink hover:border-primary hover:bg-primary/10"
+                      >
+                        <a href={conference.schedulePdf} target="_blank" rel="noopener noreferrer">
+                          View the schedule
+                          <Calendar className="ml-2 h-5 w-5" />
+                        </a>
+                      </Button>
+                    ) : null}
                     <Button
                       asChild
                       variant="outline"
