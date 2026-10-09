@@ -247,14 +247,7 @@
   }
 }
 
-.hero-film-outline {
-  position: absolute;
-  inset: -14px;
-  border: 1px solid rgba(255, 154, 92, 0.3);
-  border-radius: 2.5rem;
-}
-
-.hero-rain {
+.hero-firefall {
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -262,20 +255,72 @@
   mask-image: linear-gradient(transparent, #000 15%, #000 80%, transparent);
 }
 
-.rain-drop {
+.fire-tongue {
   position: absolute;
-  top: -140px;
-  width: 1px;
-  background: linear-gradient(transparent, hsl(var(--primary) / .75));
-  animation: hero-rainfall linear infinite;
+  top: -80px;
+  border-radius: 48% 52% 45% 55% / 62% 58% 42% 38%;
+  background: radial-gradient(
+    ellipse at 50% 78%,
+    hsl(48 100% 72%) 0 16%,
+    hsl(32 100% 56% / .95) 28%,
+    hsl(var(--primary) / .82) 48%,
+    transparent 62%
+  );
+  filter:
+    drop-shadow(0 0 7px hsl(35 100% 58% / .8))
+    drop-shadow(0 0 14px hsl(var(--primary) / .4));
+  animation-duration: 6s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
   animation-play-state: paused;
 }
 
-.hero-rain[data-running="true"] .rain-drop { animation-play-state: running; }
+.fire-tongue::before,
+.fire-tongue::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  width: 60%;
+  background: linear-gradient(
+    to top,
+    hsl(43 100% 62%),
+    hsl(var(--primary) / .95) 58%,
+    hsl(var(--secondary) / .85)
+  );
+  transform-origin: bottom center;
+}
 
-@keyframes hero-rainfall {
-  from { transform: translate3d(30px, -140px, 0) rotate(10deg); }
-  to { transform: translate3d(-130px, 1000px, 0) rotate(10deg); }
+.fire-tongue::before {
+  left: 2%;
+  height: 100%;
+  border-radius: 78% 22% 58% 42% / 92% 38% 62% 8%;
+  clip-path: polygon(48% 0, 80% 28%, 100% 68%, 86% 100%, 6% 100%, 0 62%, 20% 25%);
+  transform: rotate(-7deg);
+}
+
+.fire-tongue::after {
+  right: 2%;
+  height: 86%;
+  border-radius: 24% 76% 40% 60% / 38% 90% 10% 62%;
+  clip-path: polygon(58% 0, 88% 30%, 100% 68%, 92% 100%, 8% 100%, 0 64%, 24% 28%);
+  transform: rotate(8deg);
+}
+
+.hero-firefall[data-running="true"] .fire-tongue { animation-play-state: running; }
+
+.fire-tongue-left { animation-name: hero-firefall-left; }
+.fire-tongue-right { animation-name: hero-firefall-right; }
+
+@keyframes hero-firefall-left {
+  from { transform: translate3d(35px, -90px, 0) rotate(4deg) scale(.8); }
+  45% { transform: translate3d(-20px, 430px, 0) rotate(-7deg) scale(1); }
+  to { transform: translate3d(-85px, 980px, 0) rotate(5deg) scale(.9); }
+}
+
+@keyframes hero-firefall-right {
+  from { transform: translate3d(-25px, -90px, 0) rotate(-5deg) scale(.9); }
+  50% { transform: translate3d(25px, 470px, 0) rotate(8deg) scale(1); }
+  to { transform: translate3d(90px, 980px, 0) rotate(-4deg) scale(.82); }
 }
 
 .hero-typewriter-cursor {
@@ -318,17 +363,18 @@
 }
 
 @media (max-width: 639px) {
-  .rain-drop-desktop { display: none; }
+  .fire-tongue-desktop { display: none; }
   .home-scroll-chapter { perspective: 2400px; }
 }
 
 .hero-motion-paused *,
-.hero-motion-paused *::before {
+.hero-motion-paused *::before,
+.hero-motion-paused *::after {
   animation-play-state: paused !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .home-hero *, .home-hero *::before { animation: none !important; }
+  .home-hero *, .home-hero *::before, .home-hero *::after { animation: none !important; }
 }
 
 /* Keep secondary copy readable on white while preserving dark-mode opacity. */
