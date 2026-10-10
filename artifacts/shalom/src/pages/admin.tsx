@@ -367,14 +367,14 @@ function LoginScreen({
           >
             Admin Login
           </h1>
-          <p className="mt-2 text-sm text-copy-40">
+          <p className="mt-2 text-sm text-muted-foreground">
             Shalom Conference Dashboard
           </p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-copy-40 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
               Username
             </label>
             <Input
@@ -384,11 +384,11 @@ function LoginScreen({
               onChange={(e) => setUsername(e.target.value)}
               placeholder="Admin username"
               required
-              className="bg-ink/5 border-ink/10 text-ink placeholder:text-copy-20 focus:border-primary focus:ring-primary h-12"
+              className="bg-ink/5 border-ink/10 text-ink placeholder:text-muted-foreground focus:border-primary focus:ring-primary h-12"
             />
           </div>
           <div>
-            <label className="block text-xs font-bold uppercase tracking-widest text-copy-40 mb-2">
+            <label className="block text-xs font-bold uppercase tracking-widest text-muted-foreground mb-2">
               Password
             </label>
             <div className="relative">
@@ -399,12 +399,12 @@ function LoginScreen({
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
                 required
-                className="bg-ink/5 border-ink/10 text-ink placeholder:text-copy-20 focus:border-primary focus:ring-primary h-12 pr-12"
+                className="bg-ink/5 border-ink/10 text-ink placeholder:text-muted-foreground focus:border-primary focus:ring-primary h-12 pr-12"
               />
               <button
                 type="button"
                 onClick={() => setShowPw((v) => !v)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-copy-30 hover:text-copy-60 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
               >
                 {showPw ? (
                   <EyeOff className="h-4 w-4" />
@@ -684,7 +684,7 @@ export default function Admin() {
           <div className="relative">
             <Search
               aria-hidden="true"
-              className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-copy-35"
+              className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
             />
             <Input
               type="search"
@@ -692,7 +692,7 @@ export default function Admin() {
               onChange={(event) => setFirstTimerSearch(event.target.value)}
               placeholder="Search by name, email, Yes, or No"
               aria-label="Search first-timer responses"
-              className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-copy-35 focus-visible:border-secondary focus-visible:ring-secondary/20"
+              className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-muted-foreground focus-visible:border-secondary focus-visible:ring-secondary/20"
             />
           </div>
         )}
@@ -711,7 +711,7 @@ export default function Admin() {
             <p className="font-bold text-red-700 dark:text-red-300">
               Unable to load first-timer responses.
             </p>
-            <p className="mt-2 text-sm text-copy-45">
+            <p className="mt-2 text-sm text-muted-foreground">
               Submitted responses are still saved. Check your connection and try
               again.
             </p>
@@ -725,11 +725,11 @@ export default function Admin() {
             </Button>
           </div>
         ) : firstTimerResponses.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-copy-30">
+          <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-muted-foreground">
             No first-timer responses yet
           </div>
         ) : filteredFirstTimerResponses.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-copy-30">
+          <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-muted-foreground">
             No first-timer responses match “{firstTimerSearch.trim()}”
           </div>
         ) : (
@@ -742,7 +742,7 @@ export default function Admin() {
                 <div className="flex flex-wrap items-start justify-between gap-4">
                   <div>
                     <p className="font-bold text-ink">{response.name}</p>
-                    <p className="mt-1 flex items-center gap-2 text-sm text-copy-50">
+                    <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                       <Mail className="h-3.5 w-3.5" />
                       {response.email}
                     </p>
@@ -751,13 +751,13 @@ export default function Admin() {
                     className={
                       response.isFirstTime
                         ? "border border-emerald-300/20 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
-                        : "border border-ink/15 bg-ink/5 text-copy-60"
+                        : "border border-ink/15 bg-ink/5 text-muted-foreground"
                     }
                   >
                     First time: {response.isFirstTime ? "Yes" : "No"}
                   </Badge>
                 </div>
-                <div className="mt-5 flex items-center justify-between text-[10px] uppercase tracking-wider text-copy-25">
+                <div className="mt-5 flex items-center justify-between text-[10px] uppercase tracking-wider text-muted-foreground">
                   <span>Shalom {response.conferenceYear}</span>
                   <span>
                     {format(
@@ -824,7 +824,7 @@ export default function Admin() {
                 {merchOrders.length > 0 && (
                   <button
                     onClick={() => exportMerchOrdersCSV(merchOrders)}
-                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-copy-50 hover:text-ink transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-ink transition-colors"
                     title="Export merch orders"
                   >
                     <Download className="h-4 w-4" />
@@ -839,7 +839,7 @@ export default function Admin() {
                 {[1, 2].map((i) => <Skeleton key={i} className="h-36 w-full rounded-xl bg-ink/5" />)}
               </div>
             ) : merchOrders.length === 0 ? (
-              <div className="text-center py-16 text-copy-30 rounded-2xl border border-dashed border-ink/10">
+              <div className="text-center py-16 text-muted-foreground rounded-2xl border border-dashed border-ink/10">
                 No merch preorders yet
               </div>
             ) : (
@@ -849,8 +849,8 @@ export default function Admin() {
                     <div className="flex items-start justify-between gap-4">
                       <div>
                         <p className="font-bold text-ink">#{order.id} · {order.name}</p>
-                        <p className="mt-1 text-sm text-copy-50">{order.email}</p>
-                        {order.phone && <p className="mt-1 text-sm text-copy-50">{order.phone}</p>}
+                        <p className="mt-1 text-sm text-muted-foreground">{order.email}</p>
+                        {order.phone && <p className="mt-1 text-sm text-muted-foreground">{order.phone}</p>}
                       </div>
                       {order.status === "awaiting_verification" ? (
                         <Badge className="bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-300/20">
@@ -862,19 +862,19 @@ export default function Admin() {
                         </Badge>
                       )}
                     </div>
-                    <div className="mt-4 space-y-1 border-y border-ink/10 py-4 text-sm text-copy-75">
+                    <div className="mt-4 space-y-1 border-y border-ink/10 py-4 text-sm text-muted-foreground">
                       {order.items.map((item) => (
                         <p key={`${item.productName}-${item.size}`}>{item.quantity} × {item.productName} · {item.size}</p>
                       ))}
                     </div>
                     <div className="mt-4 flex items-end justify-between gap-4">
                       <div>
-                        <p className="text-xs uppercase tracking-wider text-copy-40">Cash App reference</p>
+                        <p className="text-xs uppercase tracking-wider text-muted-foreground">Cash App reference</p>
                         <p className="mt-1 font-mono text-sm text-primary">{order.paymentReference}</p>
                       </div>
                       <div className="text-right">
                         <p className="text-xl font-black text-primary">${Number(order.total).toFixed(2)}</p>
-                        <p className="mt-1 text-[10px] uppercase tracking-wider text-copy-30">
+                        <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
                           {format(new Date(order.createdAt), "MMM d, h:mm a")}
                         </p>
                       </div>
@@ -892,7 +892,7 @@ export default function Admin() {
                       <Button
                         type="button"
                         size="sm"
-                        className="mt-4 w-full rounded-full bg-emerald-600 text-ink hover:bg-emerald-500"
+                        className="mt-4 w-full rounded-full bg-emerald-700 text-white hover:bg-emerald-800"
                         disabled={verifyPaymentMutation.isPending}
                         onClick={() => {
                           if (window.confirm(`Confirm the Cash App payment for order #${order.id}?`)) {
@@ -919,7 +919,7 @@ export default function Admin() {
 
   if (checking) {
     return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-sm font-bold uppercase tracking-widest text-copy-50">
+      <div className="flex min-h-screen items-center justify-center bg-background text-sm font-bold uppercase tracking-widest text-muted-foreground">
         Checking admin session…
       </div>
     );
@@ -946,7 +946,7 @@ export default function Admin() {
               <ThemeToggle />
               <Link
                 href="/"
-                className="text-sm font-bold uppercase tracking-widest text-copy-50 hover:text-ink"
+                className="text-sm font-bold uppercase tracking-widest text-muted-foreground hover:text-ink"
               >
                 <ArrowLeft className="mr-2 inline h-4 w-4" />
                 Home
@@ -954,7 +954,7 @@ export default function Admin() {
               <button
                 type="button"
                 onClick={() => logout()}
-                className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-copy-50 hover:text-ink"
+                className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest text-muted-foreground hover:text-ink"
               >
                 <LogOut className="h-4 w-4" />
                 Sign Out
@@ -985,7 +985,7 @@ export default function Admin() {
 
   if (role !== "admin") {
     return (
-      <div className="grid min-h-screen place-items-center bg-background text-copy-60">
+      <div className="grid min-h-screen place-items-center bg-background text-muted-foreground">
         <p className="text-sm">Checking account access…</p>
       </div>
     );
@@ -1005,14 +1005,14 @@ export default function Admin() {
             <ThemeToggle />
             <Link
               href="/"
-              className="text-copy-50 hover:text-ink transition-colors font-bold uppercase tracking-widest text-sm flex items-center gap-2"
+              className="text-muted-foreground hover:text-ink transition-colors font-bold uppercase tracking-widest text-sm flex items-center gap-2"
             >
               <ArrowLeft className="h-4 w-4" />
               Home
             </Link>
             <button
               onClick={() => logout()}
-              className="text-copy-50 hover:text-ink transition-colors font-bold uppercase tracking-widest text-sm flex items-center gap-2"
+              className="text-muted-foreground hover:text-ink transition-colors font-bold uppercase tracking-widest text-sm flex items-center gap-2"
             >
               <LogOut className="h-4 w-4" />
               Sign Out
@@ -1040,7 +1040,7 @@ export default function Admin() {
 
             <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.8fr)]">
               <div className="space-y-3">
-                <h3 className="text-sm font-bold uppercase tracking-widest text-copy-55">
+                <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
                   Current accounts
                 </h3>
                 {adminUsersQuery.isLoading ? (
@@ -1083,11 +1083,11 @@ export default function Admin() {
                         <div className="flex items-center gap-3">
                           <Badge
                             variant="outline"
-                            className="border-ink/15 text-copy-60"
+                            className="border-ink/15 text-muted-foreground"
                           >
                             {ROLE_LABELS[adminUser.role]}
                           </Badge>
-                          <span className="text-xs text-copy-40">
+                          <span className="text-xs text-muted-foreground">
                             Added{" "}
                             {format(
                               new Date(adminUser.createdAt),
@@ -1099,7 +1099,7 @@ export default function Admin() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="rounded-xl border border-dashed border-ink/10 p-4 text-sm text-copy-45">
+                  <p className="rounded-xl border border-dashed border-ink/10 p-4 text-sm text-muted-foreground">
                     No admin accounts were returned. Refresh the list before
                     making changes.
                   </p>
@@ -1108,10 +1108,10 @@ export default function Admin() {
 
               <form onSubmit={submitAdminAccount} className="space-y-4">
                 <div>
-                  <h3 className="text-sm font-bold uppercase tracking-widest text-copy-55">
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
                     Create a staff login
                   </h3>
-                  <p className="mt-1 text-xs leading-relaxed text-copy-40">
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                     Choose access to registration counts, new converts,
                     check-in, or registrations with check-in. Full admins can
                     manage all areas and create accounts.
@@ -1120,7 +1120,7 @@ export default function Admin() {
                 <div>
                   <label
                     htmlFor="new-admin-username"
-                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-copy-45"
+                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
                   >
                     Username
                   </label>
@@ -1136,13 +1136,13 @@ export default function Admin() {
                     maxLength={254}
                     required
                     placeholder="admin@example.com"
-                    className="h-11 border-ink/10 bg-ink/5 text-ink placeholder:text-copy-25"
+                    className="h-11 border-ink/10 bg-ink/5 text-ink placeholder:text-muted-foreground"
                   />
                 </div>
                 <div>
                   <label
                     htmlFor="new-admin-role"
-                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-copy-45"
+                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
                   >
                     Access level
                   </label>
@@ -1170,7 +1170,7 @@ export default function Admin() {
                 <div>
                   <label
                     htmlFor="new-admin-password"
-                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-copy-45"
+                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
                   >
                     Password
                   </label>
@@ -1191,7 +1191,7 @@ export default function Admin() {
                 <div>
                   <label
                     htmlFor="confirm-admin-password"
-                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-copy-45"
+                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
                   >
                     Confirm password
                   </label>
@@ -1260,7 +1260,7 @@ export default function Admin() {
                   {registrations.length > 0 && !registrationsQuery.isError && (
                     <button
                       onClick={() => exportCSV(filteredRegistrations)}
-                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-copy-50 hover:text-ink transition-colors"
+                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-ink transition-colors"
                       title="Export CSV"
                     >
                       <Download className="h-4 w-4" />
@@ -1274,7 +1274,7 @@ export default function Admin() {
                 <div className="relative">
                   <Search
                     aria-hidden="true"
-                    className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-copy-35"
+                    className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                   />
                   <Input
                     type="search"
@@ -1285,7 +1285,7 @@ export default function Admin() {
                     placeholder="Search by name, email, or phone"
                     aria-label="Search registrations"
                     data-testid="input-registration-search"
-                    className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-copy-35 focus-visible:border-primary focus-visible:ring-primary/20"
+                    className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/20"
                   />
                 </div>
               )}
@@ -1333,11 +1333,11 @@ export default function Admin() {
                   </Button>
                 </div>
               ) : registrations.length === 0 ? (
-                <div className="text-center py-20 text-copy-30 rounded-2xl border border-dashed border-ink/10">
+                <div className="text-center py-20 text-muted-foreground rounded-2xl border border-dashed border-ink/10">
                   No registrations yet
                 </div>
               ) : filteredRegistrations.length === 0 ? (
-                <div className="text-center py-20 text-copy-30 rounded-2xl border border-dashed border-ink/10">
+                <div className="text-center py-20 text-muted-foreground rounded-2xl border border-dashed border-ink/10">
                   No registrations match “{registrationSearch.trim()}”
                 </div>
               ) : (
@@ -1347,7 +1347,7 @@ export default function Admin() {
                       key={reg.id}
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
-                      className="bg-ink/5 rounded-xl p-5 border border-ink/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+                      className="bg-card text-card-foreground rounded-xl p-5 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
@@ -1364,12 +1364,12 @@ export default function Admin() {
                             </Badge>
                           )}
                         </div>
-                        <div className="flex items-center gap-2 text-sm text-copy-50">
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
                           <Mail className="h-3 w-3" />
                           <span>{reg.email}</span>
                         </div>
                         {reg.phone && (
-                          <div className="flex items-center gap-2 text-sm text-copy-50">
+                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
                             <Phone className="h-3 w-3" />
                             <span>{reg.phone}</span>
                           </div>
@@ -1381,7 +1381,7 @@ export default function Admin() {
                             <Calendar className="h-3 w-3" />
                             <span>Shalom {reg.conferenceYear}</span>
                           </div>
-                          <span className="text-[10px] text-copy-30 uppercase tracking-tighter">
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
                             {format(new Date(reg.createdAt), "MMM d, yyyy")}
                           </span>
                         </div>
@@ -1412,7 +1412,7 @@ export default function Admin() {
                               <AlertDialogTitle>
                                 Remove this registration?
                               </AlertDialogTitle>
-                              <AlertDialogDescription className="text-copy-60">
+                              <AlertDialogDescription className="text-muted-foreground">
                                 This will permanently remove {reg.firstName}{" "}
                                 {reg.lastName}&apos;s registration and any
                                 private attendee portrait attached to it. This
@@ -1471,7 +1471,7 @@ export default function Admin() {
                   ))}
                 </div>
               ) : testimonies.length === 0 ? (
-                <div className="text-center py-20 text-copy-30 rounded-2xl border border-dashed border-ink/10">
+                <div className="text-center py-20 text-muted-foreground rounded-2xl border border-dashed border-ink/10">
                   No testimonies yet
                 </div>
               ) : (
@@ -1489,25 +1489,25 @@ export default function Admin() {
                             {test.name}
                           </h3>
                           {test.email && (
-                            <p className="text-xs text-copy-30 flex items-center gap-1">
+                            <p className="text-xs text-muted-foreground flex items-center gap-1">
                               <Mail className="h-3 w-3" /> {test.email}
                             </p>
                           )}
                         </div>
                         <Badge
                           variant="outline"
-                          className="border-ink/20 text-copy-50 text-[10px]"
+                          className="border-ink/20 text-muted-foreground text-[10px]"
                         >
                           {test.conferenceYear}
                         </Badge>
                       </div>
                       <div className="relative">
                         <MessageSquare className="absolute -left-2 -top-2 h-8 w-8 text-primary/10 -z-10" />
-                        <p className="text-copy-80 leading-relaxed italic">
+                        <p className="text-muted-foreground leading-relaxed italic">
                           "{test.testimony}"
                         </p>
                       </div>
-                      <p className="text-[10px] text-copy-20 uppercase text-right">
+                      <p className="text-[10px] text-muted-foreground uppercase text-right">
                         {format(new Date(test.createdAt), "MMM d, h:mm a")}
                       </p>
                     </motion.div>
@@ -1539,7 +1539,7 @@ export default function Admin() {
                       Prayer Charge reflections
                     </h2>
                   </div>
-                  <p className="mt-2 max-w-xl text-sm leading-relaxed text-copy-45">
+                  <p className="mt-2 max-w-xl text-sm leading-relaxed text-muted-foreground">
                     Anonymous feedback from the completed Prayer Charge
                     gathering.
                   </p>
@@ -1565,7 +1565,7 @@ export default function Admin() {
                   <p className="font-bold text-red-700 dark:text-red-300">
                     Unable to load Prayer Charge feedback.
                   </p>
-                  <p className="mt-2 text-sm text-copy-45">
+                  <p className="mt-2 text-sm text-muted-foreground">
                     The responses are still saved. Check your connection and try
                     again.
                   </p>
@@ -1581,10 +1581,10 @@ export default function Admin() {
                 </div>
               ) : prayerChargeSurveyResponses.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center">
-                  <p className="font-semibold text-copy-55">
+                  <p className="font-semibold text-muted-foreground">
                     No Prayer Charge responses yet
                   </p>
-                  <p className="mt-2 text-sm text-copy-30">
+                  <p className="mt-2 text-sm text-muted-foreground">
                     Anonymous reflections will appear here after attendees share
                     them.
                   </p>
@@ -1593,7 +1593,7 @@ export default function Admin() {
                 <>
                   <div className="grid gap-3 sm:grid-cols-3">
                     <div className="border border-ink/10 bg-ink/[0.03] px-5 py-4">
-                      <p className="text-xs font-bold uppercase tracking-widest text-copy-35">
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                         Responses
                       </p>
                       <p className="mt-2 text-3xl font-black text-ink">
@@ -1601,23 +1601,23 @@ export default function Admin() {
                       </p>
                     </div>
                     <div className="border border-ink/10 bg-ink/[0.03] px-5 py-4">
-                      <p className="text-xs font-bold uppercase tracking-widest text-copy-35">
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                         Average rating
                       </p>
                       <p className="mt-2 text-3xl font-black text-secondary">
                         {averagePrayerChargeRating}
-                        <span className="ml-1 text-base font-semibold text-copy-35">
+                        <span className="ml-1 text-base font-semibold text-muted-foreground">
                           / 5
                         </span>
                       </p>
                     </div>
                     <div className="border border-ink/10 bg-ink/[0.03] px-5 py-4">
-                      <p className="text-xs font-bold uppercase tracking-widest text-copy-35">
+                      <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                         Would return
                       </p>
                       <p className="mt-2 text-3xl font-black text-secondary">
                         {wouldAttendAgainCount}
-                        <span className="ml-1 text-base font-semibold text-copy-35">
+                        <span className="ml-1 text-base font-semibold text-muted-foreground">
                           yes
                         </span>
                       </p>
@@ -1632,7 +1632,7 @@ export default function Admin() {
                       >
                         <div className="flex flex-wrap items-start justify-between gap-3">
                           <div>
-                            <p className="text-xs font-bold uppercase tracking-widest text-copy-35">
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                               Rating
                             </p>
                             <div className="mt-2 flex items-center gap-1">
@@ -1642,7 +1642,7 @@ export default function Admin() {
                                   className={
                                     star <= response.rating
                                       ? "text-secondary"
-                                      : "text-copy-15"
+                                      : "text-muted-foreground"
                                   }
                                   aria-hidden="true"
                                 >
@@ -1652,7 +1652,7 @@ export default function Admin() {
                                   />
                                 </span>
                               ))}
-                              <span className="ml-2 text-sm font-semibold text-copy-60">
+                              <span className="ml-2 text-sm font-semibold text-muted-foreground">
                                 {response.rating}/5
                               </span>
                             </div>
@@ -1663,7 +1663,7 @@ export default function Admin() {
                                 ? "border border-emerald-300/20 bg-emerald-500/20 text-emerald-700 dark:text-emerald-300"
                                 : response.wouldAttendAgain === "maybe"
                                   ? "border border-amber-300/20 bg-amber-500/15 text-amber-700 dark:text-amber-200"
-                                  : "border border-ink/15 bg-ink/5 text-copy-55"
+                                  : "border border-ink/15 bg-ink/5 text-muted-foreground"
                             }
                           >
                             Attend again: {response.wouldAttendAgain}
@@ -1671,25 +1671,25 @@ export default function Admin() {
                         </div>
                         {response.meaningfulMoment && (
                           <div className="mt-5 border-l-2 border-secondary/60 pl-4">
-                            <p className="text-xs font-bold uppercase tracking-widest text-copy-35">
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                               Meaningful moment
                             </p>
-                            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-copy-75">
+                            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
                               {response.meaningfulMoment}
                             </p>
                           </div>
                         )}
                         {response.suggestion && (
                           <div className="mt-5 border-t border-ink/10 pt-4">
-                            <p className="text-xs font-bold uppercase tracking-widest text-copy-35">
+                            <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">
                               Suggestion
                             </p>
-                            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-copy-65">
+                            <p className="mt-2 whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
                               {response.suggestion}
                             </p>
                           </div>
                         )}
-                        <p className="mt-5 text-right text-[10px] uppercase tracking-wider text-copy-25">
+                        <p className="mt-5 text-right text-[10px] uppercase tracking-wider text-muted-foreground">
                           {format(
                             new Date(response.createdAt),
                             "MMM d, yyyy 'at' h:mm a",
@@ -1728,7 +1728,7 @@ export default function Admin() {
                       onClick={() =>
                         exportPrayerChainCSV(filteredPrayerChainSignups)
                       }
-                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-copy-50 transition-colors hover:text-ink"
+                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground transition-colors hover:text-ink"
                       title="Export prayer-chain signups"
                     >
                       <Download className="h-4 w-4" />
@@ -1742,7 +1742,7 @@ export default function Admin() {
                 <div className="relative">
                   <Search
                     aria-hidden="true"
-                    className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-copy-35"
+                    className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                   />
                   <Input
                     type="search"
@@ -1753,7 +1753,7 @@ export default function Admin() {
                     placeholder="Search by name, email, phone, or prayer time"
                     aria-label="Search prayer-chain signups"
                     data-testid="input-prayer-chain-search"
-                    className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-copy-35 focus-visible:border-primary focus-visible:ring-primary/20"
+                    className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/20"
                   />
                 </div>
               )}
@@ -1772,7 +1772,7 @@ export default function Admin() {
                   <p className="font-bold text-red-700 dark:text-red-300">
                     Unable to load prayer-chain registrations.
                   </p>
-                  <p className="mt-2 text-sm text-copy-45">
+                  <p className="mt-2 text-sm text-muted-foreground">
                     Your registrations are still saved. Check your connection
                     and try again.
                   </p>
@@ -1787,11 +1787,11 @@ export default function Admin() {
                   </Button>
                 </div>
               ) : prayerChainSignups.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-copy-30">
+                <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-muted-foreground">
                   No prayer-chain signups yet
                 </div>
               ) : filteredPrayerChainSignups.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-copy-30">
+                <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-muted-foreground">
                   No prayer-chain signups match “{prayerChainSearch.trim()}”
                 </div>
               ) : (
@@ -1804,11 +1804,11 @@ export default function Admin() {
                       <div className="flex flex-wrap items-start justify-between gap-4">
                         <div>
                           <p className="font-bold text-ink">{signup.name}</p>
-                          <p className="mt-1 flex items-center gap-2 text-sm text-copy-50">
+                          <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                             <Mail className="h-3.5 w-3.5" />
                             {signup.email}
                           </p>
-                          <p className="mt-1 flex items-center gap-2 text-sm text-copy-50">
+                          <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
                             <Phone className="h-3.5 w-3.5" />
                             {signup.phone}
                           </p>
@@ -1825,13 +1825,13 @@ export default function Admin() {
                         {signup.timeSlots.map((slot) => (
                           <span
                             key={slot}
-                            className="border border-ink/10 bg-shade/20 px-2.5 py-1.5 text-xs font-semibold text-copy-70"
+                            className="border border-ink/10 bg-shade/20 px-2.5 py-1.5 text-xs font-semibold text-muted-foreground"
                           >
                             {PRAYER_SLOT_LABELS[slot] ?? slot}
                           </span>
                         ))}
                       </div>
-                      <p className="mt-4 text-right text-[10px] uppercase text-copy-20">
+                      <p className="mt-4 text-right text-[10px] uppercase text-muted-foreground">
                         {format(new Date(signup.createdAt), "MMM d, h:mm a")}
                       </p>
                     </article>
@@ -1866,7 +1866,7 @@ export default function Admin() {
                   {merchOrders.length > 0 && (
                     <button
                       onClick={() => exportMerchOrdersCSV(merchOrders)}
-                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-copy-50 hover:text-ink transition-colors"
+                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-ink transition-colors"
                       title="Export merch orders"
                     >
                       <Download className="h-4 w-4" />
@@ -1886,7 +1886,7 @@ export default function Admin() {
                   ))}
                 </div>
               ) : merchOrders.length === 0 ? (
-                <div className="text-center py-16 text-copy-30 rounded-2xl border border-dashed border-ink/10">
+                <div className="text-center py-16 text-muted-foreground rounded-2xl border border-dashed border-ink/10">
                   No merch preorders yet
                 </div>
               ) : (
@@ -1901,11 +1901,11 @@ export default function Admin() {
                           <p className="font-bold text-ink">
                             #{order.id} · {order.name}
                           </p>
-                          <p className="mt-1 text-sm text-copy-50">
+                          <p className="mt-1 text-sm text-muted-foreground">
                             {order.email}
                           </p>
                           {order.phone && (
-                            <p className="mt-1 text-sm text-copy-50">
+                            <p className="mt-1 text-sm text-muted-foreground">
                               {order.phone}
                             </p>
                           )}
@@ -1920,7 +1920,7 @@ export default function Admin() {
                           </Badge>
                         )}
                       </div>
-                      <div className="mt-4 space-y-1 border-y border-ink/10 py-4 text-sm text-copy-75">
+                      <div className="mt-4 space-y-1 border-y border-ink/10 py-4 text-sm text-muted-foreground">
                         {order.items.map((item) => (
                           <p key={`${item.productName}-${item.size}`}>
                             {item.quantity} × {item.productName} · {item.size}
@@ -1929,7 +1929,7 @@ export default function Admin() {
                       </div>
                       <div className="mt-4 flex items-end justify-between gap-4">
                         <div>
-                          <p className="text-xs uppercase tracking-wider text-copy-40">
+                          <p className="text-xs uppercase tracking-wider text-muted-foreground">
                             Cash App reference
                           </p>
                           <p className="mt-1 font-mono text-sm text-primary">
@@ -1940,7 +1940,7 @@ export default function Admin() {
                           <p className="text-xl font-black text-primary">
                             ${Number(order.total).toFixed(2)}
                           </p>
-                          <p className="mt-1 text-[10px] uppercase tracking-wider text-copy-30">
+                          <p className="mt-1 text-[10px] uppercase tracking-wider text-muted-foreground">
                             {format(new Date(order.createdAt), "MMM d, h:mm a")}
                           </p>
                         </div>
@@ -1967,7 +1967,7 @@ export default function Admin() {
                         <Button
                           type="button"
                           size="sm"
-                          className="mt-4 w-full rounded-full bg-emerald-600 text-ink hover:bg-emerald-500"
+                          className="mt-4 w-full rounded-full bg-emerald-700 text-white hover:bg-emerald-800"
                           disabled={verifyPaymentMutation.isPending}
                           onClick={() => {
                             if (

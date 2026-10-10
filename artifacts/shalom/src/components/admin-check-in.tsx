@@ -289,7 +289,7 @@ export function AdminCheckIn({
                 <h2 className="mt-1 text-2xl font-bold uppercase tracking-wider text-ink sm:text-3xl">Check-in</h2>
               </div>
             </div>
-            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-copy-55">
+            <p className="mt-3 max-w-2xl text-sm leading-relaxed text-muted-foreground">
               Choose the configured session, then mark each registered attendee present. The roster is limited to that conference year.
             </p>
           </div>
@@ -316,7 +316,7 @@ export function AdminCheckIn({
             data-testid="form-create-check-in-session"
           >
             <div>
-              <label htmlFor="check-in-year" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-copy-45">
+              <label htmlFor="check-in-year" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 Conference year
               </label>
               <Input
@@ -331,7 +331,7 @@ export function AdminCheckIn({
               />
             </div>
             <div>
-              <label htmlFor="check-in-date" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-copy-45">
+              <label htmlFor="check-in-date" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 Session date
               </label>
               <Input
@@ -344,7 +344,7 @@ export function AdminCheckIn({
               />
             </div>
             <div>
-              <label htmlFor="check-in-name" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-copy-45">
+              <label htmlFor="check-in-name" className="mb-2 block text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                 Session name
               </label>
               <Input
@@ -354,7 +354,7 @@ export function AdminCheckIn({
                 value={sessionName}
                 onChange={(event) => setSessionName(event.target.value)}
                 placeholder="Friday morning arrival"
-                className="h-11 border-ink/10 bg-ink/5 text-ink placeholder:text-copy-25"
+                className="h-11 border-ink/10 bg-ink/5 text-ink placeholder:text-muted-foreground"
                 data-testid="input-check-in-name"
               />
             </div>
@@ -379,8 +379,8 @@ export function AdminCheckIn({
         <aside className="border-b border-ink/10 p-4 sm:p-6 lg:border-b-0 lg:border-r">
           <div className="mb-4 flex items-center justify-between">
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-copy-40">Configured sessions</p>
-              <p className="mt-1 text-sm text-copy-60" data-testid="text-check-in-session-count">
+              <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">Configured sessions</p>
+              <p className="mt-1 text-sm text-muted-foreground" data-testid="text-check-in-session-count">
                 {sessionsQuery.isLoading
                   ? "Loading sessions"
                   : sessionsQuery.isError
@@ -406,9 +406,9 @@ export function AdminCheckIn({
             </div>
           ) : sessions.length === 0 ? (
             <div className="rounded-xl border border-dashed border-ink/15 px-4 py-8 text-center" data-testid="empty-check-in-sessions">
-              <Clock3 className="mx-auto h-6 w-6 text-copy-30" />
-              <p className="mt-3 text-sm font-semibold text-copy-65">No sessions yet</p>
-              <p className="mt-1 text-xs leading-relaxed text-copy-35">
+              <Clock3 className="mx-auto h-6 w-6 text-muted-foreground" />
+              <p className="mt-3 text-sm font-semibold text-muted-foreground">No sessions yet</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
                 {canManageSessions
                   ? "Create the first arrival window to begin checking people in."
                   : "Ask a full admin to configure a check-in session before arrival."}
@@ -432,10 +432,10 @@ export function AdminCheckIn({
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className={`truncate text-sm font-bold ${active ? "text-primary" : "text-ink"}`}>{session.name}</p>
-                        <p className="mt-1 text-xs text-copy-50">{sessionDateLabel(session.sessionDate)}</p>
-                        <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-copy-30">{session.conferenceYear}</p>
+                        <p className="mt-1 text-xs text-muted-foreground">{sessionDateLabel(session.sessionDate)}</p>
+                        <p className="mt-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">{session.conferenceYear}</p>
                       </div>
-                      <ChevronRight className={`mt-1 h-4 w-4 shrink-0 ${active ? "text-primary" : "text-copy-25 group-hover:text-copy-55"}`} />
+                      <ChevronRight className={`mt-1 h-4 w-4 shrink-0 ${active ? "text-primary" : "text-muted-foreground group-hover:text-foreground"}`} />
                     </div>
                   </button>
                 );
@@ -447,9 +447,9 @@ export function AdminCheckIn({
         <div className="min-w-0 p-4 sm:p-6 lg:p-8">
           {!selectedSession ? (
             <div className="flex min-h-[20rem] flex-col items-center justify-center rounded-xl border border-dashed border-ink/10 px-6 text-center" data-testid="empty-check-in-selection">
-              <ClipboardCheck className="h-8 w-8 text-copy-25" />
-              <p className="mt-4 text-lg font-bold text-copy-70">Select a session to open its roster</p>
-              <p className="mt-2 max-w-sm text-sm leading-relaxed text-copy-40">Session check-ins stay separated by date and conference year.</p>
+              <ClipboardCheck className="h-8 w-8 text-muted-foreground" />
+              <p className="mt-4 text-lg font-bold text-muted-foreground">Select a session to open its roster</p>
+              <p className="mt-2 max-w-sm text-sm leading-relaxed text-muted-foreground">Session check-ins stay separated by date and conference year.</p>
             </div>
           ) : (
             <>
@@ -457,11 +457,11 @@ export function AdminCheckIn({
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">{sessionTimeLabel(selectedSession.sessionDate)} · {selectedSession.conferenceYear}</p>
                   <h3 className="mt-2 text-2xl font-bold text-ink sm:text-3xl" data-testid={`text-active-check-in-session-${selectedSession.id}`}>{selectedSession.name}</h3>
-                  <p className="mt-1 text-sm text-copy-45">{sessionDateLabel(selectedSession.sessionDate)}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{sessionDateLabel(selectedSession.sessionDate)}</p>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="rounded-xl border border-ink/10 bg-ink/[0.035] px-4 py-3">
-                    <p className="text-[10px] font-bold uppercase tracking-widest text-copy-35">Present</p>
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Present</p>
                     <p className="mt-1 text-xl font-bold text-emerald-700 dark:text-emerald-300" data-testid="text-check-in-present-count">
                       {sessionCheckInsQuery.isLoading
                         ? "…"
@@ -521,14 +521,14 @@ export function AdminCheckIn({
                 <>
                   <div className="mt-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="relative min-w-0 flex-1">
-                      <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-copy-35" />
+                      <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                       <Input
                         type="search"
                         value={search}
                         onChange={(event) => setSearch(event.target.value)}
                         placeholder="Find by name"
                         aria-label="Search the session roster"
-                        className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-copy-30"
+                        className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-muted-foreground"
                         data-testid="input-check-in-search"
                       />
                     </div>
@@ -548,14 +548,14 @@ export function AdminCheckIn({
                         <ScanLine className="h-4 w-4" />
                         Scan QR
                       </Button>
-                      <div className="flex items-center gap-2 px-1 text-xs text-copy-45">
+                      <div className="flex items-center gap-2 px-1 text-xs text-muted-foreground">
                         <Users className="h-4 w-4" />
                         {filteredRegistrations.length} shown
                       </div>
                     </div>
                   </div>
                   {canSendReplacementQr && (
-                    <p className="mt-2 text-xs text-copy-35">
+                    <p className="mt-2 text-xs text-muted-foreground">
                       Emailing a new QR code replaces and invalidates any older code for that attendee.
                     </p>
                   )}
@@ -565,13 +565,13 @@ export function AdminCheckIn({
                       <div className="flex items-start justify-between gap-4">
                         <div>
                           <h4 className="font-bold text-ink">Scan attendee QR</h4>
-                          <p className="mt-1 text-sm text-copy-50">Allow camera access and center the attendee’s code in the frame.</p>
+                          <p className="mt-1 text-sm text-muted-foreground">Allow camera access and center the attendee’s code in the frame.</p>
                         </div>
                         <Button
                           type="button"
                           variant="outline"
                           onClick={() => setScannerOpen(false)}
-                          className="shrink-0 border-ink/15 text-copy-75"
+                          className="shrink-0 border-ink/15 text-muted-foreground"
                           data-testid="button-close-qr-scanner"
                         >
                           Close
@@ -601,12 +601,12 @@ export function AdminCheckIn({
 
                   {eligibleRegistrations.length === 0 ? (
                     <div className="mt-6 rounded-xl border border-dashed border-ink/10 px-6 py-14 text-center" data-testid="empty-session-roster">
-                      <Users className="mx-auto h-7 w-7 text-copy-25" />
-                      <p className="mt-3 font-semibold text-copy-65">No registrations for {selectedSession.conferenceYear}</p>
-                      <p className="mt-1 text-sm text-copy-35">This session is ready, but its conference-year roster is empty.</p>
+                      <Users className="mx-auto h-7 w-7 text-muted-foreground" />
+                      <p className="mt-3 font-semibold text-muted-foreground">No registrations for {selectedSession.conferenceYear}</p>
+                      <p className="mt-1 text-sm text-muted-foreground">This session is ready, but its conference-year roster is empty.</p>
                     </div>
                   ) : filteredRegistrations.length === 0 ? (
-                    <div className="mt-6 rounded-xl border border-dashed border-ink/10 px-6 py-14 text-center text-sm text-copy-40" data-testid="empty-check-in-search">
+                    <div className="mt-6 rounded-xl border border-dashed border-ink/10 px-6 py-14 text-center text-sm text-muted-foreground" data-testid="empty-check-in-search">
                       No attendees match “{search.trim()}”
                     </div>
                   ) : (
@@ -650,7 +650,7 @@ export function AdminCheckIn({
                                       });
                                     }}
                                     aria-label={`Email a new QR code to ${registration.firstName} ${registration.lastName}; this replaces any previous code`}
-                                    className="w-full border-ink/15 text-copy-75 hover:bg-ink/5 sm:w-auto"
+                                    className="w-full border-ink/15 text-muted-foreground hover:bg-ink/5 sm:w-auto"
                                     data-testid={`button-email-qr-registration-${registration.id}`}
                                   >
                                     <Mail className="h-4 w-4" />
