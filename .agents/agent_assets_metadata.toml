@@ -18,6 +18,7 @@ uri = "file://artifacts/api-server/preview/shalom-attendee-badge-sample.png"
 type = "image"
 title = "Sample I’m Attending Badge"
 description = "A sample badge rendered with the new Shalom template and a representative portrait."
+logical_id = "c05ebe11-8ebb-4c7a-b96f-c18822c0e809"
 
 [[outputs]]
 id = "gvEAOurOL1NkCryh9L4FM"
@@ -25,3 +26,32 @@ uri = "file://artifacts/api-server/preview/shalom-attendee-4x5-sample.png"
 type = "image"
 title = "4:5 I’m Attending Badge Sample"
 description = "Sample badge showing the new 4:5 portrait window for iPhone-friendly photos."
+logical_id = "76ea28ce-177f-464c-9e81-e427cae9bcc9"
+
+[[outputs]]
+id = "NhyekKu-ycZW70LQyTGcU"
+uri = "file://generated-artifacts/shalom-first-timers-flyer.pdf"
+type = "pdf"
+title = "Shalom 2026 First-Timers Flyer — Print PDF"
+description = "US Letter print-ready flyer with a QR code linking directly to the first-timers page."
+logical_id = "e760e321-0dd3-46f3-baa1-3d2bbcb9ca5f"
+content_hash = "sha256:835d9b773e74bfa578e6ab69441ec7c2e123d0b505d8fc9660ef65c00f07554d"
+size = 2031632
+mtime_ms = 1791598667133
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:bf1a559b-73e7-45ad-958f-b963b2bfdcad/e760e321-0dd3-46f3-baa1-3d2bbcb9ca5f/ad81977c-b191-4f9b-8ec5-cdbfeb927d25"
+storage_version_token = "1791598706358884"
+content_type = "application/pdf"
+
+[[outputs]]
+id = "OIrdMgTjTGTREu6HTX7JQ"
+uri = "file://generated-artifacts/shalom-first-timers-flyer.png"
+type = "image"
+title = "Shalom 2026 First-Timers Flyer — PNG"
+description = "High-resolution 2448 × 3168 px version for digital sharing or printing."
+logical_id = "37f334a8-a474-4c37-8af7-07a3c0f90c8f"
+content_hash = "sha256:daa4cf19a5dc53fd9367a012d3d9b238676d2bc00cfc6591906ae159c558cd3a"
+size = 3098264
+mtime_ms = 1791598672041
+storage_uri = "gcs://replit-rams-assets-kirk/rams/assets/repl:bf1a559b-73e7-45ad-958f-b963b2bfdcad/37f334a8-a474-4c37-8af7-07a3c0f90c8f/3381793f-a064-4fa1-93be-8f2055741380"
+storage_version_token = "1791598707454273"
+content_type = "image/png"
