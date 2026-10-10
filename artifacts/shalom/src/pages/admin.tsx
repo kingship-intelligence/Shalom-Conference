@@ -347,7 +347,7 @@ function LoginScreen({
   }
 
   return (
-    <div className="relative min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="admin-theme-surface relative min-h-screen bg-background flex items-center justify-center px-4">
       <div className="absolute right-4 top-4">
         <ThemeToggle />
       </div>
@@ -931,7 +931,7 @@ export default function Admin() {
 
   if (role && role !== "admin") {
     return (
-      <div className="min-h-screen bg-background pb-16 text-foreground">
+                <div className="admin-theme-surface min-h-screen bg-background pb-16 text-foreground">
         <header className="px-4 py-6 sm:px-6">
           <div className="container mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
             <div>
@@ -992,7 +992,7 @@ export default function Admin() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-20">
+    <div className="admin-theme-surface min-h-screen bg-background text-foreground pb-20">
       <header className="relative z-20 px-4 py-8 sm:px-6">
         <div className="container mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-4">
           <h1
@@ -1352,7 +1352,7 @@ export default function Admin() {
                       <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
                           <User className="h-4 w-4 text-primary" />
-                          <span className="text-ink font-bold">
+                          <span className="font-bold text-foreground">
                             {reg.firstName} {reg.lastName}
                           </span>
                           {reg.volunteer && (

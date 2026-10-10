@@ -200,6 +200,15 @@
   }
 }
 
+.admin-theme-surface :is(input, textarea, select) {
+  color: hsl(var(--foreground));
+}
+
+.admin-theme-surface select option {
+  color: hsl(var(--foreground));
+  background-color: hsl(var(--background));
+}
+
 @layer utilities {
   input[type="search"]::-webkit-search-cancel-button {
     @apply hidden;
