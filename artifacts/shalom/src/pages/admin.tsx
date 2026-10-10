@@ -1,4 +1,5 @@
 import AdminSection from "@/components/AdminSection";
+import { ThemeToggle } from "@/components/ThemeProvider";
 import {
   RegistrationCount,
   RegistrationList,
@@ -346,7 +347,10 @@ function LoginScreen({
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+    <div className="relative min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="absolute right-4 top-4">
+        <ThemeToggle />
+      </div>
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -929,7 +933,7 @@ export default function Admin() {
     return (
       <div className="min-h-screen bg-background pb-16 text-foreground">
         <header className="px-4 py-6 sm:px-6">
-          <div className="container mx-auto flex max-w-7xl items-center justify-between">
+          <div className="container mx-auto flex max-w-7xl flex-wrap items-center justify-between gap-4">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
                 Staff access
@@ -938,7 +942,8 @@ export default function Admin() {
                 {ROLE_LABELS[role]}
               </h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+              <ThemeToggle />
               <Link
                 href="/"
                 className="text-sm font-bold uppercase tracking-widest text-copy-50 hover:text-ink"
@@ -989,14 +994,15 @@ export default function Admin() {
   return (
     <div className="min-h-screen bg-background text-foreground pb-20">
       <header className="relative z-20 px-4 py-8 sm:px-6">
-        <div className="container mx-auto max-w-7xl flex items-center justify-between">
+        <div className="container mx-auto max-w-7xl flex flex-wrap items-center justify-between gap-4">
           <h1
             className="text-4xl font-bold italic text-ink"
             style={{ fontFamily: "var(--font-display)" }}
           >
             ADMIN
           </h1>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-4">
+            <ThemeToggle />
             <Link
               href="/"
               className="text-copy-50 hover:text-ink transition-colors font-bold uppercase tracking-widest text-sm flex items-center gap-2"
