@@ -279,8 +279,13 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
   }
 
   const isCurrent = conference.year === currentConference.year;
+  const hasEnded = Boolean(
+    conference.endsAt && Date.now() >= new Date(conference.endsAt).getTime(),
+  );
+  const isUpcomingOrLive = isCurrent && !hasEnded;
   const schedule = conference.schedule ?? [];
   const speakers = conference.speakers ?? [];
+  const recordings = conference.recordings ?? [];
   const hasProgramme = schedule.length > 0 || speakers.length > 0;
 
   return (
@@ -322,16 +327,22 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
 
                 {isCurrent ? (
                   <div className="mt-10 flex flex-col items-center gap-3 lg:items-start">
-                    <Button
-                      asChild
-                      size="lg"
-                      className="h-14 w-full max-w-xs rounded-full bg-primary px-8 text-base font-bold uppercase tracking-wide text-primary-foreground shadow-lg hover:bg-primary/90 sm:text-lg sm:tracking-wider"
-                    >
-                      <Link href="/register">
-                        Register for Shalom {conference.year}
-                        <ArrowRight className="ml-2 h-5 w-5" />
-                      </Link>
-                    </Button>
+                    {hasEnded ? (
+                      <p className="w-full max-w-xs rounded-full bg-primary/10 px-6 py-4 text-center text-sm font-bold uppercase tracking-wider text-primary">
+                        Conference concluded
+                      </p>
+                    ) : (
+                      <Button
+                        asChild
+                        size="lg"
+                        className="h-14 w-full max-w-xs rounded-full bg-primary px-8 text-base font-bold uppercase tracking-wide text-primary-foreground shadow-lg hover:bg-primary/90 sm:text-lg sm:tracking-wider"
+                      >
+                        <Link href="/register">
+                          Register for Shalom {conference.year}
+                          <ArrowRight className="ml-2 h-5 w-5" />
+                        </Link>
+                      </Button>
+                    )}
                     {conference.schedulePdf ? (
                       <Button
                         asChild
@@ -345,16 +356,18 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
                         </a>
                       </Button>
                     ) : null}
-                    <Button
-                      asChild
-                      variant="outline"
-                      size="lg"
-                      className="h-auto min-h-12 w-full max-w-xs whitespace-normal rounded-full border-ink/20 bg-ink/5 px-5 py-3 text-xs font-bold uppercase leading-snug tracking-wide text-ink hover:border-primary hover:bg-primary/10 hover:text-ink sm:text-sm"
-                    >
-                      <Link href="/register?badge=1">
-                        Already registered? Make your badge
-                      </Link>
-                    </Button>
+                    {!hasEnded ? (
+                      <Button
+                        asChild
+                        variant="outline"
+                        size="lg"
+                        className="h-auto min-h-12 w-full max-w-xs whitespace-normal rounded-full border-ink/20 bg-ink/5 px-5 py-3 text-xs font-bold uppercase leading-snug tracking-wide text-ink hover:border-primary hover:bg-primary/10 hover:text-ink sm:text-sm"
+                      >
+                        <Link href="/register?badge=1">
+                          Already registered? Make your badge
+                        </Link>
+                      </Button>
+                    ) : null}
                   </div>
                 ) : null}
               </div>
@@ -384,7 +397,7 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               </p>
 
               <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
-                {isCurrent ? (
+                {isUpcomingOrLive ? (
                   <Button
                     asChild
                     size="lg"
@@ -445,7 +458,42 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
           </section>
         ) : null}
 
-        {isCurrent && conference.year === "2026" ? (
+        {recordings.length > 0 ? (
+          <section className="border-t border-ink/10 bg-card px-4 py-20 sm:px-6 sm:py-24">
+            <div className="container mx-auto max-w-7xl">
+              <div className="mb-12 text-center">
+                <p className="text-xs font-bold uppercase tracking-[0.28em] text-primary">
+                  Watch again
+                </p>
+                <h2 className="mt-4 text-4xl font-black uppercase tracking-tighter text-ink sm:text-6xl">
+                  Shalom {conference.year}
+                </h2>
+              </div>
+              <div className="grid gap-8 lg:grid-cols-2">
+                {recordings.map((recording) => (
+                  <article key={recording.youtubeId}>
+                    <div className="aspect-video overflow-hidden rounded-2xl border border-ink/10 bg-black shadow-xl">
+                      <iframe
+                        src={`https://www.youtube-nocookie.com/embed/${recording.youtubeId}`}
+                        title={`Shalom ${conference.year} ${recording.title}`}
+                        className="h-full w-full"
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                        referrerPolicy="strict-origin-when-cross-origin"
+                        allowFullScreen
+                      />
+                    </div>
+                    <h3 className="mt-5 text-center text-2xl font-bold uppercase tracking-wide text-ink">
+                      {recording.title}
+                    </h3>
+                  </article>
+                ))}
+              </div>
+            </div>
+          </section>
+        ) : null}
+
+        {isUpcomingOrLive && conference.year === "2026" ? (
           <section id="first-timers" className="scroll-mt-24 border-t border-ink/10 px-4 py-20 sm:px-6 sm:py-24">
             <div className="container mx-auto grid max-w-6xl items-start gap-12 lg:grid-cols-[1fr_0.9fr] lg:gap-20">
               <div className="text-center lg:text-left">
@@ -494,14 +542,14 @@ export default function ConferenceYear({ year = currentConference.year }: Confer
               {speakers.length > 0 ? (
                 <div className="text-center lg:text-left">
                   <h2 className="mb-10 text-3xl font-black uppercase tracking-tighter text-ink sm:text-4xl md:text-6xl">
-                    {isCurrent ? "Who's ministering" : "Who ministered"}
+                    {isUpcomingOrLive ? "Who's ministering" : "Who ministered"}
                   </h2>
                   <div className="grid gap-4 sm:grid-cols-2">
                     {speakers.map((speaker) => (
                       <SpeakerCard
                         key={speaker.name}
                         speaker={speaker}
-                        autoFlip={isCurrent}
+                        autoFlip={isUpcomingOrLive}
                       />
                     ))}
                   </div>

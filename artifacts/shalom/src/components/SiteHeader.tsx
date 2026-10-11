@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import shalomLogo from "@assets/logo_1778697155106.png";
 import { ThemeToggle } from "@/components/ThemeProvider";
 
@@ -42,13 +41,6 @@ export default function SiteHeader() {
 
         <div className="flex items-center gap-3">
           <ThemeToggle />
-          <Button
-            asChild
-            size="sm"
-            className="hidden h-10 rounded-full border-none bg-primary px-6 font-bold uppercase tracking-widest text-white hover:bg-primary/90 sm:inline-flex"
-          >
-            <Link href="/register">Register</Link>
-          </Button>
 
           {/* Hamburger — mobile only */}
           <button
@@ -87,13 +79,6 @@ export default function SiteHeader() {
                   {l.label}
                 </Link>
               ))}
-              <Link
-                href="/register"
-                onClick={() => setMenuOpen(false)}
-                className="mt-2 flex min-h-11 items-center justify-center rounded-full bg-primary px-6 text-sm font-bold uppercase tracking-widest text-white"
-              >
-                Register
-              </Link>
             </div>
           </motion.div>
         )}

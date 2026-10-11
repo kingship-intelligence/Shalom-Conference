@@ -27,6 +27,9 @@ const HERO_TITLE = `${HERO_TITLE_PREFIX}${HERO_TITLE_THEME}`;
 const CONFERENCE_START = currentConference.startsAt
   ? new Date(currentConference.startsAt).getTime()
   : null;
+const CONFERENCE_END = currentConference.endsAt
+  ? new Date(currentConference.endsAt).getTime()
+  : null;
 
 function HeroTypewriterTitle({
   enabled,
@@ -106,6 +109,7 @@ function getCountdownParts() {
     minutes: Math.floor((remaining % 3_600_000) / 60_000),
     seconds: Math.floor((remaining % 60_000) / 1_000),
     hasStarted: remaining === 0,
+    hasEnded: CONFERENCE_END !== null && Date.now() >= CONFERENCE_END,
   };
 }
 
@@ -121,6 +125,28 @@ function ConferenceCountdown() {
   }, []);
 
   if (CONFERENCE_START === null) return null;
+
+  if (countdown.hasEnded) {
+    return (
+      <section className="border-y border-white/10 bg-[#090910] px-4 py-14 text-white sm:px-6 sm:py-16">
+        <div className="container mx-auto max-w-5xl text-center">
+          <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f9591f]">
+            Shalom 2026
+          </p>
+          <h2
+            className="mt-4 text-3xl font-bold uppercase tracking-wide sm:text-5xl"
+            style={{ fontFamily: "var(--font-display)" }}
+          >
+            Thank you for joining us
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-base text-white/70 sm:text-lg">
+            The Comforter has concluded. Revisit the program, speakers, and
+            moments from this year&apos;s gathering.
+          </p>
+        </div>
+      </section>
+    );
+  }
 
   const units = [
     { label: "Days", value: countdown.days },
@@ -208,10 +234,10 @@ export default function Home() {
                   asChild
                   size="lg"
                   className="group h-14 rounded-full border-none bg-primary px-10 text-base font-bold uppercase tracking-widest text-white shadow-[0_8px_35px_-10px_rgba(249,89,31,0.7)] transition-all duration-300 hover:-translate-y-1 hover:bg-primary/90 hover:brightness-110 motion-reduce:transition-none motion-reduce:hover:translate-y-0 lg:h-16 lg:px-12 lg:text-lg xl:h-[4.5rem] xl:px-14 xl:text-xl"
-                  data-testid="button-register-hero"
+                  data-testid="button-conference-hero"
                 >
-                  <Link href="/register">
-                    Register <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
+                  <Link href="/2026">
+                    View Shalom 2026 <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
                   </Link>
                 </Button>
                 <Button
@@ -265,20 +291,20 @@ export default function Home() {
               className="mb-6 text-6xl font-bold uppercase tracking-wide text-white sm:text-8xl"
               style={{ fontFamily: "var(--font-display)" }}
             >
-              Come as you are
+              Thank you
             </h2>
             <p className="mx-auto mb-12 max-w-xl text-xl font-medium text-white/85">
-              Bring a friend. Registration takes about a minute and we'll email you
-              everything you need for the door.
+              Shalom 2026 has concluded. Thank you for worshipping, praying,
+              serving, and gathering with us.
             </p>
             <Button
               asChild
               size="lg"
               className="h-16 rounded-full bg-white px-12 text-xl font-bold uppercase tracking-widest text-primary hover:bg-white/92 border-none shadow-lg"
-              data-testid="button-register-footer"
+              data-testid="button-conference-footer"
             >
-              <Link href="/register">
-                Register <ArrowRight className="ml-3 h-6 w-6" />
+              <Link href="/2026">
+                View the conference <ArrowRight className="ml-3 h-6 w-6" />
               </Link>
             </Button>
           </FadeIn>

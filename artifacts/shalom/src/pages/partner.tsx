@@ -1,4 +1,3 @@
-import { Link } from "wouter";
 import { ArrowRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { currentConference } from "@/data/conferences";
@@ -98,15 +97,9 @@ export default function Partner() {
                   Serve
                 </h3>
                 <p className="mt-3 text-base leading-relaxed text-muted-foreground">
-                  We need ushers, media, parking, welcome team, setup and clean-up crews, and
-                  people to help with the kids. You can pick a team when you register.
+                  Thank you to every usher, media volunteer, parking attendant, welcome team
+                  member, and setup and clean-up volunteer who served at Shalom 2026.
                 </p>
-                <Link
-                  href="/register"
-                  className="mt-5 inline-flex items-center gap-2 font-bold uppercase tracking-wider text-primary hover:text-ink"
-                >
-                  Register and volunteer <ArrowRight className="h-4 w-4" />
-                </Link>
               </div>
 
               <div className="mt-8 rounded-2xl border border-ink/10 bg-card/60 p-6 text-left sm:p-8">

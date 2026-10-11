@@ -66,8 +66,8 @@ export default function About() {
                   size="lg"
                   className="w-full max-w-xs rounded-full uppercase tracking-wider sm:w-auto"
                 >
-                  <Link href="/register">
-                    Register for {currentConference.year} <ArrowRight className="h-5 w-5" />
+                  <Link href="/2026">
+                    View Shalom {currentConference.year} <ArrowRight className="h-5 w-5" />
                   </Link>
                 </Button>
                 <Button

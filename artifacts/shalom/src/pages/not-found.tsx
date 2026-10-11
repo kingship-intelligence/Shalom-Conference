@@ -30,7 +30,7 @@ export default function NotFound() {
               variant="outline"
               className="rounded-full border-ink/20 uppercase tracking-wider"
             >
-              <Link href="/register">Register for Shalom</Link>
+              <Link href="/archive">Past conferences</Link>
             </Button>
           </div>
         </div>

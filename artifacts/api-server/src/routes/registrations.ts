@@ -26,6 +26,15 @@ const router: IRouter = Router();
 const MAX_PORTRAIT_BYTES = 5 * 1024 * 1024;
 const ALLOWED_PORTRAIT_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const MAX_BADGE_DELIVERIES = 5;
+const REGISTRATION_CLOSES_AT = new Date("2026-10-10T22:00:00-04:00").getTime();
+
+router.use((req, res, next) => {
+  if (req.method === "POST" && Date.now() >= REGISTRATION_CLOSES_AT) {
+    res.status(410).json({ error: "Shalom 2026 registration is closed." });
+    return;
+  }
+  next();
+});
 
 class DuplicateRegistrationError extends Error {}
 

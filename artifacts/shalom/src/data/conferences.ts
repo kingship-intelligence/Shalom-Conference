@@ -20,6 +20,8 @@ export type Conference = {
   date: string;
   /** ISO timestamp for when doors open on the first night. Drives the home page countdown. */
   startsAt?: string;
+  /** ISO timestamp after the final session. Drives the site's post-conference state. */
+  endsAt?: string;
   /** Omit when the venue for an archived year is not on record. */
   location?: string;
   summary: string;
@@ -34,6 +36,11 @@ export type Conference = {
     time: string;
     label?: string;
     title: string;
+  }>;
+  /** Conference recordings shown as embedded videos on the year page. */
+  recordings?: Array<{
+    title: string;
+    youtubeId: string;
   }>;
   /** Omit for archived years where the lineup is not on record. */
   speakers?: Array<{
@@ -53,6 +60,7 @@ export const conferences: Conference[] = [
       "Two nights of worship, prayer and the Word, built around the Holy Spirit.",
     date: "October 9-10, 2026",
     startsAt: "2026-10-09T19:00:00-04:00",
+    endsAt: "2026-10-10T22:00:00-04:00",
     location: "2021 Lord Baltimore Dr, Windsor Mill, MD 21244",
     summary:
       "Two nights in Windsor Mill for students and young adults who want more of the Holy Spirit.",
@@ -75,6 +83,10 @@ export const conferences: Conference[] = [
         label: "Session Two",
         title: "The Comforter: The Heart of Worship",
       },
+    ],
+    recordings: [
+      { title: "Day 1", youtubeId: "zCSz9-BhT9Y" },
+      { title: "Day 2", youtubeId: "ZsuQjTrkBL0" },
     ],
     speakers: [
       {

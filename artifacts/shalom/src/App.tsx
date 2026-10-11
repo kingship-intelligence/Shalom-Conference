@@ -9,7 +9,7 @@ const Survey = lazy(() => import("@/pages/survey"));
 const NewConverts = lazy(() => import("@/pages/new-converts"));
 const Home = lazy(() => import("@/pages/home"));
 const NotFound = lazy(() => import("@/pages/not-found"));
-const Register = lazy(() => import("@/pages/register"));
+const RegistrationClosed = lazy(() => import("@/pages/registration-closed"));
 const Archive = lazy(() => import("@/pages/archive"));
 const ConferenceYear = lazy(() => import("@/pages/conference-year"));
 const About = lazy(() => import("@/pages/about"));
@@ -29,7 +29,7 @@ function Router() {
       <Route path="/" component={Home} />
       <Route path="/survey" component={Survey} />
       <Route path="/newconverts" component={NewConverts} />
-      <Route path="/register" component={Register} />
+      <Route path="/register" component={RegistrationClosed} />
       <Route path="/prayer-charge" component={PrayerCharge} />
       <Route path="/privacy" component={Privacy} />
       <Route path="/terms" component={Terms} />
