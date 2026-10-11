@@ -53,14 +53,14 @@ const PRODUCTS = [
     name: "The Comforter Crewneck",
     price: 40,
     image: crew1,
-    soldOut: false,
+    soldOut: true,
   },
   {
     id: "comforter-crewneck-shalom",
     name: "The Comforter Crewneck — Shalom Edition",
     price: 40,
     image: crew2,
-    soldOut: false,
+    soldOut: true,
   },
 ];
 
@@ -229,7 +229,7 @@ export default function Shop() {
               Wear The <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary">Fire</span>
             </h1>
             <p className="mx-auto mt-6 max-w-xl text-base leading-relaxed text-copy-60 sm:text-lg">
-              The Comforter tee and crewneck, each in a standard and a Shalom edition. Tees are currently sold out. Crewneck preorders are open now.
+              The Comforter tee and crewneck, each in a standard and a Shalom edition. All merch is sold out for now. Preorders are currently closed.
             </p>
           </div>
         </section>
