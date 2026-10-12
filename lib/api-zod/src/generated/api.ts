@@ -589,7 +589,7 @@ export const createAdminUserBodyPasswordMax = 200;
 
 export const CreateAdminUserBody = zod.object({
   "username": zod.string().min(createAdminUserBodyUsernameMin).max(createAdminUserBodyUsernameMax),
-  "password": zod.string().min(createAdminUserBodyPasswordMin).max(createAdminUserBodyPasswordMax),
+  "password": zod.string().min(createAdminUserBodyPasswordMin).max(createAdminUserBodyPasswordMax).optional().describe('Required for all roles except shalom_files (invite email is sent instead)'),
   "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch', 'shalom_files']).optional()
 })
 

@@ -422,10 +422,11 @@ export interface AdminUserInput {
      */
   username: string;
   /**
+     * Required for all roles except shalom_files (invite email is sent instead)
      * @minLength 12
      * @maxLength 200
      */
-  password: string;
+  password?: string;
   role?: AdminUserInputRole;
 }
 

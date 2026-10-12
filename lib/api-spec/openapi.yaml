@@ -859,6 +859,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+        "502":
+          description: Invite email could not be sent
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /admin/users/{id}:
     delete:
       operationId: deleteAdminUser
@@ -1465,10 +1471,16 @@ components:
         downloadURL: { type: string }
     AdminUserInput:
       type: object
-      required: [username, password]
+      required: [username]
       properties:
         username: { type: string, minLength: 3, maxLength: 254 }
-        password: { type: string, minLength: 12, maxLength: 200 }
+        password:
+          {
+            type: string,
+            minLength: 12,
+            maxLength: 200,
+            description: Required for all roles except shalom_files (invite email is sent instead),
+          }
         role:
           {
             type: string,

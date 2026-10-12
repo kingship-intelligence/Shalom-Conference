@@ -121,6 +121,16 @@ mock.module("drizzle-orm", {
   },
 });
 
+const sentShalomInvites = [];
+const emailPath = pathToFileURL(resolve("src/lib/email.ts")).href;
+mock.module(emailPath, {
+  namedExports: {
+    sendShalomFilesPortalInvite: async (options) => {
+      sentShalomInvites.push(options);
+    },
+  },
+});
+
 const routePath = pathToFileURL(resolve("src/routes/admin.ts")).href;
 const { default: adminRouter } = await import(routePath);
 
@@ -166,6 +176,7 @@ describe("admin account management", () => {
   beforeEach(() => {
     state.rows.length = 0;
     state.nextId = 1;
+    sentShalomInvites.length = 0;
     process.env.SESSION_SECRET = "test-admin-session-secret";
     process.env.ADMIN_USERNAME = bootstrapCredentials.username;
     process.env.ADMIN_PASSWORD = bootstrapCredentials.password;
@@ -332,10 +343,11 @@ describe("admin account management", () => {
       "merch",
       "shalom_files",
     ]) {
-      const credentials = {
-        username: `${role}@example.org`,
-        password: "a-long-staff-password",
-      };
+      const username = `${role}@example.org`;
+      const credentials =
+        role === "shalom_files"
+          ? { username }
+          : { username, password: "a-long-staff-password" };
       const created = await request(
         "POST",
         "/admin/users",
@@ -344,7 +356,14 @@ describe("admin account management", () => {
       );
       assert.equal(created.status, 201);
       assert.equal((await created.json()).role, role);
-      const login = await signIn(credentials);
+      const login = await signIn(
+        role === "shalom_files"
+          ? {
+              username,
+              password: sentShalomInvites.at(-1).password,
+            }
+          : credentials,
+      );
       assert.equal(login.status, 200);
       assert.equal((await login.json()).role, role);
       const staffCookie = login.headers.get("set-cookie").split(";")[0];
@@ -394,13 +413,13 @@ describe("admin account management", () => {
       "/admin/users",
       {
         username: "folder.user@example.org",
-        password: "a-long-folder-password",
         role: "shalom_files",
       },
       { cookie: adminCookie },
     );
     assert.equal(created.status, 201);
     const folderUser = await created.json();
+    assert.equal(sentShalomInvites.at(-1).email, "folder.user@example.org");
 
     const protectedBootstrap = await request(
       "DELETE",
@@ -413,7 +432,7 @@ describe("admin account management", () => {
 
     const staffLogin = await signIn({
       username: "folder.user@example.org",
-      password: "a-long-folder-password",
+      password: sentShalomInvites.at(-1).password,
     });
     const staffCookie = staffLogin.headers.get("set-cookie").split(";")[0];
     const staffDelete = await request("DELETE", "/admin/users/1", undefined, {

@@ -18,7 +18,9 @@ import {
   hasAdminSession,
   isAdminRole,
 } from "../lib/admin-session";
+import { randomBytes } from "node:crypto";
 import { hashAdminPassword, verifyAdminPassword } from "../lib/admin-password";
+import { sendShalomFilesPortalInvite } from "../lib/email";
 
 const router: IRouter = Router();
 const BOOTSTRAP_LOCK_ID = 7_313_026;
@@ -38,6 +40,16 @@ function requireFullAdmin(req: Request, res: Response): boolean {
 
 function normalizeUsername(username: string): string {
   return username.trim().toLowerCase();
+}
+
+const EMAIL_USERNAME_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function generateShalomFilesPassword(): string {
+  return randomBytes(18).toString("base64url");
+}
+
+function isEmailUsername(username: string): boolean {
+  return EMAIL_USERNAME_PATTERN.test(username);
 }
 
 async function bootstrapFirstAdmin(): Promise<void> {
@@ -123,13 +135,28 @@ router.post("/admin/users", async (req, res): Promise<void> => {
     return;
   }
 
+  const role = parsed.data.role ?? "admin";
+  let password = parsed.data.password;
+  if (role === "shalom_files") {
+    if (!isEmailUsername(username)) {
+      res.status(400).json({
+        error: "Shalom 2026 file access requires a valid email address.",
+      });
+      return;
+    }
+    password = generateShalomFilesPassword();
+  } else if (!password) {
+    res.status(400).json({ error: "Password is required for this access level." });
+    return;
+  }
+
   try {
     const [user] = await db
       .insert(adminUsersTable)
       .values({
         username,
-        passwordHash: await hashAdminPassword(parsed.data.password),
-        role: parsed.data.role ?? "admin",
+        passwordHash: await hashAdminPassword(password),
+        role,
         createdBy: getAdminSession(req)?.username ?? null,
       })
       .returning({
@@ -139,6 +166,19 @@ router.post("/admin/users", async (req, res): Promise<void> => {
         createdBy: adminUsersTable.createdBy,
         createdAt: adminUsersTable.createdAt,
       });
+
+    if (role === "shalom_files") {
+      try {
+        await sendShalomFilesPortalInvite({ email: username, password });
+      } catch (inviteError) {
+        await db.delete(adminUsersTable).where(eq(adminUsersTable.id, user.id));
+        req.log.error({ err: inviteError }, "Shalom files invite email failed");
+        res.status(502).json({
+          error: "The invite email could not be sent. Check mail configuration and try again.",
+        });
+        return;
+      }
+    }
 
     res.status(201).json(CreateAdminUserResponse.parse(user));
   } catch (error) {

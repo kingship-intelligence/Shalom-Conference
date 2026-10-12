@@ -16,6 +16,7 @@ import {
   useListPrayerChargeSurveyResponses,
   useListAdminUsers,
   useListTestimonies,
+  createAdminUser,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -360,6 +361,9 @@ export default function Admin() {
   const [newAdminRole, setNewAdminRole] = useState<AdminRole>("checkin");
   const [adminAccountFormError, setAdminAccountFormError] = useState("");
   const [deleteAccountError, setDeleteAccountError] = useState("");
+  const [bulkInviteEmails, setBulkInviteEmails] = useState("");
+  const [bulkInviteSummary, setBulkInviteSummary] = useState("");
+  const [bulkInviteBusy, setBulkInviteBusy] = useState(false);
 
   const testimoniesQuery = useListTestimonies({
     query: { enabled: fullAdmin },
@@ -444,17 +448,84 @@ export default function Admin() {
   function submitAdminAccount(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setAdminAccountFormError("");
+    const username = newAdminUsername.trim();
+    if (newAdminRole === "shalom_files") {
+      createAdminUserMutation.mutate({
+        data: {
+          username,
+          role: "shalom_files",
+        },
+      });
+      return;
+    }
     if (newAdminPassword !== confirmAdminPassword) {
       setAdminAccountFormError("The passwords do not match.");
       return;
     }
     createAdminUserMutation.mutate({
       data: {
-        username: newAdminUsername.trim(),
+        username,
         password: newAdminPassword,
         role: newAdminRole,
       },
     });
+  }
+
+  async function submitBulkShalomInvites(
+    event: React.FormEvent<HTMLFormElement>,
+  ) {
+    event.preventDefault();
+    setBulkInviteSummary("");
+    setAdminAccountFormError("");
+    const emails = [
+      ...new Set(
+        bulkInviteEmails
+          .split(/[\n,;]+/)
+          .map((value) => value.trim().toLowerCase())
+          .filter((value) => value.length > 0),
+      ),
+    ];
+    if (emails.length === 0) {
+      setBulkInviteSummary("Add at least one email address.");
+      return;
+    }
+
+    setBulkInviteBusy(true);
+    let invited = 0;
+    const failed: string[] = [];
+    for (const email of emails) {
+      try {
+        await createAdminUser(
+          { username: email, role: "shalom_files" },
+          { credentials: "include" },
+        );
+        invited += 1;
+      } catch (inviteError) {
+        const message = (
+          inviteError as { data?: { error?: string } } | null
+        )?.data?.error;
+        failed.push(message ? `${email} (${message})` : email);
+      }
+    }
+    setBulkInviteBusy(false);
+    if (invited > 0) {
+      setBulkInviteEmails("");
+      queryClient.invalidateQueries({
+        queryKey: getListAdminUsersQueryKey(),
+      });
+    }
+    const parts = [];
+    if (invited > 0) {
+      parts.push(
+        invited === 1
+          ? "1 invite email sent."
+          : `${invited} invite emails sent.`,
+      );
+    }
+    if (failed.length > 0) {
+      parts.push(`Could not invite: ${failed.join("; ")}`);
+    }
+    setBulkInviteSummary(parts.join(" "));
   }
 
   const testimonies = [...(testimoniesQuery.data || [])].sort(
@@ -1007,11 +1078,11 @@ export default function Admin() {
                     htmlFor="new-admin-username"
                     className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
                   >
-                    Username
+                    {newAdminRole === "shalom_files" ? "Email" : "Username"}
                   </label>
                   <Input
                     id="new-admin-username"
-                    type="text"
+                    type={newAdminRole === "shalom_files" ? "email" : "text"}
                     autoComplete="username"
                     value={newAdminUsername}
                     onChange={(event) =>
@@ -1020,7 +1091,11 @@ export default function Admin() {
                     minLength={3}
                     maxLength={254}
                     required
-                    placeholder="admin@example.com"
+                    placeholder={
+                      newAdminRole === "shalom_files"
+                        ? "name@example.com"
+                        : "admin@example.com"
+                    }
                     className="h-11 border-ink/10 bg-ink/5 text-ink placeholder:text-muted-foreground"
                   />
                 </div>
@@ -1046,48 +1121,57 @@ export default function Admin() {
                     <option value="admin">Full admin portal</option>
                   </select>
                 </div>
-                <div>
-                  <label
-                    htmlFor="new-admin-password"
-                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                  >
-                    Password
-                  </label>
-                  <Input
-                    id="new-admin-password"
-                    type="password"
-                    autoComplete="new-password"
-                    value={newAdminPassword}
-                    onChange={(event) =>
-                      setNewAdminPassword(event.target.value)
-                    }
-                    minLength={12}
-                    maxLength={200}
-                    required
-                    className="h-11 border-ink/10 bg-ink/5 text-ink"
-                  />
-                </div>
-                <div>
-                  <label
-                    htmlFor="confirm-admin-password"
-                    className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
-                  >
-                    Confirm password
-                  </label>
-                  <Input
-                    id="confirm-admin-password"
-                    type="password"
-                    autoComplete="new-password"
-                    value={confirmAdminPassword}
-                    onChange={(event) =>
-                      setConfirmAdminPassword(event.target.value)
-                    }
-                    minLength={12}
-                    maxLength={200}
-                    required
-                    className="h-11 border-ink/10 bg-ink/5 text-ink"
-                  />
-                </div>
+                {newAdminRole === "shalom_files" ? (
+                  <p className="rounded-xl border border-dashed border-ink/10 p-3 text-xs leading-relaxed text-muted-foreground">
+                    No password is needed here. We email each person a sign-in
+                    link and temporary password for the files portal.
+                  </p>
+                ) : (
+                  <>
+                    <div>
+                      <label
+                        htmlFor="new-admin-password"
+                        className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                      >
+                        Password
+                      </label>
+                      <Input
+                        id="new-admin-password"
+                        type="password"
+                        autoComplete="new-password"
+                        value={newAdminPassword}
+                        onChange={(event) =>
+                          setNewAdminPassword(event.target.value)
+                        }
+                        minLength={12}
+                        maxLength={200}
+                        required
+                        className="h-11 border-ink/10 bg-ink/5 text-ink"
+                      />
+                    </div>
+                    <div>
+                      <label
+                        htmlFor="confirm-admin-password"
+                        className="mb-2 block text-xs font-bold uppercase tracking-widest text-muted-foreground"
+                      >
+                        Confirm password
+                      </label>
+                      <Input
+                        id="confirm-admin-password"
+                        type="password"
+                        autoComplete="new-password"
+                        value={confirmAdminPassword}
+                        onChange={(event) =>
+                          setConfirmAdminPassword(event.target.value)
+                        }
+                        minLength={12}
+                        maxLength={200}
+                        required
+                        className="h-11 border-ink/10 bg-ink/5 text-ink"
+                      />
+                    </div>
+                  </>
+                )}
                 {(adminAccountFormError || accountApiError) && (
                   <p
                     role="alert"
@@ -1102,8 +1186,48 @@ export default function Admin() {
                   className="w-full rounded-full bg-primary font-bold uppercase tracking-widest text-white hover:bg-primary/90"
                 >
                   {createAdminUserMutation.isPending
-                    ? "Creating account…"
-                    : "Create account"}
+                    ? newAdminRole === "shalom_files"
+                      ? "Sending invite…"
+                      : "Creating account…"
+                    : newAdminRole === "shalom_files"
+                      ? "Send invite"
+                      : "Create account"}
+                </Button>
+              </form>
+
+              <form
+                onSubmit={submitBulkShalomInvites}
+                className="mt-8 space-y-4 border-t border-ink/10 pt-6"
+              >
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">
+                    Invite Shalom 2026 viewers
+                  </h3>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+                    Paste one email per line. Each person receives portal access
+                    by email; you do not set passwords manually.
+                  </p>
+                </div>
+                <textarea
+                  id="bulk-shalom-invites"
+                  value={bulkInviteEmails}
+                  onChange={(event) => setBulkInviteEmails(event.target.value)}
+                  rows={6}
+                  placeholder={"name@example.com\nanother@example.com"}
+                  className="w-full rounded-md border border-ink/10 bg-ink/5 px-3 py-2 text-sm text-ink placeholder:text-muted-foreground"
+                />
+                {bulkInviteSummary && (
+                  <p className="text-sm text-muted-foreground">
+                    {bulkInviteSummary}
+                  </p>
+                )}
+                <Button
+                  type="submit"
+                  disabled={bulkInviteBusy || createAdminUserMutation.isPending}
+                  variant="outline"
+                  className="w-full rounded-full border-ink/20 font-bold uppercase tracking-widest text-ink"
+                >
+                  {bulkInviteBusy ? "Sending invites…" : "Send invite emails"}
                 </Button>
               </form>
             </div>

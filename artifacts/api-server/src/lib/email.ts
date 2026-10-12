@@ -568,3 +568,37 @@ export async function sendMerchOrderNotification(opts: {
     throw new Error(`Gmail API error ${response.status}: ${text}`);
   }
 }
+
+export async function sendShalomFilesPortalInvite(opts: {
+  email: string;
+  password: string;
+}): Promise<void> {
+  const siteUrl = getSiteUrl();
+  const adminUrl = `${siteUrl}/admin`;
+  const email = escapeHtml(opts.email);
+  const password = escapeHtml(opts.password);
+  const html = `<!DOCTYPE html>
+<html lang="en"><body style="margin:0;padding:32px 16px;background:#0d0d0d;font-family:Arial,sans-serif;color:#fff;">
+  <table width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
+    <table width="580" style="max-width:580px;width:100%;background:#141414;border-radius:16px;overflow:hidden;">
+      <tr><td style="padding:28px 32px;background:#0a1a0f;border-bottom:2px solid #22c55e;">
+        <p style="margin:0;color:#22c55e;font-size:12px;font-weight:700;letter-spacing:3px;text-transform:uppercase;">Shalom 2026</p>
+        <h1 style="margin:8px 0 0;font-size:26px;color:#fff;">Your files portal access</h1>
+      </td></tr>
+      <tr><td style="padding:32px;color:#c0c0c0;line-height:1.7;">
+        <p style="margin:0 0 16px;">You can sign in to view and download Shalom 2026 conference files.</p>
+        <p style="margin:0 0 8px;"><strong style="color:#fff;">Sign-in page:</strong> <a href="${adminUrl}" style="color:#22c55e;">${escapeHtml(adminUrl)}</a></p>
+        <p style="margin:0 0 8px;"><strong style="color:#fff;">Email:</strong> ${email}</p>
+        <p style="margin:0 0 20px;"><strong style="color:#fff;">Temporary password:</strong> <code style="color:#fff;background:#1f1f1f;padding:4px 8px;border-radius:6px;">${password}</code></p>
+        <p style="margin:0;color:#a0a0a0;font-size:13px;">Keep this password private. Contact the Shalom team if you need help signing in.</p>
+      </td></tr>
+    </table>
+  </td></tr></table>
+</body></html>`;
+
+  await sendHtmlEmail({
+    to: opts.email,
+    subject: "Shalom 2026 files portal sign-in",
+    html,
+  });
+}
