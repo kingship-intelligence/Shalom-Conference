@@ -28,14 +28,6 @@ const ALLOWED_PORTRAIT_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]
 const MAX_BADGE_DELIVERIES = 5;
 const REGISTRATION_CLOSES_AT = new Date("2026-10-10T22:00:00-04:00").getTime();
 
-router.use((req, res, next) => {
-  if (req.method === "POST" && Date.now() >= REGISTRATION_CLOSES_AT) {
-    res.status(410).json({ error: "Shalom 2026 registration is closed." });
-    return;
-  }
-  next();
-});
-
 class DuplicateRegistrationError extends Error {}
 
 function hashUploadToken(token: string): string {
@@ -102,6 +94,11 @@ async function getAuthorizedBadgeRegistration(
 }
 
 router.post("/registrations", async (req, res): Promise<void> => {
+  if (Date.now() >= REGISTRATION_CLOSES_AT) {
+    res.status(410).json({ error: "Shalom 2026 registration is closed." });
+    return;
+  }
+
   const parsed = CreateRegistrationBody.safeParse(req.body);
   if (!parsed.success) {
     req.log.warn({ errors: parsed.error.message }, "Invalid request body");

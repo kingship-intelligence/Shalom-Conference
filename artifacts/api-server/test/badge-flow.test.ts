@@ -189,6 +189,23 @@ describe("attendee badge delivery flow", () => {
     deletedPortraits.length = 0;
   });
 
+  it("keeps admin sign-in reachable after the conference registration deadline", async () => {
+    const app = makeApp();
+    app.post("/admin/login", (_req, res) => res.sendStatus(204));
+    const previousTime = Date.now();
+    mock.timers.setTime(new Date("2026-10-11T04:00:00Z").getTime());
+
+    try {
+      const login = await request(app, "POST", "/admin/login", {});
+      const registration = await request(app, "POST", "/registrations", {});
+
+      assert.equal(login.status, 204);
+      assert.equal(registration.status, 410);
+    } finally {
+      mock.timers.setTime(previousTime);
+    }
+  });
+
   it("registers an attendee and returns a one-time badge token", async () => {
     const response = await request(makeApp(), "POST", "/registrations", registration);
     const body = await response.json();
