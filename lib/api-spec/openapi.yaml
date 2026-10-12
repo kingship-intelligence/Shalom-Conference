@@ -26,6 +26,8 @@ tags:
     description: Merch preorder operations
   - name: admin
     description: Admin sign-in and account management
+  - name: shalom-files
+    description: Private Shalom 2026 file folder
 paths:
   /healthz:
     get:
@@ -857,6 +859,178 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/ErrorResponse"
+  /admin/users/{id}:
+    delete:
+      operationId: deleteAdminUser
+      tags: [admin]
+      summary: Delete an account created in the admin portal
+      parameters:
+        - $ref: "#/components/parameters/AdminUserId"
+      responses:
+        "204":
+          description: Account deleted
+        "400":
+          description: Invalid account ID
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: The account cannot be deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Account not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
+          description: The last full admin account cannot be deleted
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /shalom-files:
+    get:
+      operationId: listShalomFiles
+      tags: [shalom-files]
+      summary: List files in the Shalom 2026 folder
+      responses:
+        "200":
+          description: Shalom 2026 files
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ShalomFile"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Shalom 2026 file access required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /shalom-files/upload-url:
+    post:
+      operationId: requestShalomFileUploadUrl
+      tags: [shalom-files]
+      summary: Request a private upload URL for the Shalom 2026 folder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ShalomFileUploadInput"
+      responses:
+        "200":
+          description: Short-lived upload URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShalomFileUploadUrl"
+        "400":
+          description: Invalid file request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Shalom 2026 file access required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /shalom-files/{fileId}/complete:
+    post:
+      operationId: completeShalomFileUpload
+      tags: [shalom-files]
+      summary: Verify and publish an uploaded Shalom 2026 file
+      parameters:
+        - $ref: "#/components/parameters/ShalomFileId"
+      responses:
+        "200":
+          description: File is available in the folder
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShalomFile"
+        "400":
+          description: Uploaded file failed verification
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Shalom 2026 file access required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: Pending upload was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /shalom-files/{fileId}/download:
+    post:
+      operationId: requestShalomFileDownloadUrl
+      tags: [shalom-files]
+      summary: Request a private download URL for a Shalom 2026 file
+      parameters:
+        - $ref: "#/components/parameters/ShalomFileId"
+      responses:
+        "200":
+          description: Short-lived download URL
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ShalomFileDownloadUrl"
+        "401":
+          description: Admin sign-in required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
+          description: Shalom 2026 file access required
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
+          description: File was not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
   /merch-orders:
     post:
       operationId: createMerchOrder
@@ -1240,10 +1414,11 @@ components:
         conferenceYear: { type: integer, minimum: 2000, maximum: 2100 }
     AdminUser:
       type: object
-      required: [id, username, role, createdAt]
+      required: [id, username, role, createdBy, createdAt]
       properties:
         id: { type: integer }
         username: { type: string }
+        createdBy: { type: ["string", "null"] }
         role:
           {
             type: string,
@@ -1256,9 +1431,38 @@ components:
                 registration_checkin,
                 first_timers,
                 merch,
+                shalom_files,
               ],
           }
         createdAt: { type: string, format: date-time }
+    ShalomFile:
+      type: object
+      required: [id, fileName, contentType, size, uploadedBy, createdAt]
+      properties:
+        id: { type: integer }
+        fileName: { type: string }
+        contentType: { type: string }
+        size: { type: integer, minimum: 1, maximum: 104857600 }
+        uploadedBy: { type: string }
+        createdAt: { type: string, format: date-time }
+    ShalomFileUploadInput:
+      type: object
+      required: [fileName, contentType, size]
+      properties:
+        fileName: { type: string, minLength: 1, maxLength: 180 }
+        contentType: { type: string, minLength: 1, maxLength: 200 }
+        size: { type: integer, minimum: 1, maximum: 104857600 }
+    ShalomFileUploadUrl:
+      type: object
+      required: [id, uploadURL]
+      properties:
+        id: { type: integer }
+        uploadURL: { type: string }
+    ShalomFileDownloadUrl:
+      type: object
+      required: [downloadURL]
+      properties:
+        downloadURL: { type: string }
     AdminUserInput:
       type: object
       required: [username, password]
@@ -1277,6 +1481,7 @@ components:
                 registration_checkin,
                 first_timers,
                 merch,
+                shalom_files,
               ],
           }
     AdminLoginInput:
@@ -1303,6 +1508,7 @@ components:
                 registration_checkin,
                 first_timers,
                 merch,
+                shalom_files,
               ],
           }
     AdminSession:
@@ -1323,6 +1529,7 @@ components:
                 registration_checkin,
                 first_timers,
                 merch,
+                shalom_files,
               ],
           }
     AdminLogoutResponse:
@@ -1383,6 +1590,16 @@ components:
       properties:
         error: { type: string }
   parameters:
+    AdminUserId:
+      name: id
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
+    ShalomFileId:
+      name: fileId
+      in: path
+      required: true
+      schema: { type: integer, minimum: 1 }
     CheckInSessionId:
       name: sessionId
       in: path

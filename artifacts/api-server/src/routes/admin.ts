@@ -4,6 +4,7 @@ import { db, adminUsersTable } from "@workspace/db";
 import {
   CreateAdminUserBody,
   CreateAdminUserResponse,
+  DeleteAdminUserParams,
   GetAdminSessionResponse,
   LoginAdminBody,
   LoginAdminResponse,
@@ -67,6 +68,7 @@ async function bootstrapFirstAdmin(): Promise<void> {
       username,
       passwordHash: await hashAdminPassword(configuredPassword),
       role: "admin",
+      createdBy: null,
     });
   });
 }
@@ -98,6 +100,7 @@ router.get("/admin/users", async (req, res): Promise<void> => {
       id: adminUsersTable.id,
       username: adminUsersTable.username,
       role: adminUsersTable.role,
+      createdBy: adminUsersTable.createdBy,
       createdAt: adminUsersTable.createdAt,
     })
     .from(adminUsersTable)
@@ -127,11 +130,13 @@ router.post("/admin/users", async (req, res): Promise<void> => {
         username,
         passwordHash: await hashAdminPassword(parsed.data.password),
         role: parsed.data.role ?? "admin",
+        createdBy: getAdminSession(req)?.username ?? null,
       })
       .returning({
         id: adminUsersTable.id,
         username: adminUsersTable.username,
         role: adminUsersTable.role,
+        createdBy: adminUsersTable.createdBy,
         createdAt: adminUsersTable.createdAt,
       });
 
@@ -148,6 +153,59 @@ router.post("/admin/users", async (req, res): Promise<void> => {
     }
     throw error;
   }
+});
+
+router.delete("/admin/users/:id", async (req, res): Promise<void> => {
+  if (!requireFullAdmin(req, res)) return;
+  const session = getAdminSession(req);
+  if (!session) {
+    res.status(401).json({ error: "Admin sign-in is required." });
+    return;
+  }
+
+  const parsed = DeleteAdminUserParams.safeParse(req.params);
+  if (!parsed.success) {
+    res.status(400).json({ error: "Invalid account ID." });
+    return;
+  }
+
+  const [target] = await db
+    .select()
+    .from(adminUsersTable)
+    .where(eq(adminUsersTable.id, parsed.data.id));
+  if (!target) {
+    res.status(404).json({ error: "Account not found." });
+    return;
+  }
+  if (!target.createdBy) {
+    res.status(403).json({ error: "Only accounts created in the portal can be deleted." });
+    return;
+  }
+  if (target.username === session.username) {
+    res.status(403).json({ error: "You cannot delete the account you are signed in with." });
+    return;
+  }
+  if (target.role === "admin") {
+    const admins = await db
+      .select({ id: adminUsersTable.id })
+      .from(adminUsersTable)
+      .where(eq(adminUsersTable.role, "admin"));
+    if (admins.length <= 1) {
+      res.status(409).json({ error: "The last full admin account cannot be deleted." });
+      return;
+    }
+  }
+
+  const [deletedUser] = await db
+    .delete(adminUsersTable)
+    .where(eq(adminUsersTable.id, target.id))
+    .returning({ id: adminUsersTable.id });
+  if (!deletedUser) {
+    res.status(404).json({ error: "Account not found." });
+    return;
+  }
+
+  res.status(204).send();
 });
 
 router.post("/admin/login", async (req, res): Promise<void> => {

@@ -10,6 +10,7 @@ const table = {
   username: { name: "username" },
   passwordHash: { name: "password_hash" },
   role: { name: "role" },
+  createdBy: { name: "created_by" },
   createdAt: { name: "created_at" },
 };
 const state = { rows: [], nextId: 1 };
@@ -52,6 +53,29 @@ function fakeDb() {
               ),
           };
           return query;
+        },
+      };
+    },
+    delete() {
+      return {
+        where(condition) {
+          return {
+            returning: async (fields) => {
+              const deleted = [];
+              state.rows = state.rows.filter((row) => {
+                const matches = row[condition.column.name] === condition.value;
+                if (matches) deleted.push(row);
+                return !matches;
+              });
+              return fields
+                ? deleted.map((row) =>
+                    Object.fromEntries(
+                      Object.keys(fields).map((key) => [key, row[key]]),
+                    ),
+                  )
+                : deleted;
+            },
+          };
         },
       };
     },
@@ -164,6 +188,7 @@ describe("admin account management", () => {
         id: 1,
         username: "primary.admin@example.com",
         role: "admin",
+        createdBy: null,
         createdAt: state.rows[0].createdAt.toISOString(),
       },
     ]);
@@ -188,6 +213,7 @@ describe("admin account management", () => {
       id: 2,
       username: "second.admin@example.com",
       role: "admin",
+      createdBy: "primary.admin@example.com",
       createdAt: state.rows[1].createdAt.toISOString(),
     });
     assert.notEqual(state.rows[1].passwordHash, "a-long-new-admin-password");
@@ -304,6 +330,7 @@ describe("admin account management", () => {
       "registration_checkin",
       "first_timers",
       "merch",
+      "shalom_files",
     ]) {
       const credentials = {
         username: `${role}@example.org`,
@@ -356,5 +383,88 @@ describe("admin account management", () => {
       ).status,
       400,
     );
+    assert.equal(state.rows.length, 7);
+  });
+
+  it("deletes only portal-created accounts and protects the last full admin", async () => {
+    const primaryLogin = await signIn(bootstrapCredentials);
+    const adminCookie = primaryLogin.headers.get("set-cookie").split(";")[0];
+    const created = await request(
+      "POST",
+      "/admin/users",
+      {
+        username: "folder.user@example.org",
+        password: "a-long-folder-password",
+        role: "shalom_files",
+      },
+      { cookie: adminCookie },
+    );
+    assert.equal(created.status, 201);
+    const folderUser = await created.json();
+
+    const protectedBootstrap = await request(
+      "DELETE",
+      "/admin/users/1",
+      undefined,
+      { cookie: adminCookie },
+    );
+    assert.equal(protectedBootstrap.status, 403);
+    assert.equal(state.rows.length, 2);
+
+    const staffLogin = await signIn({
+      username: "folder.user@example.org",
+      password: "a-long-folder-password",
+    });
+    const staffCookie = staffLogin.headers.get("set-cookie").split(";")[0];
+    const staffDelete = await request("DELETE", "/admin/users/1", undefined, {
+      cookie: staffCookie,
+    });
+    assert.equal(staffDelete.status, 403);
+
+    const deleted = await request(
+      "DELETE",
+      `/admin/users/${folderUser.id}`,
+      undefined,
+      { cookie: adminCookie },
+    );
+    assert.equal(deleted.status, 204);
+    assert.equal(state.rows.some((row) => row.id === folderUser.id), false);
+
+    const secondAdmin = await request(
+      "POST",
+      "/admin/users",
+      {
+        username: "second.admin@example.org",
+        password: "a-long-second-password",
+        role: "admin",
+      },
+      { cookie: adminCookie },
+    );
+    const secondAdminUser = await secondAdmin.json();
+    const secondLogin = await signIn({
+      username: "second.admin@example.org",
+      password: "a-long-second-password",
+    });
+    const secondCookie = secondLogin.headers.get("set-cookie").split(";")[0];
+    const selfDelete = await request(
+      "DELETE",
+      `/admin/users/${secondAdminUser.id}`,
+      undefined,
+      { cookie: secondCookie },
+    );
+    assert.equal(selfDelete.status, 403);
+
+    state.rows.splice(
+      state.rows.findIndex((row) => row.username === "primary.admin@example.com"),
+      1,
+    );
+    const lastAdminDelete = await request(
+      "DELETE",
+      `/admin/users/${secondAdminUser.id}`,
+      undefined,
+      { cookie: adminCookie },
+    );
+    assert.equal(lastAdminDelete.status, 409);
+    assert.equal(state.rows.length, 1);
   });
 });

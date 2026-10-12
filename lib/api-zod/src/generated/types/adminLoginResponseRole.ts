@@ -17,4 +17,5 @@ export const AdminLoginResponseRole = {
   registration_checkin: 'registration_checkin',
   first_timers: 'first_timers',
   merch: 'merch',
+  shalom_files: 'shalom_files',
 } as const;

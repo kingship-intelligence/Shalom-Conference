@@ -39,6 +39,7 @@ export * from "./prayer-chain-signups";
 export * from "./first-timer-responses";
 export * from "./prayer-charge-survey-responses";
 export * from "./admin-users";
+export * from "./shalom-files";
 
 export * from "./new-converts";
 export * from "./conference-survey";

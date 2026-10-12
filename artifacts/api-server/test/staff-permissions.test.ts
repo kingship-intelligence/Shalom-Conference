@@ -10,19 +10,21 @@ import {
   hasCheckInAccess,
   hasFirstTimersAccess,
   hasMerchAccess,
+  hasShalomFilesAccess,
   type AdminRole,
 } from "../src/lib/admin-session";
 
 it("enforces the signed-session access matrix for every staff role", async () => {
   process.env.SESSION_SECRET = "test-staff-role-secret";
   const matrix: [AdminRole, boolean[]][] = [
-    ["admin", [true, true, true, true, true, true, true]],
-    ["checkin", [false, false, false, false, true, false, false]],
-    ["registration_viewer", [false, false, true, false, false, false, false]],
-    ["new_converts", [false, false, false, true, false, false, false]],
-    ["registration_checkin", [false, true, true, false, true, false, false]],
-    ["first_timers", [false, false, false, false, false, true, false]],
-    ["merch", [false, false, false, false, false, false, true]],
+    ["admin", [true, true, true, true, true, true, true, true]],
+    ["checkin", [false, false, false, false, true, false, false, false]],
+    ["registration_viewer", [false, false, true, false, false, false, false, false]],
+    ["new_converts", [false, false, false, true, false, false, false, false]],
+    ["registration_checkin", [false, true, true, false, true, false, false, false]],
+    ["first_timers", [false, false, false, false, false, true, false, false]],
+    ["merch", [false, false, false, false, false, false, true, false]],
+    ["shalom_files", [false, false, false, false, false, false, false, true]],
   ];
   for (const [role, expected] of matrix) {
     let cookie = "";
@@ -41,6 +43,7 @@ it("enforces the signed-session access matrix for every staff role", async () =>
       hasCheckInAccess,
       hasFirstTimersAccess,
       hasMerchAccess,
+      hasShalomFilesAccess,
     ];
     assert.deepEqual(
       checks.map((check) => check(request)),
@@ -50,7 +53,7 @@ it("enforces the signed-session access matrix for every staff role", async () =>
     request.headers.cookie = cookie.replace(`.${role}.`, ".owner.");
     assert.deepEqual(
       checks.map((check) => check(request)),
-      [false, false, false, false, false, false, false],
+      [false, false, false, false, false, false, false, false],
     );
   }
 });

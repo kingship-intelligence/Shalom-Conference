@@ -11,7 +11,8 @@ export type AdminRole =
   | "new_converts"
   | "registration_checkin"
   | "first_timers"
-  | "merch";
+  | "merch"
+  | "shalom_files";
 
 export type AdminSession = {
   username: string;
@@ -140,6 +141,7 @@ export function isAdminRole(value: unknown): value is AdminRole {
     "registration_checkin",
     "first_timers",
     "merch",
+    "shalom_files",
   ].includes(value as string);
 }
 export function hasRegistrationAccess(req: Request): boolean {
@@ -157,6 +159,11 @@ export function hasNewConvertsAccess(req: Request): boolean {
 export function hasMerchAccess(req: Request): boolean {
   const role = getAdminSession(req)?.role;
   return role === "admin" || role === "merch";
+}
+
+export function hasShalomFilesAccess(req: Request): boolean {
+  const role = getAdminSession(req)?.role;
+  return role === "admin" || role === "shalom_files";
 }
 
 export function hasFirstTimersAccess(req: Request): boolean {

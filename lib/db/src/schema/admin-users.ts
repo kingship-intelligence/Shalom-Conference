@@ -9,6 +9,7 @@ export const adminUsersTable = pgTable(
     username: text("username").notNull(),
     passwordHash: text("password_hash").notNull(),
     role: text("role").notNull().default("admin"),
+    createdBy: text("created_by"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (table) => [uniqueIndex("admin_users_username_unique").on(table.username)],

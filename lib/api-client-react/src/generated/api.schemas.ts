@@ -349,13 +349,56 @@ export const AdminUserRole = {
   registration_checkin: 'registration_checkin',
   first_timers: 'first_timers',
   merch: 'merch',
+  shalom_files: 'shalom_files',
 } as const;
 
 export interface AdminUser {
   id: number;
   username: string;
+  /** @nullable */
+  createdBy: string | null;
   role: AdminUserRole;
   createdAt: string;
+}
+
+export interface ShalomFile {
+  id: number;
+  fileName: string;
+  contentType: string;
+  /**
+     * @minimum 1
+     * @maximum 104857600
+     */
+  size: number;
+  uploadedBy: string;
+  createdAt: string;
+}
+
+export interface ShalomFileUploadInput {
+  /**
+     * @minLength 1
+     * @maxLength 180
+     */
+  fileName: string;
+  /**
+     * @minLength 1
+     * @maxLength 200
+     */
+  contentType: string;
+  /**
+     * @minimum 1
+     * @maximum 104857600
+     */
+  size: number;
+}
+
+export interface ShalomFileUploadUrl {
+  id: number;
+  uploadURL: string;
+}
+
+export interface ShalomFileDownloadUrl {
+  downloadURL: string;
 }
 
 export type AdminUserInputRole = typeof AdminUserInputRole[keyof typeof AdminUserInputRole];
@@ -369,6 +412,7 @@ export const AdminUserInputRole = {
   registration_checkin: 'registration_checkin',
   first_timers: 'first_timers',
   merch: 'merch',
+  shalom_files: 'shalom_files',
 } as const;
 
 export interface AdminUserInput {
@@ -409,6 +453,7 @@ export const AdminLoginResponseRole = {
   registration_checkin: 'registration_checkin',
   first_timers: 'first_timers',
   merch: 'merch',
+  shalom_files: 'shalom_files',
 } as const;
 
 export interface AdminLoginResponse {
@@ -428,6 +473,7 @@ export const AdminSessionRole = {
   registration_checkin: 'registration_checkin',
   first_timers: 'first_timers',
   merch: 'merch',
+  shalom_files: 'shalom_files',
 } as const;
 
 export interface AdminSession {

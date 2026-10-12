@@ -529,7 +529,7 @@ export const ListFirstTimerResponsesResponse = zod.array(ListFirstTimerResponses
 export const GetAdminSessionResponse = zod.object({
   "ok": zod.boolean(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch'])
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch', 'shalom_files'])
 })
 
 
@@ -559,7 +559,7 @@ export const LoginAdminBody = zod.object({
 export const LoginAdminResponse = zod.object({
   "ok": zod.boolean(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch'])
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch', 'shalom_files'])
 })
 
 
@@ -569,7 +569,8 @@ export const LoginAdminResponse = zod.object({
 export const ListAdminUsersResponseItem = zod.object({
   "id": zod.number().int(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch']),
+  "createdBy": zod.string().nullable(),
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch', 'shalom_files']),
   "createdAt": zod.coerce.date()
 })
 export const ListAdminUsersResponse = zod.array(ListAdminUsersResponseItem)
@@ -589,14 +590,108 @@ export const createAdminUserBodyPasswordMax = 200;
 export const CreateAdminUserBody = zod.object({
   "username": zod.string().min(createAdminUserBodyUsernameMin).max(createAdminUserBodyUsernameMax),
   "password": zod.string().min(createAdminUserBodyPasswordMin).max(createAdminUserBodyPasswordMax),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch']).optional()
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch', 'shalom_files']).optional()
 })
 
 export const CreateAdminUserResponse = zod.object({
   "id": zod.number().int(),
   "username": zod.string(),
-  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch']),
+  "createdBy": zod.string().nullable(),
+  "role": zod.enum(['admin', 'checkin', 'registration_viewer', 'new_converts', 'registration_checkin', 'first_timers', 'merch', 'shalom_files']),
   "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Delete an account created in the admin portal
+ */
+
+
+
+export const DeleteAdminUserParams = zod.object({
+  "id": zod.coerce.number().int().min(1)
+})
+
+export const DeleteAdminUserResponse = zod.void()
+
+
+/**
+ * @summary List files in the Shalom 2026 folder
+ */
+export const listShalomFilesResponseSizeMax = 104857600;
+
+
+
+export const ListShalomFilesResponseItem = zod.object({
+  "id": zod.number().int(),
+  "fileName": zod.string(),
+  "contentType": zod.string(),
+  "size": zod.number().int().min(1).max(listShalomFilesResponseSizeMax),
+  "uploadedBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+export const ListShalomFilesResponse = zod.array(ListShalomFilesResponseItem)
+
+
+/**
+ * @summary Request a private upload URL for the Shalom 2026 folder
+ */
+export const requestShalomFileUploadUrlBodyFileNameMax = 180;
+
+export const requestShalomFileUploadUrlBodyContentTypeMax = 200;
+
+export const requestShalomFileUploadUrlBodySizeMax = 104857600;
+
+
+
+export const RequestShalomFileUploadUrlBody = zod.object({
+  "fileName": zod.string().min(1).max(requestShalomFileUploadUrlBodyFileNameMax),
+  "contentType": zod.string().min(1).max(requestShalomFileUploadUrlBodyContentTypeMax),
+  "size": zod.number().int().min(1).max(requestShalomFileUploadUrlBodySizeMax)
+})
+
+export const RequestShalomFileUploadUrlResponse = zod.object({
+  "id": zod.number().int(),
+  "uploadURL": zod.string()
+})
+
+
+/**
+ * @summary Verify and publish an uploaded Shalom 2026 file
+ */
+
+
+
+export const CompleteShalomFileUploadParams = zod.object({
+  "fileId": zod.coerce.number().int().min(1)
+})
+
+export const completeShalomFileUploadResponseSizeMax = 104857600;
+
+
+
+export const CompleteShalomFileUploadResponse = zod.object({
+  "id": zod.number().int(),
+  "fileName": zod.string(),
+  "contentType": zod.string(),
+  "size": zod.number().int().min(1).max(completeShalomFileUploadResponseSizeMax),
+  "uploadedBy": zod.string(),
+  "createdAt": zod.coerce.date()
+})
+
+
+/**
+ * @summary Request a private download URL for a Shalom 2026 file
+ */
+
+
+
+export const RequestShalomFileDownloadUrlParams = zod.object({
+  "fileId": zod.coerce.number().int().min(1)
+})
+
+export const RequestShalomFileDownloadUrlResponse = zod.object({
+  "downloadURL": zod.string()
 })
 
 

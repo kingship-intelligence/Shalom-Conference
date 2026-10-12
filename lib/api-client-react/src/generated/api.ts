@@ -59,6 +59,10 @@ import type {
   RegistrationCheckIn,
   RegistrationCreated,
   RegistrationInput,
+  ShalomFile,
+  ShalomFileDownloadUrl,
+  ShalomFileUploadInput,
+  ShalomFileUploadUrl,
   Testimony,
   TestimonyInput
 } from './api.schemas';
@@ -2788,6 +2792,417 @@ export const useCreateAdminUser = <TError = ErrorType<ErrorResponse>,
       return useMutation(getCreateAdminUserMutationOptions(options), queryClient);
     }
 
+export const getDeleteAdminUserUrl = (id: number,) => {
+
+
+
+
+  return `/api/admin/users/${id}`
+}
+
+/**
+ * @summary Delete an account created in the admin portal
+ */
+export const deleteAdminUser = async (id: number, options?: Parameters<typeof customFetch>[1]): Promise<void> => {
+
+  return customFetch<void>(getDeleteAdminUserUrl(id),
+  {
+    ...options,
+    method: 'DELETE'
+
+
+  }
+);}
+
+
+
+
+
+export const getDeleteAdminUserMutationKey = () => ['deleteAdminUser'] as const;
+
+export const getDeleteAdminUserMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminUser>>, TError,DeleteAdminUserMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof deleteAdminUser>>, TError,DeleteAdminUserMutationVariables, TContext> => {
+
+const mutationKey = getDeleteAdminUserMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteAdminUser>>, DeleteAdminUserMutationVariables> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteAdminUser(id,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteAdminUserMutationResult = NonNullable<Awaited<ReturnType<typeof deleteAdminUser>>>
+
+    export type DeleteAdminUserMutationError = ErrorType<ErrorResponse>
+    export type DeleteAdminUserMutationVariables = {id: number}
+
+    /**
+ * @summary Delete an account created in the admin portal
+ */
+export const useDeleteAdminUser = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteAdminUser>>, TError,DeleteAdminUserMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteAdminUser>>,
+        TError,
+        DeleteAdminUserMutationVariables,
+        TContext
+      > => {
+      return useMutation(getDeleteAdminUserMutationOptions(options), queryClient);
+    }
+
+export const getListShalomFilesUrl = () => {
+
+
+
+
+  return `/api/shalom-files`
+}
+
+/**
+ * @summary List files in the Shalom 2026 folder
+ */
+export const listShalomFiles = async ( options?: Parameters<typeof customFetch>[1]): Promise<ShalomFile[]> => {
+
+  return customFetch<ShalomFile[]>(getListShalomFilesUrl(),
+  {
+    ...options,
+    method: 'GET'
+
+
+  }
+);}
+
+
+
+
+
+export const getListShalomFilesQueryKey = () => {
+    return [
+    `/api/shalom-files`
+    ] as const;
+    }
+
+
+export const getListShalomFilesQueryOptions = <TData = Awaited<ReturnType<typeof listShalomFiles>>, TError = ErrorType<ErrorResponse>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShalomFiles>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+) => {
+
+const {query: queryOptions, request: requestOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getListShalomFilesQueryKey();
+
+
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof listShalomFiles>>> = ({ signal }) => listShalomFiles({ signal, ...requestOptions });
+
+
+
+
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof listShalomFiles>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type ListShalomFilesQueryResult = NonNullable<Awaited<ReturnType<typeof listShalomFiles>>>
+export type ListShalomFilesQueryError = ErrorType<ErrorResponse>
+
+
+export function useListShalomFiles<TData = Awaited<ReturnType<typeof listShalomFiles>>, TError = ErrorType<ErrorResponse>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShalomFiles>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listShalomFiles>>,
+          TError,
+          Awaited<ReturnType<typeof listShalomFiles>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListShalomFiles<TData = Awaited<ReturnType<typeof listShalomFiles>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShalomFiles>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof listShalomFiles>>,
+          TError,
+          Awaited<ReturnType<typeof listShalomFiles>>
+        > , 'initialData'
+      >, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useListShalomFiles<TData = Awaited<ReturnType<typeof listShalomFiles>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShalomFiles>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List files in the Shalom 2026 folder
+ */
+
+export function useListShalomFiles<TData = Awaited<ReturnType<typeof listShalomFiles>>, TError = ErrorType<ErrorResponse>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof listShalomFiles>>, TError, TData>>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getListShalomFilesQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  return withQueryKey(query, queryOptions.queryKey);
+}
+
+
+
+
+
+
+
+export const getRequestShalomFileUploadUrlUrl = () => {
+
+
+
+
+  return `/api/shalom-files/upload-url`
+}
+
+/**
+ * @summary Request a private upload URL for the Shalom 2026 folder
+ */
+export const requestShalomFileUploadUrl = async (shalomFileUploadInput: ShalomFileUploadInput, options?: Parameters<typeof customFetch>[1]): Promise<ShalomFileUploadUrl> => {
+
+    const getHeaders = (h?: NonNullable<RequestInit['headers']>): Record<string, string | readonly string[]> => {
+    if (!h) return {};
+    if (h instanceof Headers) return Object.fromEntries(h.entries());
+    if (Symbol.iterator in h) {
+      return Object.fromEntries(
+        Array.from(h as Iterable<Iterable<string>>, (entry) => Array.from(entry) as [string, string]),
+      );
+    }
+    const headers: Record<string, string | readonly string[]> = {};
+    for (const [name, value] of Object.entries<string | readonly string[] | undefined>(h)) {
+      if (value !== undefined) headers[name] = value;
+    }
+    return headers;
+  };
+return customFetch<ShalomFileUploadUrl>(getRequestShalomFileUploadUrlUrl(),
+  {
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...getHeaders(options?.headers) },
+    body: JSON.stringify(shalomFileUploadInput)
+  }
+);}
+
+
+
+
+
+export const getRequestShalomFileUploadUrlMutationKey = () => ['requestShalomFileUploadUrl'] as const;
+
+export const getRequestShalomFileUploadUrlMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestShalomFileUploadUrl>>, TError,RequestShalomFileUploadUrlMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof requestShalomFileUploadUrl>>, TError,RequestShalomFileUploadUrlMutationVariables, TContext> => {
+
+const mutationKey = getRequestShalomFileUploadUrlMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestShalomFileUploadUrl>>, RequestShalomFileUploadUrlMutationVariables> = (props) => {
+          const {data} = props ?? {};
+
+          return  requestShalomFileUploadUrl(data,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RequestShalomFileUploadUrlMutationResult = NonNullable<Awaited<ReturnType<typeof requestShalomFileUploadUrl>>>
+    export type RequestShalomFileUploadUrlMutationBody = BodyType<ShalomFileUploadInput>
+    export type RequestShalomFileUploadUrlMutationError = ErrorType<ErrorResponse>
+    export type RequestShalomFileUploadUrlMutationVariables = {data: BodyType<ShalomFileUploadInput>}
+
+    /**
+ * @summary Request a private upload URL for the Shalom 2026 folder
+ */
+export const useRequestShalomFileUploadUrl = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestShalomFileUploadUrl>>, TError,RequestShalomFileUploadUrlMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof requestShalomFileUploadUrl>>,
+        TError,
+        RequestShalomFileUploadUrlMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRequestShalomFileUploadUrlMutationOptions(options), queryClient);
+    }
+
+export const getCompleteShalomFileUploadUrl = (fileId: number,) => {
+
+
+
+
+  return `/api/shalom-files/${fileId}/complete`
+}
+
+/**
+ * @summary Verify and publish an uploaded Shalom 2026 file
+ */
+export const completeShalomFileUpload = async (fileId: number, options?: Parameters<typeof customFetch>[1]): Promise<ShalomFile> => {
+
+  return customFetch<ShalomFile>(getCompleteShalomFileUploadUrl(fileId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getCompleteShalomFileUploadMutationKey = () => ['completeShalomFileUpload'] as const;
+
+export const getCompleteShalomFileUploadMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeShalomFileUpload>>, TError,CompleteShalomFileUploadMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof completeShalomFileUpload>>, TError,CompleteShalomFileUploadMutationVariables, TContext> => {
+
+const mutationKey = getCompleteShalomFileUploadMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof completeShalomFileUpload>>, CompleteShalomFileUploadMutationVariables> = (props) => {
+          const {fileId} = props ?? {};
+
+          return  completeShalomFileUpload(fileId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CompleteShalomFileUploadMutationResult = NonNullable<Awaited<ReturnType<typeof completeShalomFileUpload>>>
+
+    export type CompleteShalomFileUploadMutationError = ErrorType<ErrorResponse>
+    export type CompleteShalomFileUploadMutationVariables = {fileId: number}
+
+    /**
+ * @summary Verify and publish an uploaded Shalom 2026 file
+ */
+export const useCompleteShalomFileUpload = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof completeShalomFileUpload>>, TError,CompleteShalomFileUploadMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof completeShalomFileUpload>>,
+        TError,
+        CompleteShalomFileUploadMutationVariables,
+        TContext
+      > => {
+      return useMutation(getCompleteShalomFileUploadMutationOptions(options), queryClient);
+    }
+
+export const getRequestShalomFileDownloadUrlUrl = (fileId: number,) => {
+
+
+
+
+  return `/api/shalom-files/${fileId}/download`
+}
+
+/**
+ * @summary Request a private download URL for a Shalom 2026 file
+ */
+export const requestShalomFileDownloadUrl = async (fileId: number, options?: Parameters<typeof customFetch>[1]): Promise<ShalomFileDownloadUrl> => {
+
+  return customFetch<ShalomFileDownloadUrl>(getRequestShalomFileDownloadUrlUrl(fileId),
+  {
+    ...options,
+    method: 'POST'
+
+
+  }
+);}
+
+
+
+
+
+export const getRequestShalomFileDownloadUrlMutationKey = () => ['requestShalomFileDownloadUrl'] as const;
+
+export const getRequestShalomFileDownloadUrlMutationOptions = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestShalomFileDownloadUrl>>, TError,RequestShalomFileDownloadUrlMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+): UseMutationOptions<Awaited<ReturnType<typeof requestShalomFileDownloadUrl>>, TError,RequestShalomFileDownloadUrlMutationVariables, TContext> => {
+
+const mutationKey = getRequestShalomFileDownloadUrlMutationKey();
+const {mutation: mutationOptions, request: requestOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, request: undefined};
+
+
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof requestShalomFileDownloadUrl>>, RequestShalomFileDownloadUrlMutationVariables> = (props) => {
+          const {fileId} = props ?? {};
+
+          return  requestShalomFileDownloadUrl(fileId,requestOptions)
+        }
+
+
+
+
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RequestShalomFileDownloadUrlMutationResult = NonNullable<Awaited<ReturnType<typeof requestShalomFileDownloadUrl>>>
+
+    export type RequestShalomFileDownloadUrlMutationError = ErrorType<ErrorResponse>
+    export type RequestShalomFileDownloadUrlMutationVariables = {fileId: number}
+
+    /**
+ * @summary Request a private download URL for a Shalom 2026 file
+ */
+export const useRequestShalomFileDownloadUrl = <TError = ErrorType<ErrorResponse>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof requestShalomFileDownloadUrl>>, TError,RequestShalomFileDownloadUrlMutationVariables, TContext>, request?: SecondParameter<typeof customFetch>}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof requestShalomFileDownloadUrl>>,
+        TError,
+        RequestShalomFileDownloadUrlMutationVariables,
+        TContext
+      > => {
+      return useMutation(getRequestShalomFileDownloadUrlMutationOptions(options), queryClient);
+    }
+
 export const getCreateMerchOrderUrl = () => {
 
 
@@ -3334,3 +3749,10 @@ export function useListConferenceSurveys<TData = Awaited<ReturnType<typeof listC
 
   return withQueryKey(query, queryOptions.queryKey);
 }
+
+
+
+
+
+
+

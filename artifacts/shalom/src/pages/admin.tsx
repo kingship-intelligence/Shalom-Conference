@@ -1,28 +1,20 @@
 import AdminSection from "@/components/AdminSection";
 import { ThemeToggle } from "@/components/ThemeProvider";
-import {
-  RegistrationCount,
-  RegistrationList,
-  SurveyResponses,
-} from "@/components/StaffPanels";
-import NewConvertsAdmin from "@/components/NewConvertsAdmin";
+import { SurveyResponses } from "@/components/StaffPanels";
+import ShalomFilesPanel from "@/components/ShalomFilesPanel";
 import { useCallback, useEffect, useState } from "react";
 import {
-  getListRegistrationsQueryKey,
   getListMerchOrdersQueryKey,
-  getListPrayerChainSignupsQueryKey,
   getListFirstTimerResponsesQueryKey,
   getListPrayerChargeSurveyResponsesQueryKey,
   getListAdminUsersQueryKey,
   useConfirmMerchOrderPayment,
   useCreateAdminUser,
-  useDeleteRegistration,
+  useDeleteAdminUser,
   useListMerchOrders,
-  useListPrayerChainSignups,
   useListFirstTimerResponses,
   useListPrayerChargeSurveyResponses,
   useListAdminUsers,
-  useListRegistrations,
   useListTestimonies,
 } from "@workspace/api-client-react";
 import { useQueryClient } from "@tanstack/react-query";
@@ -46,12 +38,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import {
   Check,
-  User,
   UserCheck,
   Users,
   Mail,
-  Phone,
-  Calendar,
   MessageSquare,
   ArrowLeft,
   Lock,
@@ -61,9 +50,8 @@ import {
   Download,
   Search,
   ShoppingBag,
-  Trash2,
-  Clock3,
   Star,
+  Trash2,
 } from "lucide-react";
 import { AdminCheckIn } from "@/components/admin-check-in";
 
@@ -75,16 +63,18 @@ type AdminRole =
   | "new_converts"
   | "registration_checkin"
   | "first_timers"
-  | "merch";
+  | "merch"
+  | "shalom_files";
 
 const ROLE_LABELS: Record<AdminRole, string> = {
   admin: "Full admin",
   checkin: "Check-in only",
-  registration_viewer: "Registration count only",
-  new_converts: "New converts only",
-  registration_checkin: "Registrations and check-in",
+  registration_viewer: "Retired access",
+  new_converts: "Retired access",
+  registration_checkin: "Check-in only",
   first_timers: "First timers only",
   merch: "Merch only",
+  shalom_files: "Shalom 2026 files only",
 };
 
 function isAdminRole(value: unknown): value is AdminRole {
@@ -96,57 +86,8 @@ function isAdminRole(value: unknown): value is AdminRole {
     "registration_checkin",
     "first_timers",
     "merch",
+    "shalom_files",
   ].includes(value as string);
-}
-
-const PRAYER_SLOT_LABELS: Record<string, string> = {
-  "00:00": "12 AM – 1 AM",
-  "01:00": "1 AM – 2 AM",
-  "02:00": "2 AM – 3 AM",
-  "03:00": "3 AM – 4 AM",
-  "04:00": "4 AM – 5 AM",
-  "05:00": "5 AM – 6 AM",
-  "06:00": "6 AM – 7 AM",
-  "07:00": "7 AM – 8 AM",
-  "08:00": "8 AM – 9 AM",
-  "09:00": "9 AM – 10 AM",
-  "10:00": "10 AM – 11 AM",
-  "11:00": "11 AM – 12 PM",
-};
-
-function exportCSV(registrations: any[]) {
-  const headers = [
-    "First Name",
-    "Last Name",
-    "Email",
-    "Phone",
-    "Year",
-    "Volunteer",
-    "Role",
-    "Registered At",
-  ];
-  const rows = registrations.map((r) => [
-    r.firstName,
-    r.lastName,
-    r.email,
-    r.phone ?? "",
-    r.conferenceYear,
-    r.volunteer ? "Yes" : "No",
-    r.volunteerRole ?? "",
-    new Date(r.createdAt).toLocaleString(),
-  ]);
-  const csv = [headers, ...rows]
-    .map((row) =>
-      row.map((v) => `"${String(v).replace(/"/g, '""')}"`).join(","),
-    )
-    .join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = `shalom-registrations-${new Date().toISOString().slice(0, 10)}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
 }
 
 function exportMerchOrdersCSV(orders: any[]) {
@@ -196,41 +137,11 @@ function exportMerchOrdersCSV(orders: any[]) {
   URL.revokeObjectURL(url);
 }
 
-function exportPrayerChainCSV(signups: any[]) {
-  const headers = [
-    "Name",
-    "Email",
-    "Phone",
-    "Available Prayer Times",
-    "Submitted At",
-  ];
-  const rows = signups.map((signup) => [
-    signup.name,
-    signup.email,
-    signup.phone,
-    signup.timeSlots
-      .map((slot: string) => PRAYER_SLOT_LABELS[slot] ?? slot)
-      .join("; "),
-    new Date(signup.createdAt).toLocaleString(),
-  ]);
-  const csv = [headers, ...rows]
-    .map((row) =>
-      row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(","),
-    )
-    .join("\n");
-  const blob = new Blob([csv], { type: "text/csv" });
-  const url = URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = url;
-  link.download = `prayer-chain-signups-${new Date().toISOString().slice(0, 10)}.csv`;
-  link.click();
-  URL.revokeObjectURL(url);
-}
-
 function useAdminAuth() {
   const authQueryClient = useQueryClient();
   const [authed, setAuthed] = useState(false);
   const [role, setRole] = useState<AdminRole | null>(null);
+  const [username, setUsername] = useState<string | null>(null);
   const [checking, setChecking] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -259,6 +170,7 @@ function useAdminAuth() {
           throw new Error("Admin session has no valid access role.");
         }
         setRole(session.role);
+        setUsername(typeof session.username === "string" ? session.username : null);
         setAuthed(true);
       })
       .catch((sessionError) => {
@@ -298,6 +210,7 @@ function useAdminAuth() {
         }
         sessionStorage.setItem(SESSION_KEY, "1");
         setRole(session.role);
+        setUsername(typeof session.username === "string" ? session.username : null);
         setAuthed(true);
       } else {
         setError("Incorrect username or password.");
@@ -315,6 +228,7 @@ function useAdminAuth() {
       authQueryClient.clear();
       sessionStorage.removeItem(SESSION_KEY);
       setRole(null);
+      setUsername(null);
       setAuthed(false);
       setError(message);
       void fetch("/api/admin/session", {
@@ -325,7 +239,7 @@ function useAdminAuth() {
     [authQueryClient],
   );
 
-  return { authed, role, checking, login, logout, loading, error };
+  return { authed, role, username, checking, login, logout, loading, error };
 }
 
 function LoginScreen({
@@ -435,32 +349,18 @@ function LoginScreen({
 }
 
 export default function Admin() {
-  const { authed, role, checking, login, logout, loading, error } =
+  const { authed, role, username, checking, login, logout, loading, error } =
     useAdminAuth();
   const fullAdmin = authed && role === "admin";
   const queryClient = useQueryClient();
-  const [registrationSearch, setRegistrationSearch] = useState("");
-  const [prayerChainSearch, setPrayerChainSearch] = useState("");
   const [firstTimerSearch, setFirstTimerSearch] = useState("");
-  const [deletingRegistrationId, setDeletingRegistrationId] = useState<
-    number | null
-  >(null);
-  const [deleteRegistrationError, setDeleteRegistrationError] = useState("");
   const [newAdminUsername, setNewAdminUsername] = useState("");
   const [newAdminPassword, setNewAdminPassword] = useState("");
   const [confirmAdminPassword, setConfirmAdminPassword] = useState("");
   const [newAdminRole, setNewAdminRole] = useState<AdminRole>("checkin");
   const [adminAccountFormError, setAdminAccountFormError] = useState("");
+  const [deleteAccountError, setDeleteAccountError] = useState("");
 
-  const registrationsQuery = useListRegistrations({
-    query: {
-      enabled: fullAdmin,
-      queryKey: getListRegistrationsQueryKey(),
-      retry: 2,
-      refetchOnWindowFocus: true,
-    },
-    request: { credentials: "include" },
-  });
   const testimoniesQuery = useListTestimonies({
     query: { enabled: fullAdmin },
     request: { credentials: "include" },
@@ -478,15 +378,6 @@ export default function Admin() {
     query: {
       enabled: authed && (role === "admin" || role === "merch"),
       queryKey: getListMerchOrdersQueryKey(),
-      retry: 2,
-      refetchOnWindowFocus: true,
-    },
-    request: { credentials: "include" },
-  });
-  const prayerChainQuery = useListPrayerChainSignups({
-    query: {
-      enabled: fullAdmin,
-      queryKey: getListPrayerChainSignupsQueryKey(),
       retry: 2,
       refetchOnWindowFocus: true,
     },
@@ -519,32 +410,6 @@ export default function Admin() {
       },
     },
   });
-  const deleteRegistrationMutation = useDeleteRegistration({
-    mutation: {
-      onSuccess: () => {
-        setDeleteRegistrationError("");
-        setDeletingRegistrationId(null);
-        queryClient.invalidateQueries({
-          queryKey: getListRegistrationsQueryKey(),
-        });
-        queryClient.invalidateQueries({
-          predicate: (query) =>
-            query.queryKey.some(
-              (key) =>
-                typeof key === "string" &&
-                key.startsWith("/api/check-in-sessions/") &&
-                key.endsWith("/check-ins"),
-            ),
-        });
-      },
-      onError: () => {
-        setDeleteRegistrationError(
-          "Unable to remove this registration. Please try again.",
-        );
-      },
-    },
-    request: { credentials: "include" },
-  });
   const createAdminUserMutation = useCreateAdminUser({
     mutation: {
       onSuccess: () => {
@@ -556,6 +421,21 @@ export default function Admin() {
         queryClient.invalidateQueries({
           queryKey: getListAdminUsersQueryKey(),
         });
+      },
+    },
+    request: { credentials: "include" },
+  });
+  const deleteAdminUserMutation = useDeleteAdminUser({
+    mutation: {
+      onSuccess: () => {
+        setDeleteAccountError("");
+        queryClient.invalidateQueries({
+          queryKey: getListAdminUsersQueryKey(),
+        });
+      },
+      onError: (deleteError) => {
+        const message = (deleteError as { data?: { error?: string } } | null)?.data?.error;
+        setDeleteAccountError(message || "This account could not be deleted.");
       },
     },
     request: { credentials: "include" },
@@ -577,47 +457,12 @@ export default function Admin() {
     });
   }
 
-  const registrations = [...(registrationsQuery.data || [])].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-  const normalizedRegistrationSearch = registrationSearch.trim().toLowerCase();
-  const filteredRegistrations = normalizedRegistrationSearch
-    ? registrations.filter((registration) =>
-        [
-          registration.firstName,
-          registration.lastName,
-          `${registration.firstName} ${registration.lastName}`,
-          registration.email,
-          registration.phone,
-        ].some((value) =>
-          value?.toLowerCase().includes(normalizedRegistrationSearch),
-        ),
-      )
-    : registrations;
-
   const testimonies = [...(testimoniesQuery.data || [])].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
   const merchOrders = [...(merchOrdersQuery.data || [])].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
-  const prayerChainSignups = [...(prayerChainQuery.data || [])].sort(
-    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-  );
-  const normalizedPrayerChainSearch = prayerChainSearch.trim().toLowerCase();
-  const filteredPrayerChainSignups = normalizedPrayerChainSearch
-    ? prayerChainSignups.filter((signup) =>
-        [
-          signup.name,
-          signup.email,
-          signup.phone,
-          ...signup.timeSlots,
-          ...signup.timeSlots.map((slot) => PRAYER_SLOT_LABELS[slot]),
-        ].some((value) =>
-          value?.toLowerCase().includes(normalizedPrayerChainSearch),
-        ),
-      )
-    : prayerChainSignups;
   const firstTimerResponses = [...(firstTimerResponsesQuery.data || [])].sort(
     (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
   );
@@ -777,7 +622,6 @@ export default function Admin() {
   useEffect(() => {
     const protectedQueryErrors = [
       merchOrdersQuery.error,
-      prayerChainQuery.error,
       firstTimerResponsesQuery.error,
       prayerChargeSurveyQuery.error,
       adminUsersQuery.error,
@@ -797,7 +641,6 @@ export default function Admin() {
     authed,
     logout,
     merchOrdersQuery.error,
-    prayerChainQuery.error,
     firstTimerResponsesQuery.error,
     prayerChargeSurveyQuery.error,
     adminUsersQuery.error,
@@ -963,12 +806,9 @@ export default function Admin() {
           </div>
         </header>
         <main className="container mx-auto max-w-7xl px-4 pt-3 sm:px-6">
-          {(role === "registration_viewer" ||
-            role === "registration_checkin") && <RegistrationCount />}
-          {role === "registration_checkin" && <RegistrationList />}
-          {role === "new_converts" && <NewConvertsAdmin />}
           {role === "merch" && merchPanel}
           {role === "first_timers" && firstTimersSection}
+          {role === "shalom_files" && <ShalomFilesPanel defaultOpen />}
           {(role === "checkin" || role === "registration_checkin") && (
             <AdminSection title="Check-in desk" defaultOpen>
               <AdminCheckIn
@@ -1071,7 +911,13 @@ export default function Admin() {
                     </Button>
                   </div>
                 ) : adminUsersQuery.data?.length ? (
-                  <ul className="space-y-3">
+                  <div className="space-y-3">
+                    {deleteAccountError && (
+                      <p role="alert" className="text-sm text-red-700 dark:text-red-300">
+                        {deleteAccountError}
+                      </p>
+                    )}
+                    <ul className="space-y-3">
                     {adminUsersQuery.data.map((adminUser) => (
                       <li
                         key={adminUser.id}
@@ -1094,10 +940,49 @@ export default function Admin() {
                               "MMM d, yyyy",
                             )}
                           </span>
+                          {adminUser.createdBy && adminUser.username !== username && (
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  className="border-red-500/30 text-red-700 hover:bg-red-500/10 dark:text-red-300"
+                                  aria-label={`Delete account ${adminUser.username}`}
+                                >
+                                  <Trash2 className="h-4 w-4" />
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent className="border-ink/10 bg-card text-ink">
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>Delete this account?</AlertDialogTitle>
+                                  <AlertDialogDescription className="text-muted-foreground">
+                                    {adminUser.username} will immediately lose access to the admin portal.
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel className="border-ink/20 bg-transparent text-ink hover:bg-ink/10 hover:text-ink">
+                                    Cancel
+                                  </AlertDialogCancel>
+                                  <AlertDialogAction
+                                    className="bg-red-600 text-white hover:bg-red-500"
+                                    disabled={deleteAdminUserMutation.isPending}
+                                    onClick={() => {
+                                      setDeleteAccountError("");
+                                      deleteAdminUserMutation.mutate({ id: adminUser.id });
+                                    }}
+                                  >
+                                    Delete account
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          )}
                         </div>
                       </li>
                     ))}
-                  </ul>
+                    </ul>
+                  </div>
                 ) : (
                   <p className="rounded-xl border border-dashed border-ink/10 p-4 text-sm text-muted-foreground">
                     No admin accounts were returned. Refresh the list before
@@ -1112,9 +997,9 @@ export default function Admin() {
                     Create a staff login
                   </h3>
                   <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                    Choose access to registration counts, new converts,
-                    check-in, or registrations with check-in. Full admins can
-                    manage all areas and create accounts.
+                    Choose access to check-in, first timers, merchandise,
+                    Shalom 2026 files, or the full portal. Full admins can
+                    manage all remaining areas and create accounts.
                   </p>
                 </div>
                 <div>
@@ -1157,13 +1042,7 @@ export default function Admin() {
                     <option value="checkin">Check-in only</option>
                     <option value="first_timers">First timers only</option>
                     <option value="merch">Merch only</option>
-                    <option value="registration_viewer">
-                      Registration count only
-                    </option>
-                    <option value="new_converts">New converts only</option>
-                    <option value="registration_checkin">
-                      Registrations and check-in
-                    </option>
+                    <option value="shalom_files">Shalom 2026 files only</option>
                     <option value="admin">Full admin portal</option>
                   </select>
                 </div>
@@ -1231,6 +1110,8 @@ export default function Admin() {
           </section>
         </AdminSection>
 
+        <ShalomFilesPanel />
+
         <AdminSection title="Check-in desk">
           <AdminCheckIn
             authed={authed}
@@ -1240,215 +1121,6 @@ export default function Admin() {
         </AdminSection>
 
         <div className="space-y-4">
-          {/* Registrations Section */}
-          <AdminSection title="Registrations">
-            <section data-testid="section-registrations" className="space-y-6">
-              <div className="flex items-center justify-between border-t-2 border-primary pt-4">
-                <h2 className="text-2xl font-bold text-ink uppercase tracking-wider">
-                  Registrations
-                </h2>
-                <div className="flex items-center gap-3">
-                  <Badge className="bg-primary text-white">
-                    {registrationsQuery.isLoading
-                      ? "..."
-                      : registrationsQuery.isError
-                        ? "Unavailable"
-                        : normalizedRegistrationSearch
-                          ? `${filteredRegistrations.length}/${registrations.length}`
-                          : registrations.length}
-                  </Badge>
-                  {registrations.length > 0 && !registrationsQuery.isError && (
-                    <button
-                      onClick={() => exportCSV(filteredRegistrations)}
-                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground hover:text-ink transition-colors"
-                      title="Export CSV"
-                    >
-                      <Download className="h-4 w-4" />
-                      Export
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {registrations.length > 0 && !registrationsQuery.isError && (
-                <div className="relative">
-                  <Search
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <Input
-                    type="search"
-                    value={registrationSearch}
-                    onChange={(event) =>
-                      setRegistrationSearch(event.target.value)
-                    }
-                    placeholder="Search by name, email, or phone"
-                    aria-label="Search registrations"
-                    data-testid="input-registration-search"
-                    className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/20"
-                  />
-                </div>
-              )}
-
-              {deleteRegistrationError && (
-                <p
-                  role="alert"
-                  className="rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-200"
-                >
-                  {deleteRegistrationError}
-                </p>
-              )}
-
-              {registrationsQuery.isLoading ? (
-                <div className="space-y-4">
-                  {[1, 2, 3].map((i) => (
-                    <Skeleton
-                      key={i}
-                      className="h-24 w-full rounded-xl bg-ink/5"
-                    />
-                  ))}
-                </div>
-              ) : registrationsQuery.isError ? (
-                <div
-                  className="rounded-xl border border-red-400/20 bg-red-400/5 px-5 py-10 text-center"
-                  role="alert"
-                  data-testid="error-registration-list"
-                >
-                  <p className="font-semibold text-red-700 dark:text-red-200">
-                    Registrations could not be loaded.
-                  </p>
-                  <p className="mt-2 text-sm text-red-700 dark:text-red-200/65">
-                    {registrationsQuery.error instanceof Error
-                      ? registrationsQuery.error.message
-                      : "The private registrations request failed."}
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    onClick={() => void registrationsQuery.refetch()}
-                    className="mt-5 border-red-200/20 text-red-700 dark:text-red-100 hover:bg-red-200/10"
-                    data-testid="button-retry-registration-list"
-                  >
-                    Try again
-                  </Button>
-                </div>
-              ) : registrations.length === 0 ? (
-                <div className="text-center py-20 text-muted-foreground rounded-2xl border border-dashed border-ink/10">
-                  No registrations yet
-                </div>
-              ) : filteredRegistrations.length === 0 ? (
-                <div className="text-center py-20 text-muted-foreground rounded-2xl border border-dashed border-ink/10">
-                  No registrations match “{registrationSearch.trim()}”
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  {filteredRegistrations.map((reg) => (
-                    <motion.div
-                      key={reg.id}
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      className="bg-card text-card-foreground rounded-xl p-5 border border-border flex flex-col sm:flex-row sm:items-center justify-between gap-4"
-                    >
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <User className="h-4 w-4 text-primary" />
-                          <span className="font-bold text-foreground">
-                            {reg.firstName} {reg.lastName}
-                          </span>
-                          {reg.volunteer && (
-                            <Badge
-                              variant="secondary"
-                              className="bg-primary/20 text-primary border-primary/20 text-[10px] uppercase font-bold px-2 py-0"
-                            >
-                              {reg.volunteerRole || "Volunteer"}
-                            </Badge>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                          <Mail className="h-3 w-3" />
-                          <span>{reg.email}</span>
-                        </div>
-                        {reg.phone && (
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            <Phone className="h-3 w-3" />
-                            <span>{reg.phone}</span>
-                          </div>
-                        )}
-                      </div>
-                      <div className="flex items-center justify-between gap-4 sm:justify-end">
-                        <div className="text-right flex flex-row sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2">
-                          <div className="flex items-center gap-1 text-xs font-bold text-primary uppercase">
-                            <Calendar className="h-3 w-3" />
-                            <span>Shalom {reg.conferenceYear}</span>
-                          </div>
-                          <span className="text-[10px] text-muted-foreground uppercase tracking-tighter">
-                            {format(new Date(reg.createdAt), "MMM d, yyyy")}
-                          </span>
-                        </div>
-                        <AlertDialog
-                          onOpenChange={(open) => {
-                            if (open) {
-                              setDeletingRegistrationId(reg.id);
-                              setDeleteRegistrationError("");
-                            } else if (!deleteRegistrationMutation.isPending) {
-                              setDeletingRegistrationId(null);
-                            }
-                          }}
-                        >
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="icon"
-                              className="shrink-0 border-red-500/30 text-red-700 dark:text-red-300 hover:border-red-500/60 hover:bg-red-500/10 hover:text-red-700 dark:text-red-200"
-                              aria-label={`Remove registration for ${reg.firstName} ${reg.lastName}`}
-                              title="Remove registration"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent className="border-ink/10 bg-card text-ink">
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Remove this registration?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription className="text-muted-foreground">
-                                This will permanently remove {reg.firstName}{" "}
-                                {reg.lastName}&apos;s registration and any
-                                private attendee portrait attached to it. This
-                                action cannot be undone.
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel className="border-ink/20 bg-transparent text-ink hover:bg-ink/10 hover:text-ink">
-                                Cancel
-                              </AlertDialogCancel>
-                              <AlertDialogAction
-                                className="bg-red-600 text-white hover:bg-red-500"
-                                disabled={deleteRegistrationMutation.isPending}
-                                onClick={() => {
-                                  setDeletingRegistrationId(reg.id);
-                                  deleteRegistrationMutation.mutate({
-                                    registrationId: reg.id,
-                                  });
-                                }}
-                              >
-                                {deleteRegistrationMutation.isPending &&
-                                deletingRegistrationId === reg.id
-                                  ? "Removing…"
-                                  : "Remove registration"}
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              )}
-            </section>
-          </AdminSection>
-
           {/* Testimonies Section */}
           <AdminSection title="Testimonies">
             <section data-testid="section-testimonies" className="space-y-6">
@@ -1517,9 +1189,6 @@ export default function Admin() {
             </section>
           </AdminSection>
 
-          <AdminSection title="New believers">
-            <NewConvertsAdmin />
-          </AdminSection>
           <AdminSection title="Conference survey">
             <SurveyResponses />
           </AdminSection>
@@ -1699,144 +1368,6 @@ export default function Admin() {
                     ))}
                   </div>
                 </>
-              )}
-            </section>
-          </AdminSection>
-
-          <AdminSection title="Prayer chain">
-            <section
-              data-testid="section-prayer-chain"
-              className="space-y-6 lg:col-span-2"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-3 border-t-2 border-primary pt-4">
-                <div className="flex items-center gap-3">
-                  <Clock3 className="h-5 w-5 text-primary" />
-                  <h2 className="text-2xl font-bold uppercase tracking-wider text-ink">
-                    Prayer chain
-                  </h2>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Badge className="bg-primary text-white">
-                    {prayerChainQuery.isLoading
-                      ? "..."
-                      : normalizedPrayerChainSearch
-                        ? `${filteredPrayerChainSignups.length}/${prayerChainSignups.length}`
-                        : prayerChainSignups.length}
-                  </Badge>
-                  {prayerChainSignups.length > 0 && (
-                    <button
-                      onClick={() =>
-                        exportPrayerChainCSV(filteredPrayerChainSignups)
-                      }
-                      className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-widest text-muted-foreground transition-colors hover:text-ink"
-                      title="Export prayer-chain signups"
-                    >
-                      <Download className="h-4 w-4" />
-                      Export
-                    </button>
-                  )}
-                </div>
-              </div>
-
-              {prayerChainSignups.length > 0 && (
-                <div className="relative">
-                  <Search
-                    aria-hidden="true"
-                    className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-                  />
-                  <Input
-                    type="search"
-                    value={prayerChainSearch}
-                    onChange={(event) =>
-                      setPrayerChainSearch(event.target.value)
-                    }
-                    placeholder="Search by name, email, phone, or prayer time"
-                    aria-label="Search prayer-chain signups"
-                    data-testid="input-prayer-chain-search"
-                    className="h-12 border-ink/10 bg-ink/5 pl-11 text-ink placeholder:text-muted-foreground focus-visible:border-primary focus-visible:ring-primary/20"
-                  />
-                </div>
-              )}
-
-              {prayerChainQuery.isLoading ? (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {[1, 2].map((item) => (
-                    <Skeleton
-                      key={item}
-                      className="h-48 w-full rounded-xl bg-ink/5"
-                    />
-                  ))}
-                </div>
-              ) : prayerChainQuery.isError ? (
-                <div className="rounded-2xl border border-red-400/20 bg-red-400/5 px-6 py-12 text-center">
-                  <p className="font-bold text-red-700 dark:text-red-300">
-                    Unable to load prayer-chain registrations.
-                  </p>
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Your registrations are still saved. Check your connection
-                    and try again.
-                  </p>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className="mt-6 border-ink/20 text-ink hover:bg-ink/10"
-                    onClick={() => prayerChainQuery.refetch()}
-                    data-testid="button-retry-prayer-chain"
-                  >
-                    Try Again
-                  </Button>
-                </div>
-              ) : prayerChainSignups.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-muted-foreground">
-                  No prayer-chain signups yet
-                </div>
-              ) : filteredPrayerChainSignups.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-ink/10 py-16 text-center text-muted-foreground">
-                  No prayer-chain signups match “{prayerChainSearch.trim()}”
-                </div>
-              ) : (
-                <div className="grid gap-4 md:grid-cols-2">
-                  {filteredPrayerChainSignups.map((signup) => (
-                    <article
-                      key={signup.id}
-                      className="rounded-xl border border-ink/10 bg-ink/5 p-5"
-                    >
-                      <div className="flex flex-wrap items-start justify-between gap-4">
-                        <div>
-                          <p className="font-bold text-ink">{signup.name}</p>
-                          <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-                            <Mail className="h-3.5 w-3.5" />
-                            {signup.email}
-                          </p>
-                          <p className="mt-1 flex items-center gap-2 text-sm text-muted-foreground">
-                            <Phone className="h-3.5 w-3.5" />
-                            {signup.phone}
-                          </p>
-                        </div>
-                        <Badge
-                          variant="outline"
-                          className="border-primary/30 text-primary"
-                        >
-                          {signup.timeSlots.length}{" "}
-                          {signup.timeSlots.length === 1 ? "hour" : "hours"}
-                        </Badge>
-                      </div>
-                      <div className="mt-5 flex flex-wrap gap-2">
-                        {signup.timeSlots.map((slot) => (
-                          <span
-                            key={slot}
-                            className="border border-ink/10 bg-shade/20 px-2.5 py-1.5 text-xs font-semibold text-muted-foreground"
-                          >
-                            {PRAYER_SLOT_LABELS[slot] ?? slot}
-                          </span>
-                        ))}
-                      </div>
-                      <p className="mt-4 text-right text-[10px] uppercase text-muted-foreground">
-                        {format(new Date(signup.createdAt), "MMM d, h:mm a")}
-                      </p>
-                    </article>
-                  ))}
-                </div>
               )}
             </section>
           </AdminSection>

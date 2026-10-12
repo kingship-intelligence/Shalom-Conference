@@ -10,6 +10,8 @@ import type { AdminUserRole } from './adminUserRole';
 export interface AdminUser {
   id: number;
   username: string;
+  /** @nullable */
+  createdBy: string | null;
   role: AdminUserRole;
   createdAt: Date;
 }
