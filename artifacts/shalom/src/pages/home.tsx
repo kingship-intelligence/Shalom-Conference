@@ -20,9 +20,8 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 );
 
 const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
-const HERO_TITLE_PREFIX = `${currentConference.year}: `;
-const HERO_TITLE_THEME = currentConference.theme.toUpperCase();
-const HERO_TITLE = `${HERO_TITLE_PREFIX}${HERO_TITLE_THEME}`;
+const HERO_VIDEO_SRC = "/videos/shalom-hero.mp4";
+const HERO_POSTER_SRC = "/images/home/shalom-hero-poster.webp";
 // Countdown target comes from the conference data so there is one place to update.
 const CONFERENCE_START = currentConference.startsAt
   ? new Date(currentConference.startsAt).getTime()
@@ -30,57 +29,6 @@ const CONFERENCE_START = currentConference.startsAt
 const CONFERENCE_END = currentConference.endsAt
   ? new Date(currentConference.endsAt).getTime()
   : null;
-
-function HeroTypewriterTitle({
-  enabled,
-  reducedMotion,
-}: {
-  enabled: boolean;
-  reducedMotion: boolean;
-}) {
-  const [visibleCharacters, setVisibleCharacters] = useState(
-    reducedMotion ? HERO_TITLE.length : 0,
-  );
-
-  useEffect(() => {
-    if (reducedMotion) {
-      setVisibleCharacters(HERO_TITLE.length);
-      return;
-    }
-    if (!enabled || visibleCharacters >= HERO_TITLE.length) return;
-
-    const nextCharacter = HERO_TITLE[visibleCharacters];
-    const timer = window.setTimeout(
-      () => setVisibleCharacters((count) => count + 1),
-      nextCharacter === "\n" ? 240 : 72,
-    );
-    return () => window.clearTimeout(timer);
-  }, [enabled, reducedMotion, visibleCharacters]);
-
-  const visiblePrefix = HERO_TITLE_PREFIX.slice(0, visibleCharacters);
-  const visibleTheme = HERO_TITLE_THEME.slice(
-    0,
-    Math.max(0, visibleCharacters - HERO_TITLE_PREFIX.length),
-  );
-
-  return (
-    <h1
-      className="hero-title mb-7 whitespace-nowrap text-[clamp(1.75rem,7.8vw,2.3rem)] font-bold uppercase leading-[0.92] tracking-tight text-black sm:text-[3rem] lg:mb-10 lg:text-[5rem] xl:text-[6.25rem] 2xl:text-[7rem] italic"
-      style={{ fontFamily: "var(--font-display)" }}
-      aria-label={HERO_TITLE.replace("\n", " ")}
-    >
-      <span className="block min-h-[0.92em]" aria-hidden="true">
-        {visiblePrefix}
-        <span className="-mr-[0.18em] inline-block bg-gradient-to-r from-primary to-secondary bg-clip-text pr-[0.18em] text-transparent">
-          {visibleTheme}
-        </span>
-        {!reducedMotion && visibleCharacters < HERO_TITLE.length && (
-          <span className="hero-typewriter-cursor" />
-        )}
-      </span>
-    </h1>
-  );
-}
 
 function ScrollPage({ children, enabled }: { children: React.ReactNode; enabled: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -201,6 +149,7 @@ export default function Home() {
   const [isDesktop, setIsDesktop] = useState(() =>
     typeof window === "undefined" ? true : window.matchMedia(HERO_DESKTOP_MEDIA_QUERY).matches,
   );
+  const heroVideoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const desktop = window.matchMedia(HERO_DESKTOP_MEDIA_QUERY);
@@ -211,46 +160,15 @@ export default function Home() {
     return () => desktop.removeEventListener?.("change", sync);
   }, []);
 
-  const heroContent = (
-    <motion.div
-              initial={prefersReducedMotion ? false : { opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7 }}
-              className="mx-auto flex max-w-6xl flex-col items-center text-center"
-            >
-              <HeroTypewriterTitle enabled={motionEnabled} reducedMotion={prefersReducedMotion} />
-              {currentConference.scriptureText && (
-                <div className="mb-9 max-w-4xl">
-                  <p className="text-xs font-bold uppercase tracking-[0.3em] text-primary">
-                    {currentConference.scripture}
-                  </p>
-                  <blockquote className="mt-5 text-lg font-medium leading-relaxed text-slate-700 sm:text-xl lg:text-2xl xl:text-3xl">
-                    “{currentConference.scriptureText}”
-                  </blockquote>
-                </div>
-              )}
-              <div className="flex flex-wrap justify-center gap-3">
-                <Button
-                  asChild
-                  size="lg"
-                  className="group h-14 rounded-full border-none bg-primary px-10 text-base font-bold uppercase tracking-widest text-white shadow-[0_8px_35px_-10px_rgba(249,89,31,0.7)] transition-all duration-300 hover:-translate-y-1 hover:bg-primary/90 hover:brightness-110 motion-reduce:transition-none motion-reduce:hover:translate-y-0 lg:h-16 lg:px-12 lg:text-lg xl:h-[4.5rem] xl:px-14 xl:text-xl"
-                  data-testid="button-conference-hero"
-                >
-                  <Link href="/2026">
-                    View Shalom 2026 <ArrowRight className="ml-2 h-5 w-5 transition-transform duration-300 group-hover:translate-x-1 motion-reduce:transition-none" />
-                  </Link>
-                </Button>
-                <Button
-                  asChild
-                  variant="outline"
-                  size="lg"
-                  className="h-14 rounded-full border-slate-300 bg-transparent px-10 text-base font-bold uppercase tracking-widest text-[#13101c] hover:bg-slate-100 hover:text-[#13101c] lg:h-16 lg:px-12 lg:text-lg xl:h-[4.5rem] xl:px-14 xl:text-xl"
-                >
-                  <Link href="/2026">See the lineup</Link>
-                </Button>
-              </div>
-            </motion.div>
-  );
+  useEffect(() => {
+    const video = heroVideoRef.current;
+    if (!video || prefersReducedMotion) return;
+    if (motionEnabled) {
+      void video.play().catch(() => {});
+      return;
+    }
+    video.pause();
+  }, [motionEnabled, prefersReducedMotion]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -258,9 +176,33 @@ export default function Home() {
 
       <main className="home-scroll-story">
       <ScrollPage enabled={motionEnabled}>
-      <section className={`home-hero relative isolate flex flex-col items-center overflow-hidden bg-white px-6 pb-6 pt-10 text-[#13101c] sm:px-10 lg:min-h-[min(760px,calc(100svh-76px))] lg:flex-row lg:px-16 lg:py-16 2xl:min-h-[min(900px,calc(100svh-76px))] ${!motionEnabled ? "hero-motion-paused" : ""}`}>
-        <div className="container relative z-10 mx-auto w-full max-w-[1500px]">
-          {heroContent}
+      <section
+        aria-label="Shalom conference"
+        className={`home-hero relative isolate flex min-h-[min(640px,calc(100svh-76px))] flex-col overflow-hidden lg:min-h-[min(600px,calc(100svh-76px))] 2xl:min-h-[min(680px,calc(100svh-76px))] ${!motionEnabled ? "hero-motion-paused" : ""}`}
+      >
+        <h1 className="sr-only">Shalom Youth Conference</h1>
+        <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
+          {prefersReducedMotion ? (
+            <img
+              src={HERO_POSTER_SRC}
+              alt=""
+              className="home-hero-media"
+              fetchPriority="high"
+            />
+          ) : (
+            <video
+              ref={heroVideoRef}
+              className="home-hero-media"
+              autoPlay
+              muted
+              loop
+              playsInline
+              poster={HERO_POSTER_SRC}
+              preload="auto"
+            >
+              <source src={HERO_VIDEO_SRC} type="video/mp4" />
+            </video>
+          )}
         </div>
         {isDesktop && !prefersReducedMotion && (
           <button
@@ -268,7 +210,7 @@ export default function Home() {
             onClick={() => setMotionPaused((paused) => !paused)}
             aria-label={motionPaused ? "Play hero motion" : "Pause hero motion"}
             aria-pressed={motionPaused}
-            className="relative z-20 ml-auto mt-5 flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-[10px] uppercase tracking-widest text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:absolute lg:bottom-5 lg:right-6 lg:mt-0 lg:min-h-0 lg:px-3"
+            className="relative z-10 ml-auto flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-black/35 px-4 py-2 text-[10px] uppercase tracking-widest text-white/90 backdrop-blur-sm transition-colors hover:bg-black/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:absolute lg:bottom-5 lg:right-6 lg:min-h-0 lg:px-3"
           >
             {motionPaused ? <Play className="h-3 w-3" /> : <Pause className="h-3 w-3" />}
             {motionPaused ? "Play motion" : "Pause motion"}

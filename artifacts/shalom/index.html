@@ -24,21 +24,18 @@
     <meta name="twitter:description" content="October 9-10 in Windsor Mill, MD. Two nights of worship and prayer for students and young adults." />
     <meta name="twitter:image" content="/opengraph.jpg" />
     <link rel="icon" type="image/png" href="/favicon.png" />
-    <!-- Home hero: start fetching the first-paint image before the JS bundle has run. -->
+    <!-- Home hero: poster for first paint, then background video from the app bundle. -->
     <link
       rel="preload"
       as="image"
-      media="(max-width: 767px)"
-      imagesrcset="/images/home/shalom-hero-mobile-1080.webp 1080w, /images/home/shalom-hero-mobile-1620.webp 1620w"
-      imagesizes="100vw"
+      href="/images/home/shalom-hero-poster.webp"
       fetchpriority="high"
     />
     <link
       rel="preload"
-      as="image"
-      media="(min-width: 768px)"
-      href="/images/home/shalom-hero-poster.webp"
-      fetchpriority="high"
+      as="video"
+      href="/videos/shalom-hero.mp4"
+      type="video/mp4"
     />
   </head>
   <body>
