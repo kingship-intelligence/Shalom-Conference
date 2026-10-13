@@ -21,7 +21,6 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 
 const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
 const HERO_VIDEO_SRC = "/videos/shalom-hero-optimized.mp4";
-const HERO_POSTER_SRC = "/images/home/shalom-hero-poster.webp";
 // Countdown target comes from the conference data so there is one place to update.
 const CONFERENCE_START = currentConference.startsAt
   ? new Date(currentConference.startsAt).getTime()
@@ -162,7 +161,7 @@ export default function Home() {
 
   useEffect(() => {
     const video = heroVideoRef.current;
-    if (!video || prefersReducedMotion) return;
+    if (!video) return;
     if (motionEnabled) {
       void video.play().catch(() => {});
       return;
@@ -182,27 +181,17 @@ export default function Home() {
       >
         <h1 className="sr-only">Shalom Youth Conference</h1>
         <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
-          {prefersReducedMotion ? (
-            <img
-              src={HERO_POSTER_SRC}
-              alt=""
-              className="home-hero-media"
-              fetchPriority="high"
-            />
-          ) : (
-            <video
-              ref={heroVideoRef}
-              className="home-hero-media"
-              autoPlay
-              muted
-              loop
-              playsInline
-              poster={HERO_POSTER_SRC}
-              preload="auto"
-            >
-              <source src={HERO_VIDEO_SRC} type="video/mp4" />
-            </video>
-          )}
+          <video
+            ref={heroVideoRef}
+            className="home-hero-media"
+            autoPlay={!prefersReducedMotion}
+            muted
+            loop
+            playsInline
+            preload="auto"
+          >
+            <source src={HERO_VIDEO_SRC} type="video/mp4" />
+          </video>
         </div>
         {isDesktop && !prefersReducedMotion && (
           <button
