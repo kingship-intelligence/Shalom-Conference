@@ -20,7 +20,7 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
 );
 
 const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
-const HERO_VIDEO_SRC = "/videos/shalom-hero.mp4";
+const HERO_VIDEO_SRC = "/videos/shalom-hero-optimized.mp4";
 const HERO_POSTER_SRC = "/images/home/shalom-hero-poster.webp";
 // Countdown target comes from the conference data so there is one place to update.
 const CONFERENCE_START = currentConference.startsAt
