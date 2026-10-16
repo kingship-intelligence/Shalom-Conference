@@ -57,16 +57,7 @@ export default function Home() {
         aria-label="Shalom conference"
         className="home-hero relative isolate min-h-[min(640px,calc(100svh-76px))] overflow-hidden bg-black lg:min-h-[min(600px,calc(100svh-76px))] 2xl:min-h-[min(680px,calc(100svh-76px))]"
       >
-        <h1 className="sr-only">Shalom Youth Conference</h1>
-        <div className="absolute inset-0 lg:hidden">
-          <img
-            src={HERO_PHOTOS[0]}
-            alt="A worshipper praying at Shalom Conference"
-            className="h-full w-full object-cover object-center"
-            fetchPriority="high"
-          />
-        </div>
-        <div className="absolute inset-0 hidden grid-cols-3 gap-px bg-white/20 lg:grid">
+        <div className="absolute inset-0 grid grid-rows-3 gap-px bg-white/20 lg:grid-cols-3 lg:grid-rows-1">
           {HERO_PHOTOS.map((photo, index) => (
             <div key={photo} className="relative overflow-hidden bg-black">
               <img
@@ -82,22 +73,25 @@ export default function Home() {
             </div>
           ))}
         </div>
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/75 via-black/30 to-transparent px-5 pb-7 pt-24 sm:px-10 sm:pb-10 lg:px-16">
+          <h1
+            className="text-5xl font-bold uppercase leading-[0.9] tracking-tight text-white sm:text-7xl lg:text-8xl"
+            style={{
+              fontFamily: "var(--font-display)",
+              textShadow: "0 4px 28px rgba(0, 0, 0, 0.95)",
+            }}
+          >
+            What is Shalom?
+          </h1>
+        </div>
       </section>
 
       </ScrollPage>
 
       <ScrollPage enabled={motionEnabled}>
-        <section id="about-shalom" className="bg-background px-4 py-20 sm:px-6 sm:py-28">
-          <FadeIn className="container mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
+        <section id="about-shalom" className="bg-background px-4 pb-20 pt-10 sm:px-6 sm:pb-28 sm:pt-14">
+          <FadeIn className="container mx-auto max-w-4xl">
             <div>
-              <h2
-                className="text-5xl font-bold uppercase leading-[0.9] tracking-tight text-ink sm:text-7xl"
-                style={{ fontFamily: "var(--font-display)" }}
-              >
-                What is Shalom?
-              </h2>
-            </div>
-            <div className="flex flex-col justify-center">
               <p className="text-xl font-medium leading-relaxed text-ink sm:text-2xl">
                 Shalom is an annual conference for students and young adults,
                 hosted by Reveille, the youth ministry of RCCG Higher Ground
