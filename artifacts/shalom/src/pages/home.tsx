@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from "react";
+import { useRef } from "react";
 import { Link } from "wouter";
 import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Pause, Play } from "lucide-react";
-import { currentConference } from "@/data/conferences";
+import { ArrowRight } from "lucide-react";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -19,15 +18,11 @@ const FadeIn = ({ children, delay = 0, className = "" }: { children: React.React
   </motion.div>
 );
 
-const HERO_DESKTOP_MEDIA_QUERY = "(min-width: 1024px)";
-const HERO_VIDEO_SRC = "/videos/shalom-hero-optimized.mp4";
-// Countdown target comes from the conference data so there is one place to update.
-const CONFERENCE_START = currentConference.startsAt
-  ? new Date(currentConference.startsAt).getTime()
-  : null;
-const CONFERENCE_END = currentConference.endsAt
-  ? new Date(currentConference.endsAt).getTime()
-  : null;
+const HERO_PHOTOS = [
+  "/images/home/shalom-2026-prayer-1.jpg",
+  "/images/home/shalom-2026-prayer-middle.jpg",
+  "/images/home/shalom-2026-prayer-3.jpg",
+];
 
 function ScrollPage({ children, enabled }: { children: React.ReactNode; enabled: boolean }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -47,127 +42,10 @@ function ScrollPage({ children, enabled }: { children: React.ReactNode; enabled:
   );
 }
 
-function getCountdownParts() {
-  const remaining = Math.max(0, (CONFERENCE_START ?? 0) - Date.now());
-
-  return {
-    days: Math.floor(remaining / 86_400_000),
-    hours: Math.floor((remaining % 86_400_000) / 3_600_000),
-    minutes: Math.floor((remaining % 3_600_000) / 60_000),
-    seconds: Math.floor((remaining % 60_000) / 1_000),
-    hasStarted: remaining === 0,
-    hasEnded: CONFERENCE_END !== null && Date.now() >= CONFERENCE_END,
-  };
-}
-
-function ConferenceCountdown() {
-  const [countdown, setCountdown] = useState(getCountdownParts);
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setCountdown(getCountdownParts());
-    }, 1_000);
-
-    return () => window.clearInterval(timer);
-  }, []);
-
-  if (CONFERENCE_START === null) return null;
-
-  if (countdown.hasEnded) {
-    return (
-      <section className="border-y border-white/10 bg-[#090910] px-4 py-14 text-white sm:px-6 sm:py-16">
-        <div className="container mx-auto max-w-5xl text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f9591f]">
-            Shalom 2026
-          </p>
-          <h2
-            className="mt-4 text-3xl font-bold uppercase tracking-wide sm:text-5xl"
-            style={{ fontFamily: "var(--font-display)" }}
-          >
-            Thank you for joining us
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-base text-white/70 sm:text-lg">
-            The Comforter has concluded. Revisit the program, speakers, and
-            moments from this year&apos;s gathering.
-          </p>
-        </div>
-      </section>
-    );
-  }
-
-  const units = [
-    { label: "Days", value: countdown.days },
-    { label: "Hours", value: countdown.hours },
-    { label: "Minutes", value: countdown.minutes },
-    { label: "Seconds", value: countdown.seconds },
-  ];
-
-  return (
-    <section className="border-y border-white/10 bg-[#090910] px-4 py-14 text-white sm:px-6 sm:py-16">
-      <div className="container mx-auto max-w-5xl text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.3em] text-[#f9591f]">
-          {countdown.hasStarted ? "Happening now" : "Countdown"}
-        </p>
-        <h2
-          className="mt-4 text-3xl font-bold uppercase tracking-wide sm:text-5xl"
-          style={{ fontFamily: "var(--font-display)" }}
-        >
-          {countdown.hasStarted ? "Shalom 2026 is happening now" : "Doors open Friday at 7 PM"}
-        </h2>
-
-        {!countdown.hasStarted && (
-          <div
-            className="mx-auto mt-10 grid max-w-3xl grid-cols-4 border-y border-white/15"
-            aria-label={`${countdown.days} days, ${countdown.hours} hours, ${countdown.minutes} minutes, and ${countdown.seconds} seconds until Shalom 2026`}
-          >
-            {units.map((unit, index) => (
-              <div
-                key={unit.label}
-                className={`py-6 sm:py-8 ${index > 0 ? "border-l border-white/15" : ""}`}
-              >
-                <span className="block font-mono text-3xl font-bold tabular-nums sm:text-6xl">
-                  {String(unit.value).padStart(2, "0")}
-                </span>
-                <span className="mt-2 block text-[9px] font-bold uppercase tracking-[0.18em] text-white/60 sm:text-xs sm:tracking-[0.25em]">
-                  {unit.label}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-    </section>
-  );
-}
-
 export default function Home() {
   // framer's hook tracks prefers-reduced-motion and updates live.
   const prefersReducedMotion = useReducedMotion() ?? false;
-  const [motionPaused, setMotionPaused] = useState(false);
-  const motionEnabled = !prefersReducedMotion && !motionPaused;
-  const [isDesktop, setIsDesktop] = useState(() =>
-    typeof window === "undefined" ? true : window.matchMedia(HERO_DESKTOP_MEDIA_QUERY).matches,
-  );
-  const heroVideoRef = useRef<HTMLVideoElement>(null);
-
-  useEffect(() => {
-    const desktop = window.matchMedia(HERO_DESKTOP_MEDIA_QUERY);
-    const sync = () => setIsDesktop(desktop.matches);
-
-    sync();
-    desktop.addEventListener?.("change", sync);
-    return () => desktop.removeEventListener?.("change", sync);
-  }, []);
-
-  useEffect(() => {
-    const video = heroVideoRef.current;
-    if (!video) return;
-    if (motionEnabled) {
-      void video.play().catch(() => {});
-      return;
-    }
-    video.pause();
-  }, [motionEnabled, prefersReducedMotion]);
+  const motionEnabled = !prefersReducedMotion;
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -177,71 +55,81 @@ export default function Home() {
       <ScrollPage enabled={motionEnabled}>
       <section
         aria-label="Shalom conference"
-        className={`home-hero relative isolate flex min-h-[min(640px,calc(100svh-76px))] flex-col overflow-hidden lg:min-h-[min(600px,calc(100svh-76px))] 2xl:min-h-[min(680px,calc(100svh-76px))] ${!motionEnabled ? "hero-motion-paused" : ""}`}
+        className="home-hero relative isolate min-h-[min(640px,calc(100svh-76px))] overflow-hidden bg-black lg:min-h-[min(600px,calc(100svh-76px))] 2xl:min-h-[min(680px,calc(100svh-76px))]"
       >
         <h1 className="sr-only">Shalom Youth Conference</h1>
-        <div className="pointer-events-none absolute inset-0 z-0" aria-hidden="true">
-          <video
-            ref={heroVideoRef}
-            className="home-hero-media"
-            autoPlay={!prefersReducedMotion}
-            muted
-            loop
-            playsInline
-            preload="auto"
-          >
-            <source src={HERO_VIDEO_SRC} type="video/mp4" />
-          </video>
+        <div className="absolute inset-0 lg:hidden">
+          <img
+            src={HERO_PHOTOS[0]}
+            alt="A worshipper praying at Shalom Conference"
+            className="h-full w-full object-cover object-center"
+            fetchPriority="high"
+          />
         </div>
-        {isDesktop && !prefersReducedMotion && (
-          <button
-            type="button"
-            onClick={() => setMotionPaused((paused) => !paused)}
-            aria-label={motionPaused ? "Play hero motion" : "Pause hero motion"}
-            aria-pressed={motionPaused}
-            className="relative z-10 ml-auto flex min-h-11 items-center gap-2 rounded-full border border-white/25 bg-black/35 px-4 py-2 text-[10px] uppercase tracking-widest text-white/90 backdrop-blur-sm transition-colors hover:bg-black/50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-primary lg:absolute lg:bottom-5 lg:right-6 lg:min-h-0 lg:px-3"
-          >
-            {motionPaused ? <Play className="h-3 w-3" /> : <Pause className="h-3 w-3" />}
-            {motionPaused ? "Play motion" : "Pause motion"}
-          </button>
-        )}
+        <div className="absolute inset-0 hidden grid-cols-3 gap-px bg-white/20 lg:grid">
+          {HERO_PHOTOS.map((photo, index) => (
+            <div key={photo} className="relative overflow-hidden bg-black">
+              <img
+                src={photo}
+                alt={[
+                  "A worshipper praying at Shalom Conference",
+                  "A worship leader at Shalom Conference",
+                  "Congregants praying together at Shalom Conference",
+                ][index]}
+                className="h-full w-full object-cover object-center"
+                fetchPriority={index === 0 ? "high" : "auto"}
+              />
+            </div>
+          ))}
+        </div>
       </section>
 
       </ScrollPage>
 
       <ScrollPage enabled={motionEnabled}>
-        <ConferenceCountdown />
-      </ScrollPage>
-
-      <ScrollPage enabled={motionEnabled}>
-
-      <section id="home-cta" className="bg-primary px-4 py-28 sm:px-6">
-        <div className="container mx-auto max-w-3xl text-center">
-          <FadeIn>
-            <h2
-              className="mb-6 text-6xl font-bold uppercase tracking-wide text-white sm:text-8xl"
-              style={{ fontFamily: "var(--font-display)" }}
-            >
-              Thank you
-            </h2>
-            <p className="mx-auto mb-12 max-w-xl text-xl font-medium text-white/85">
-              Shalom 2026 has concluded. Thank you for worshipping, praying,
-              serving, and gathering with us.
-            </p>
-            <Button
-              asChild
-              size="lg"
-              className="h-16 rounded-full bg-white px-12 text-xl font-bold uppercase tracking-widest text-primary hover:bg-white/92 border-none shadow-lg"
-              data-testid="button-conference-footer"
-            >
-              <Link href="/2026">
-                View the conference <ArrowRight className="ml-3 h-6 w-6" />
-              </Link>
-            </Button>
+        <section id="about-shalom" className="bg-background px-4 py-20 sm:px-6 sm:py-28">
+          <FadeIn className="container mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:gap-20">
+            <div>
+              <h2
+                className="text-5xl font-bold uppercase leading-[0.9] tracking-tight text-ink sm:text-7xl"
+                style={{ fontFamily: "var(--font-display)" }}
+              >
+                What is Shalom?
+              </h2>
+            </div>
+            <div className="flex flex-col justify-center">
+              <p className="text-xl font-medium leading-relaxed text-ink sm:text-2xl">
+                Shalom is an annual conference for students and young adults,
+                hosted by Reveille, the youth ministry of RCCG Higher Ground
+                Assembly in Windsor Mill, Maryland.
+              </p>
+              <p className="mt-6 text-base leading-relaxed text-muted-foreground sm:text-lg">
+                At its heart, Shalom is a space to worship without distraction,
+                pray for one another, and make room for the Holy Spirit to do
+                what only He can do.
+              </p>
+              <div className="mt-10 flex flex-wrap gap-3">
+                <Button
+                  asChild
+                  size="lg"
+                  className="rounded-full px-8 font-bold uppercase tracking-widest"
+                >
+                  <Link href="/about">
+                    Learn about Shalom <ArrowRight className="ml-2 h-5 w-5" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="rounded-full border-ink/20 px-8 font-bold uppercase tracking-widest"
+                >
+                  <Link href="/archive">Past conferences</Link>
+                </Button>
+              </div>
+            </div>
           </FadeIn>
-        </div>
-      </section>
-
+        </section>
       </ScrollPage>
       </main>
 

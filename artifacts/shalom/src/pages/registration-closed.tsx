@@ -18,8 +18,8 @@ export default function RegistrationClosed() {
             Registration is closed
           </h1>
           <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
-            Thank you to everyone who joined us for The Comforter. Explore the
-            2026 conference page or revisit previous Shalom gatherings.
+            Thank you to everyone who joined us for Shalom 2026. Explore the
+            conference page or revisit previous Shalom gatherings.
           </p>
           <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
             <Button asChild size="lg" className="rounded-full uppercase tracking-wider">

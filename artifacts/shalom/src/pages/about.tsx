@@ -1,7 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
-import { currentConference } from "@/data/conferences";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 
@@ -46,17 +45,18 @@ export default function About() {
           <div className="container mx-auto max-w-4xl">
             <div className="text-center lg:text-left">
               <h2 className="mb-8 text-3xl font-black uppercase tracking-tighter text-ink sm:text-4xl md:text-6xl">
-                This year: The Comforter
+                Why we gather
               </h2>
               <div className="space-y-6 text-lg leading-relaxed text-muted-foreground sm:text-xl">
                 <p>
-                  The theme for {currentConference.year} comes from {currentConference.scripture}, where
-                  Jesus promises His friends that the Father will send the Holy Spirit to teach them,
-                  remind them, and leave them with a peace the world can't give.
+                  Each Shalom conference has its own theme, but the purpose
+                  remains the same: helping young people draw closer to God and
+                  encounter Him together.
                 </p>
                 <p>
-                  That's what we're praying for over these two nights. If you've been carrying
-                  something heavy, this is a good place to set it down.
+                  We gather across churches and backgrounds to worship, pray,
+                  build genuine community, and leave strengthened for everyday
+                  life with Jesus.
                 </p>
               </div>
 
@@ -66,8 +66,8 @@ export default function About() {
                   size="lg"
                   className="w-full max-w-xs rounded-full uppercase tracking-wider sm:w-auto"
                 >
-                  <Link href="/2026">
-                    View Shalom {currentConference.year} <ArrowRight className="h-5 w-5" />
+                  <Link href="/archive">
+                    Explore past conferences <ArrowRight className="h-5 w-5" />
                   </Link>
                 </Button>
                 <Button
@@ -76,8 +76,8 @@ export default function About() {
                   size="lg"
                   className="w-full max-w-xs rounded-full border-ink/20 uppercase tracking-wider sm:w-auto"
                 >
-                  <Link href="/archive">
-                    Past years <ArrowRight className="h-5 w-5" />
+                  <Link href="/2026">
+                    Shalom 2026 <ArrowRight className="h-5 w-5" />
                   </Link>
                 </Button>
               </div>
